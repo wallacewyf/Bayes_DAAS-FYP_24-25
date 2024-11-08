@@ -4,11 +4,13 @@ from scipy import stats
 from sklearn import linear_model
 from matplotlib import pyplot as plt
 
-source_path = '/Users/wallace/Documents/code/python/fyp_24/'
+data_path = '/Users/wallace/Documents/code/python/fyp_24/raw_data/'
+script_path = '/Users/wallace/Documents/code/python/fyp_24/scripts/'
+results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
+
 source_file = 'FY2023_ESG_Returns.xlsx'
 
-source = source_path + source_file
-combined_esg_filename = 'sorted_combined_esg.csv'
+source = data_path + source_file
 
 source_df = pd.read_excel(source, header=0)
 
@@ -46,11 +48,12 @@ yoy_return['52 Week Total Return'] = yoy_return['52 Week Total Return'].apply(la
 yoy_return.rename(columns={'52 Week Total Return':'52 Week Total Return (%)'}, inplace=True)
 
 # sort ESG scores
+combined_esg_filename = 'sorted_combined_esg.csv'
 combined_esg.sort_values(by='ESG Score\n(FY0)', ascending=False, axis=0, inplace=True)
-combined_esg.to_csv(source_path + combined_esg_filename, sep = ',', header=True, index=False)
+combined_esg.to_csv(results_path + combined_esg_filename, sep = ',', header=True, index=False)
 
 print ('ESG scores are now sorted from highest to lowest.',
-       '\n' + f'File has been saved to {source_path}' + f'{combined_esg_filename}.')
+       '\n' + f'File has been saved to {results_path}' + f'{combined_esg_filename}.')
 
 # scatterplot - ESG combined scores v. 52W total return
 x = combined_esg['ESG Score\n(FY0)'].tolist()
@@ -67,4 +70,3 @@ print (r)
 
 plt.scatter(x, y)
 plt.plot(x, mymodel)
-plt.show()
