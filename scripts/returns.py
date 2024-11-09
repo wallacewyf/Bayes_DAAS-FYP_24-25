@@ -9,5 +9,6 @@ from scipy import stats
 from sklearn import linear_model
 from matplotlib import pyplot as plt
 
-
 returns_df = pd.read_excel(config.returns)
+
+returns_df.to_csv(config.results_path + 'returns_df.csv', header=True, index=False)
