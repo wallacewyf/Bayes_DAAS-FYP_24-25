@@ -1,4 +1,4 @@
-# config parameters file
+# import parameters file
 import config
 
 # import libraries
