@@ -27,10 +27,3 @@ roa_df.rename(columns={'ROA Tot Assets, %, TTM': 'ROA (%)'}, inplace=True)
 print (roe_df)
 print ()
 print (roa_df)
-
-ek.set_app_id('34b17369973d4e5eb52450fa0de997bc41a13d13')
-
-df = ek.get_timeseries(["MSFT.O"], 
-                       start_date="2016-01-01",  
-                       end_date="2016-01-10")
-print (df)
