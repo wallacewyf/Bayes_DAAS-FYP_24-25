@@ -11,58 +11,61 @@ from matplotlib import pyplot as plt
 # init source df
 source_df = pd.read_excel(config.source, header=0)
 
-market_cap = source_df[['Exchange Ticker', 
-                        'Company Name', 
-                        'Company Market Capitalization\n(USD)'
-]]
+# clean up and set index
+source_df['Identifier'] = source_df['Identifier'].apply(lambda x: x[:len(x)-3])
+source_df.set_index(keys='Identifier', inplace=True)
 
-combined_esg = source_df[['Exchange Ticker', 
-                        'Company Name', 
-                        'ESG Score\n(FY0)',
-                        'ESG Score Grade\n(FY0)']]
+# data wrangling
+source_df.drop('Exchange Ticker', 
+               axis=1, 
+               inplace=True)
 
-e_score = source_df[['Exchange Ticker', 
-                    'Company Name', 
-                    'Environmental Pillar Score Grade\n(FY0)',
-                     'Environmental Pillar Score\n(FY0)']]
+source_df.rename(columns={'Company Market Capitalization\n(USD)':'Market Cap (USD $)',
+                          'ESG Score\n(FY0)': 'ESG Score',
+                          'ESG Score Grade\n(FY0)': 'ESG Grade', 
+                          'Environmental Pillar Score Grade\n(FY0)': 'E Grade',
+                          'Social Pillar Score Grade\n(FY0)': 'S Grade',
+                          'Governance Pillar Score Grade\n(FY0)': 'G Grade',
+                          'Environmental Pillar Score\n(FY0)': 'E Score', 
+                          'Social Pillar Score\n(FY0)': 'S Score',
+                          'Governance Pillar Score\n(FY0)': 'G Score',
+                          '52 Week Total Return': '52 Week Total Return (%)'},
+                  inplace=True)
 
-s_score = source_df[['Exchange Ticker', 
-                    'Company Name', 
-                    'Social Pillar Score Grade\n(FY0)',
-                     'Social Pillar Score\n(FY0)']]
+# convert YoY into %
+source_df['52 Week Total Return (%)'] = source_df['52 Week Total Return (%)'].apply(lambda x: round(x*100, 2))
 
-g_score = source_df[['Exchange Ticker', 
-                    'Company Name', 
-                    'Governance Pillar Score Grade\n(FY0)',
-                     'Governance Pillar Score\n(FY0)']]
+# sort ESG scores and export
+source_df.sort_values(by=['ESG Score', 'Company Name'], 
+                      ascending=[False, True], 
+                      axis=0, 
+                      inplace=True)
 
-yoy_return = source_df[['Exchange Ticker', 
-                        'Company Name', 
-                        '52 Week Total Return']]
-
-# convert into %
-yoy_return['52 Week Total Return'] = yoy_return['52 Week Total Return'].apply(lambda x: round(x*100, 2))
-yoy_return.rename(columns={'52 Week Total Return':'52 Week Total Return (%)'}, inplace=True)
-
-# sort ESG scores
-combined_esg.sort_values(by='ESG Score\n(FY0)', ascending=False, axis=0, inplace=True)
-combined_esg.to_csv(config.results_path + config.combined_esg_filename, sep = ',', header=True, index=False)
+source_df.to_csv(config.results_path + config.combined_esg_filename, 
+                 sep = ',', 
+                 header=True, 
+                 index=False)
 
 print ('ESG scores are now sorted from highest to lowest.',
-       '\n' + f'File has been saved to {config.results_path}' + f'{config.combined_esg_filename}.')
+       '\n' + f'File has been saved to {config.results_path}' + f'{config.combined_esg_filename}.' + '\n')
+
+print ('------------------------------------------------------------')
 
 # scatterplot - ESG combined scores v. 52W total return
-x = combined_esg['ESG Score\n(FY0)'].tolist()
-y = yoy_return['52 Week Total Return (%)'].tolist()
+x = source_df['ESG Score'].tolist()
+y = source_df['52 Week Total Return (%)'].tolist()
 
 slope, intercept, r, p, std_err = stats.linregress(x, y)
+
 
 def myfunc(x):
   return slope * x + intercept
 
 mymodel = list(map(myfunc, x))
 
-print (r)
+print ('x: Combined ESG scores')
+print ('y: FY0 returns' + '\n')
+print ('The relationship between x and y is:', round(r, 5))
+print ('------------------------------------------------------------')
 
-plt.scatter(x, y)
-plt.plot(x, mymodel)
+print (source_df.head(5))
