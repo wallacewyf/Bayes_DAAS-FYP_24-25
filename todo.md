@@ -3,10 +3,13 @@
 3. set them into dataframe 
 
     - 1, 2 and 3 are done
+        - total assets (actual) missing before 2012?
+        - might be under different name
+        
     - extracted for NASDAQ only, SNP500 to follow up
     - to run further analysis in order to run on select scope on companies in hope for persistency throughout sample set
     - check .isin function in pandas?
-
+    
 4. run regression and correlation analysis
 
 5. extract results into folder in a presentable format

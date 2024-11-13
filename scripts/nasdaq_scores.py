@@ -46,8 +46,6 @@ g_pillars.sort_values(by=[2023, 'GICS Industry Name', 'Company Name'],
                        ascending=[False, True, True],
                        inplace=True)
 
-print (g_pillars)
-
 # # clean up and set index
 # source_df['Identifier'] = source_df['Identifier'].apply(lambda x: x[:len(x)-3])
 # source_df.set_index(keys='Identifier', inplace=True)
