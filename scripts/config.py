@@ -24,10 +24,12 @@ example_return = data_path + example_return
 # esg files
 nasdaq_esg = data_path + 'ESG_Scores_NASDAQ100_20Y.xlsx'
 snp_esg = data_path + 'ESG_Scores_SNP500_20Y.xlsx'
+dji_esg = data_path + 'ESG_Scores_DJI_30Y.xlsx'
 
 # return files 
 nasdaq_returns = data_path + 'Returns_NASDAQ100_20Y.xlsx'
 snp_returns = data_path + 'Returns_SNP500_20Y.xlsx'
+dji_returns = data_path + 'Returns_DJI_30Y.xlsx'
 
 # combined ESG scores - lseg.py
 combined_esg_filename = 'sorted_combined_esg.csv'
