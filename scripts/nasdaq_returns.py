@@ -2,12 +2,7 @@
 import config
 
 # import libraries
-import eikon as ek
 import pandas as pd
-import numpy as np
-from scipy import stats
-from sklearn import linear_model
-from matplotlib import pyplot as plt
 
 yeardict_map = {'Return On Equity - Actual\nIn the last 20 FY': '2023',
                        'Unnamed: 3': '2022',
