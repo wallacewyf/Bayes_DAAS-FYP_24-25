@@ -55,8 +55,7 @@ mkt_cap = returns_df.iloc[2:, [0] + list(range(101, 121))]
 mkt_cap = mkt_cap.set_axis(year_list, axis=1)
 mkt_cap.dropna(inplace=True)
 
-# Total Assets - Actual
-# DATA ISSUE
+# Total Assets - Reported
 ta_df = returns_df.iloc[2:, [0] + list(range(121, 141))]
 ta_df = ta_df.set_axis(year_list, axis=1)
 ta_df.dropna(inplace=True)

@@ -1,15 +1,20 @@
-1. extract past 20 years returns for NASDAQ companies
-2. extract past 20 years ESG scores for the aforementioned companies
-3. set them into dataframe 
+1. extract past 20 years returns
+2. extract past 20 years ESG scores
+3. split into dataframe
 
     - 1, 2 and 3 are done
-        - total assets (actual) missing before 2012?
-        - might be under different name
-        
-    - extracted for NASDAQ only, SNP500 to follow up
-        - extracted NASDAQ, SNP500, DJI (Dow sample size too small)
-        - david advised to extract EURO STOXX 600, FTSE 350 as well for cross-comparison
-        - maybe cross-compare across BBG, Morningstar Sustainalytics?
+        - ROA / ROCE / ROE directly correlated, 
+        - P/E ratio and ROE directly correlated
+    
+    - timeframe: 20 years
+
+    - extracted scope:
+        1. NASDAQ100 - based on BlackRock's iShares ETF fund
+        2. S&P 500 - based on S&P Index
+        3. MSCI World - based on SOURCE MSCI World Index
+        4. STOXX 600: SOURCE STOXX EUROPE 600 UCITS ETF
+
+        - cross-compare across BBG, Morningstar Sustainalytics?
 
     - to run further analysis in order to run on select scope on companies in hope for persistency throughout sample set
     - check .isin function in pandas?
@@ -18,3 +23,6 @@
 
 5. extract results into folder in a presentable format
 
+
+-- TODO LIST 
+1. EXTRACT S&P 500 TOTAL ASSETS, REPORTED
