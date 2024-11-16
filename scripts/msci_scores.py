@@ -1,8 +1,8 @@
-# import parameters file
-import config
-
 # import libraries
 import pandas as pd
+
+# import parameters file
+import config
 
 # init source df
 source_df = pd.read_excel(config.msci_esg, index_col=0, skiprows=1)
