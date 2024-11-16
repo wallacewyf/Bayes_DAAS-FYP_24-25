@@ -15,11 +15,11 @@
         4. STOXX 600: SOURCE STOXX EUROPE 600 UCITS ETF
 
         - cross-compare across BBG, Morningstar Sustainalytics?
-
-    - to run further analysis in order to run on select scope on companies in hope for persistency throughout sample set
-    - check .isin function in pandas?
     
 4. run regression and correlation analysis
+    - Time Series Regression Analysis
+    - Correlation 
+    - Relationship between ESG, E, S, G against Q ratio, YoY returns, ROA, ROE
 
 5. extract results into folder in a presentable format
 
