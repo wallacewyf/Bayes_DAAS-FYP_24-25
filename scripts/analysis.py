@@ -9,7 +9,8 @@ import seaborn as sns
 # statistical packages
 from sklearn.linear_model import LinearRegression
 from sklearn.multioutput import MultiOutputRegressor
-from sklearn.metrics import r2_score                        # R-squared
+from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
+from sklearn.preprocessing import PolynomialFeatures
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -98,16 +99,60 @@ g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', 
 # print (g_stack_sum, '\n')
 
 # --------------------------------------------------------------------
+# Regression Analysis
 
-# Correlation Analysis
+r2_values = []
+years = list(range(2004, 2024))
+
+for year in years:
+    # Extract data for the current year
+    X = q_ratio[year].values.reshape(-1, 1)  # Q Ratio for the year
+    y = esg_scores[year].values             # ESG Scores for the year
+
+    # Fit a linear regression model
+    model = LinearRegression()
+    model.fit(X, y)
+    y_pred = model.predict(X)
+
+    # Calculate R² (linearity measure)
+    r2 = r2_score(y, y_pred)
+    r2_values.append(r2)
+
+# Plot R² values over time
+# plt.figure(figsize=(10, 6))
+# plt.plot(years, r2_values, marker='o', label='R² (Linearity Measure)')
+# plt.title("Linearity (R²) Between ESG Scores and Q Ratio Over Time")
+# plt.xlabel("Year")
+# plt.ylabel("R² Value")
+# plt.grid()
+# plt.legend()
+# plt.show()
+
+print (q_ratio.loc['BARC.L'])
+
+# --------------------------------------------------------------------
+
+# Correlation Analysis -- this can only be done if you know if the relationship is linear/non-linear
 # correlation analysis -- this is only for 2023, it has to be time series as esg scores evolves over time
 esg_corr = esg_scores.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 e_corr = e_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 s_corr = s_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 g_corr = g_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 
+esg_corr = esg_scores.values.flatten()
+q_corr = q_ratio.values.flatten()
+
+pearson_corr = np.corrcoef(q_corr, esg_corr)[0,1]
+yearly_corr = q_ratio.corrwith(esg_scores, axis=0)
+
+# print (yearly_corr)
+
+
 # print ('Correlation Analysis')
 # print ('--------------------------------------------------------------------')
+# print (f'Pearson product-moment correlation coefficient: {pearson_corr}')
+
+
 # print(f'Correlation between ESG scores and Q ratio: {round(esg_corr, 5)}')
 # print(f'Correlation between E scores and Q ratio: {round(e_corr, 5)}')
 # print(f'Correlation between S scores and Q ratio: {round(s_corr, 5)}')

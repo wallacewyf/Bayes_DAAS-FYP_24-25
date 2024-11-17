@@ -26,4 +26,6 @@
 
 -- TODO LIST 
 1. EXTRACT S&P 500 TOTAL ASSETS, REPORTED
-2. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts?
+2. Q ratio values doesn't seem right, try adding MARKET CAP + TOTAL LIABILITIES, REPORTED and then divide by TOTAL ASSETS, REPORTED and compare
+    - Barclays Q ratio of 0.015752 seems too low
+3. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts?
