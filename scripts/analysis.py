@@ -34,65 +34,72 @@ import ftse_scores
 
 # FTSE 350
 # inner join
-esg_scores, q_ratio = ftse_scores.esg_scores.align(ftse_returns.q_ratio, join='inner') 
+merged_df = pd.concat([ftse_scores.esg_scores,
+                        ftse_scores.e_pillars, 
+                        ftse_scores.s_pillars, 
+                        ftse_scores.g_pillars, 
+                        ftse_returns.q_ratio], 
+                        axis=1,
+                        join='inner')
 
-# inner join
-join_df = pd.concat([ftse_scores.e_pillars, ftse_scores.s_pillars, ftse_scores.g_pillars], axis=1, join='inner')
+# separate scores and Q ratio into separate dataframes
+esg_scores = merged_df.iloc[:, :20]
+e_pillars = merged_df.iloc[:, 20:40]
+s_pillars = merged_df.iloc[:, 40:60]
+g_pillars = merged_df.iloc[:, 60:80]
+q_ratio = merged_df.iloc[:, 80:]
 
-e_pillars = join_df.iloc[:, :20]
-s_pillars = join_df.iloc[:, 20:40]
-g_pillars = join_df.iloc[:, 40:60]
-
+# omit values where 0 for a more macro perspective, excludes count
 esg_sum = esg_scores.mask(esg_scores == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 e_sum = e_pillars.mask(e_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 s_sum = s_pillars.mask(s_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 g_sum = g_pillars.mask(g_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 
+# macro description, excludes count
 esg_stack_sum = esg_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 e_stack_sum = e_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 s_stack_sum = s_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 
-# Descriptive Analysis
-# Time-Series Summary
-print ('Time Series Descriptive Statistic')
-print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (esg_sum, '\n')
+# # Descriptive Analysis
+# # Time-Series Summary
+# print ('Time Series Descriptive Statistic')
+# print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (esg_sum, '\n')
 
-print ('E Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (e_sum, '\n')
+# print ('E Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (e_sum, '\n')
 
-print ('S Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (s_sum, '\n')
+# print ('S Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (s_sum, '\n')
 
-print ('G Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (g_sum, '\n\n')
+# print ('G Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (g_sum, '\n\n')
 
-print ('Summary Statistics')
-print ('ESG Scores over 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (esg_stack_sum, '\n')
+# print ('Summary Statistics')
+# print ('ESG Scores over 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (esg_stack_sum, '\n')
 
-print ('E Scores over 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (e_stack_sum, '\n')
+# print ('E Scores over 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (e_stack_sum, '\n')
 
-print ('S Scores over 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (s_stack_sum, '\n')
+# print ('S Scores over 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (s_stack_sum, '\n')
 
-print ('G Scores over 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (g_stack_sum, '\n')
+# print ('G Scores over 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (g_stack_sum, '\n')
 
 # --------------------------------------------------------------------
 
-# test_df.to_csv(config.results_path + 'test_df.csv', header=True, index=True)
-
+# Correlation Analysis
 # correlation analysis -- this is only for 2023, it has to be time series as esg scores evolves over time
 esg_corr = esg_scores.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 e_corr = e_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
@@ -135,3 +142,5 @@ g_corr = g_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 
 # plt.show()
 
+# TODO: Correlation, Relationship, Regression, Cluster Analysis 
+#       (cross-compare with methods on cited literatures on types of analysis used)
