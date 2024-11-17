@@ -26,5 +26,4 @@
 
 -- TODO LIST 
 1. EXTRACT S&P 500 TOTAL ASSETS, REPORTED
-2. FIGURE OUT HOW TO MOVE ALL DATA WRANGLING SCRIPTS INTO A DATA_WRANGLING FOLDER, AND LET CORR_ANALYSIS BE ABLE TO CALL IT FROM THE DATA_WRANGLING PATH
-    (doesn't work - check with david)
+2. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts?

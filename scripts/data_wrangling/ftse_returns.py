@@ -47,4 +47,3 @@ q_ratio = q_ta / q_mktcap
 # print(q_mktcap.columns.equals(q_ta.columns))  # Should return True
 
 q_ratio.to_csv(config.results_path + 'q_ratio.csv', header=True, index=True)        # exports to csv format
-
