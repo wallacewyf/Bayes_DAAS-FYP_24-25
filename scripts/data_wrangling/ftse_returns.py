@@ -9,9 +9,8 @@ import matplotlib.pyplot as plt
 col_names = list(range(2023, 2003, -1))
 
 # read returns data file
-returns_df = pd.read_excel(config.ftse_returns, index_col=[0,1,2], skiprows=2)
-returns_df.index.names = ['Identifier', 'Company Name', 'GICS Industry Name']
-returns_df.drop(returns_df.columns[0], axis=1, inplace=True)
+returns_df = pd.read_excel(config.ftse_returns, index_col=[0,1,2,3], skiprows=2)
+returns_df.index.names = ['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name']
 
 # Return on Equity  - Actual
 roe_df = returns_df.iloc[:, :20]
@@ -61,8 +60,6 @@ pe_df.dropna(inplace=True)
 # Q Ratio
 q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
 q_ratio = q_mktcap / q_ta
-q_ratio.insert(0, column='Exchange Name', value='LONDON STOCK EXCHANGE')
-q_ratio.set_index('Exchange Name', append=True, inplace=True)
 
 # CHECK IF INNER JOIN SUCCESS
 # print(q_mktcap.index.equals(q_ta.index))  # Should return True
