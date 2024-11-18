@@ -105,7 +105,6 @@ g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', 
 #   - but fix the Q ratio value, then figure out again if we should use r2 or OLS to 
 #     to calculate linearity
 
-
 r2_values = []
 years = list(range(2004, 2024))
 
