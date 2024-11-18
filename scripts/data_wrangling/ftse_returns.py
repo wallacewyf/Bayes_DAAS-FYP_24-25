@@ -47,3 +47,10 @@ q_ratio = q_mktcap / q_ta
 # print(q_mktcap.columns.equals(q_ta.columns))  # Should return True
 
 q_ratio.to_csv(config.results_path + 'q_ratio.csv', header=True, index=True)        # exports to csv format
+
+overval_2023 = q_ratio[q_ratio[2023] > 1][2023]
+underval_2023 = q_ratio[(q_ratio[2023] > 0) & (q_ratio[2023] <= 0.05)][2023]
+fairval_2023 = q_ratio[(q_ratio[2023] > 0.05) & (q_ratio[2023] <= 1)][2023]
+
+for each_company in underval_2023.index.values:
+    print (list(each_company)[1])

@@ -62,7 +62,7 @@ e_stack_sum = e_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', 
 s_stack_sum = s_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 
-# # Descriptive Analysis
+# # Descriptive Analysis for ESG Scores
 # # Time-Series Summary
 # print ('Time Series Descriptive Statistic')
 # print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
@@ -99,7 +99,12 @@ g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', 
 # print (g_stack_sum, '\n')
 
 # --------------------------------------------------------------------
-# Regression Analysis
+# Regression Analysis 
+# notes: 
+#   - there probably isn't any linearity
+#   - but fix the Q ratio value, then figure out again if we should use r2 or OLS to 
+#     to calculate linearity
+
 
 r2_values = []
 years = list(range(2004, 2024))
@@ -118,17 +123,17 @@ for year in years:
     r2 = r2_score(y, y_pred)
     r2_values.append(r2)
 
-# Plot R² values over time
-# plt.figure(figsize=(10, 6))
-# plt.plot(years, r2_values, marker='o', label='R² (Linearity Measure)')
-# plt.title("Linearity (R²) Between ESG Scores and Q Ratio Over Time")
-# plt.xlabel("Year")
-# plt.ylabel("R² Value")
-# plt.grid()
-# plt.legend()
-# plt.show()
+print (r2_values)
 
-print (q_ratio.loc['BARC.L'])
+# Plot R² values over time
+plt.figure(figsize=(10, 6))
+plt.plot(years, r2_values, marker='o', label='R² (Linearity Measure)')
+plt.title("Linearity (R²) Between ESG Scores and Q Ratio Over Time")
+plt.xlabel("Year")
+plt.ylabel("R² Value")
+plt.grid()
+plt.legend()
+plt.show()
 
 # --------------------------------------------------------------------
 
@@ -147,19 +152,17 @@ yearly_corr = q_ratio.corrwith(esg_scores, axis=0)
 
 # print (yearly_corr)
 
-
 # print ('Correlation Analysis')
 # print ('--------------------------------------------------------------------')
 # print (f'Pearson product-moment correlation coefficient: {pearson_corr}')
-
 
 # print(f'Correlation between ESG scores and Q ratio: {round(esg_corr, 5)}')
 # print(f'Correlation between E scores and Q ratio: {round(e_corr, 5)}')
 # print(f'Correlation between S scores and Q ratio: {round(s_corr, 5)}')
 # print(f'Correlation between G scores and Q ratio: {round(g_corr, 5)}')
 
-
-# # line graph for relationship between average of Q ratio and ESG scores
+# Data Visualization
+# line graph for relationship between average of Q ratio and ESG scores
 # esg_avg = esg_scores.mean(axis=0)
 # q_avg = q_ratio.mean(axis=0)
 
