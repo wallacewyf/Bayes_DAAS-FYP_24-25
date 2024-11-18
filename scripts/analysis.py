@@ -35,26 +35,44 @@ import ftse_scores
 
 # FTSE 350
 # inner join
-merged_df = pd.concat([ftse_scores.esg_scores,
-                        ftse_scores.e_pillars, 
-                        ftse_scores.s_pillars, 
-                        ftse_scores.g_pillars, 
-                        ftse_returns.q_ratio], 
-                        axis=1,
-                        join='inner')
+
+esg_q_df = pd.concat([ftse_scores.esg_scores,
+                      ftse_scores.e_pillars, 
+                      ftse_scores.s_pillars, 
+                      ftse_scores.g_pillars, 
+                      ftse_returns.q_ratio], 
+                      axis=1,
+                      join='inner')
 
 # separate scores and Q ratio into separate dataframes
-esg_scores = merged_df.iloc[:, :20]
-e_pillars = merged_df.iloc[:, 20:40]
-s_pillars = merged_df.iloc[:, 40:60]
-g_pillars = merged_df.iloc[:, 60:80]
-q_ratio = merged_df.iloc[:, 80:]
+esg_scores = esg_q_df.iloc[:, :20]
+e_pillars = esg_q_df.iloc[:, 20:40]
+s_pillars = esg_q_df.iloc[:, 40:60]
+g_pillars = esg_q_df.iloc[:, 60:80]
+q_ratio = esg_q_df.iloc[:, 80:]
 
 # omit values where 0 for a more macro perspective, excludes count
+# ESG 
 esg_sum = esg_scores.mask(esg_scores == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 e_sum = e_pillars.mask(e_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 s_sum = s_pillars.mask(s_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 g_sum = g_pillars.mask(g_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
+
+# FINP Indicator
+# align q_ratio unique companies with ftse_returns dfs
+finp_q_df = pd.concat([q_ratio,
+                       ftse_returns.roe_df, 
+                       ftse_returns.roa_df, 
+                       ftse_returns.yoy_return],
+                       axis=1,
+                       join='inner')
+
+print (finp_q_df)
+
+# roe = 
+# roa
+# yoy
+
 
 # macro description, excludes count
 esg_stack_sum = esg_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
@@ -62,24 +80,26 @@ e_stack_sum = e_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', 
 s_stack_sum = s_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
 
-# # Descriptive Analysis for ESG Scores
-# # Time-Series Summary
-# print ('Time Series Descriptive Statistic')
-# print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (esg_sum, '\n')
+# print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
 
-# print ('E Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (e_sum, '\n')
+# Descriptive Analysis for ESG Scores
+# Time-Series Summary
+print ('Time Series Descriptive Statistic')
+print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
+print ('--------------------------------------------------------------------')
+print (esg_sum, '\n')
 
-# print ('S Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (s_sum, '\n')
+print ('E Scores from 2023 to 2004 (excluding where values = 0)')
+print ('--------------------------------------------------------------------')
+print (e_sum, '\n')
 
-# print ('G Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (g_sum, '\n\n')
+print ('S Scores from 2023 to 2004 (excluding where values = 0)')
+print ('--------------------------------------------------------------------')
+print (s_sum, '\n')
+
+print ('G Scores from 2023 to 2004 (excluding where values = 0)')
+print ('--------------------------------------------------------------------')
+print (g_sum, '\n\n')
 
 # print ('Summary Statistics')
 # print ('ESG Scores over 2023 to 2004 (excluding where values = 0)')
@@ -105,34 +125,34 @@ g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', 
 #   - but fix the Q ratio value, then figure out again if we should use r2 or OLS to 
 #     to calculate linearity
 
-r2_values = []
-years = list(range(2004, 2024))
+# r2_values = []
+# years = list(range(2004, 2024))
 
-for year in years:
-    # Extract data for the current year
-    X = q_ratio[year].values.reshape(-1, 1)  # Q Ratio for the year
-    y = esg_scores[year].values             # ESG Scores for the year
+# for year in years:
+#     # Extract data for the current year
+#     X = q_ratio[year].values.reshape(-1, 1)  # Q Ratio for the year
+#     y = esg_scores[year].values             # ESG Scores for the year
 
-    # Fit a linear regression model
-    model = LinearRegression()
-    model.fit(X, y)
-    y_pred = model.predict(X)
+#     # Fit a linear regression model
+#     model = LinearRegression()
+#     model.fit(X, y)
+#     y_pred = model.predict(X)
 
-    # Calculate R² (linearity measure)
-    r2 = r2_score(y, y_pred)
-    r2_values.append(r2)
+#     # Calculate R² (linearity measure)
+#     r2 = r2_score(y, y_pred)
+#     r2_values.append(r2)
 
-print (r2_values)
+# print (r2_values)
 
-# Plot R² values over time
-plt.figure(figsize=(10, 6))
-plt.plot(years, r2_values, marker='o', label='R² (Linearity Measure)')
-plt.title("Linearity (R²) Between ESG Scores and Q Ratio Over Time")
-plt.xlabel("Year")
-plt.ylabel("R² Value")
-plt.grid()
-plt.legend()
-plt.show()
+# # Plot R² values over time
+# plt.figure(figsize=(10, 6))
+# plt.plot(years, r2_values, marker='o', label='R² (Linearity Measure)')
+# plt.title("Linearity (R²) Between ESG Scores and Q Ratio Over Time")
+# plt.xlabel("Year")
+# plt.ylabel("R² Value")
+# plt.grid()
+# plt.legend()
+# plt.show()
 
 # --------------------------------------------------------------------
 
@@ -188,6 +208,23 @@ yearly_corr = q_ratio.corrwith(esg_scores, axis=0)
 # plt.legend(lines_1 + lines_2, labels_1 + labels_2, loc='lower right')
 
 # plt.show()
+
+
+
+# print (q_ratio.columns)
+
+# q_ratio_x = q_ratio.columns
+# q_ratio_y = q_ratio.mean(axis=0)
+
+# plt.plot(q_ratio.columns, q_ratio.mean(axis=0), label='Avg Q Ratio')
+# plt.title('Average Q Ratio over time (2023 to 2004)')
+# plt.xlabel('Year')
+# plt.ylabel('Avg Q')
+# plt.grid(True)
+
+# plt.show()
+
+# print (q_ratio_y)
 
 # TODO: Correlation, Relationship, Regression, Cluster Analysis 
 #       (cross-compare with methods on cited literatures on types of analysis used)
