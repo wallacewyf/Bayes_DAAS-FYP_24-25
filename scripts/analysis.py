@@ -36,6 +36,9 @@ import ftse_scores
 # FTSE 350
 # inner join
 
+# TODO: check if this is the best way to do a join between ESG scores?
+# maybe it's better if we just do between ESG, E, S, G instead of ESG and Q
+
 esg_q_df = pd.concat([ftse_scores.esg_scores,
                       ftse_scores.e_pillars, 
                       ftse_scores.s_pillars, 
@@ -52,56 +55,66 @@ g_pillars = esg_q_df.iloc[:, 60:80]
 q_ratio = esg_q_df.iloc[:, 80:]
 
 # omit values where 0 for a more macro perspective, excludes count
-# ESG 
-esg_sum = esg_scores.mask(esg_scores == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
-e_sum = e_pillars.mask(e_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
-s_sum = s_pillars.mask(s_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
-g_sum = g_pillars.mask(g_pillars == 0).describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
+# ESG detailed perspective
+esg_sum = esg_scores.mask(esg_scores == 0).describe().iloc[1:, :]
+e_sum = e_pillars.mask(e_pillars == 0).describe().iloc[1:, :]
+s_sum = s_pillars.mask(s_pillars == 0).describe().iloc[1:, :]
+g_sum = g_pillars.mask(g_pillars == 0).describe().iloc[1:, :]
+
+# ESG macro perspective
+esg_stack_sum = esg_sum.stack().describe().iloc[1:]
+e_stack_sum = e_sum.stack().describe().iloc[1:]
+s_stack_sum = s_sum.stack().describe().iloc[1:]
+g_stack_sum = g_sum.stack().describe().iloc[1:]
+
+
+# split between pre/post COVID pandemic / Paris Agreement
+# print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
 
 # FINP Indicator
 # align q_ratio unique companies with ftse_returns dfs
-finp_q_df = pd.concat([q_ratio,
+# Align ESG Scores with dataframes of returns with non-NaN companies 
+finp_df = pd.concat([esg_scores,
                        ftse_returns.roe_df, 
                        ftse_returns.roa_df, 
                        ftse_returns.yoy_return],
                        axis=1,
                        join='inner')
 
-print (finp_q_df)
+roe_df = finp_df.iloc[:, 20:40]
+roa_df = finp_df.iloc[:, 40:60]
+yoy_return = finp_df.iloc[:, 60:80]
 
-# roe = 
-# roa
-# yoy
+roe_desc = roe_df.describe().iloc[1:, :]
+roa_desc = roa_df.describe().iloc[1:, :]
+yoy_desc = yoy_return.describe().iloc[1:, :]
+q_desc = q_ratio.describe().iloc[1:, :]
 
+roe_stack_desc = roe_df.stack().describe().iloc[1:]
+roa_stack_desc = roa_df.stack().describe().iloc[1:]
+yoy_stack_desc = yoy_return.stack().describe().iloc[1:]
+q_stack_desc = q_ratio.stack().describe().iloc[1:]
 
-# macro description, excludes count
-esg_stack_sum = esg_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
-e_stack_sum = e_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
-s_stack_sum = s_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
-g_stack_sum = g_sum.stack().describe().loc[['mean', 'std', 'min', '25%', '50%', '75%', 'max']]
+# # Descriptive Analysis for ESG Scores
+# # Time-Series Summary
+# print ('Time Series Descriptive Statistics for ESG Scores')
+# print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (esg_sum, '\n')
 
-# print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
+# print ('E Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (e_sum, '\n')
 
-# Descriptive Analysis for ESG Scores
-# Time-Series Summary
-print ('Time Series Descriptive Statistic')
-print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (esg_sum, '\n')
+# print ('S Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (s_sum, '\n')
 
-print ('E Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (e_sum, '\n')
+# print ('G Scores from 2023 to 2004 (excluding where values = 0)')
+# print ('--------------------------------------------------------------------')
+# print (g_sum, '\n\n')
 
-print ('S Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (s_sum, '\n')
-
-print ('G Scores from 2023 to 2004 (excluding where values = 0)')
-print ('--------------------------------------------------------------------')
-print (g_sum, '\n\n')
-
-# print ('Summary Statistics')
+# print ('Summary Statistics for ESG Scores')
 # print ('ESG Scores over 2023 to 2004 (excluding where values = 0)')
 # print ('--------------------------------------------------------------------')
 # print (esg_stack_sum, '\n')
@@ -117,6 +130,44 @@ print (g_sum, '\n\n')
 # print ('G Scores over 2023 to 2004 (excluding where values = 0)')
 # print ('--------------------------------------------------------------------')
 # print (g_stack_sum, '\n')
+
+# # Descriptive Analysis for Financial Performance (FINP) Indicators
+# # namely: Return on Equity, Return on Assets, 52-Week Returns, Q Ratio
+# Time-Series Summary
+# print ('Time Series Descriptive Statistics for FINP')
+# print ('Return on Equity (ROE) from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (roe_desc, '\n')
+
+# print ('Return on Assets (ROA) from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (roa_desc, '\n')
+
+# print ('52 Week Return from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (yoy_desc, '\n')
+
+# print ('Q Ratio from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (q_desc, '\n\n')
+
+# print ('Summary Statistics for ESG Scores')
+# print ('Return on Equity (ROE) from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (roe_stack_desc, '\n')
+
+# print ('Return on Assets (ROA) from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (roa_stack_desc, '\n')
+
+# print ('52 Week Return from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (yoy_stack_desc, '\n')
+
+# print ('Q Ratio from 2023 to 2004')
+# print ('--------------------------------------------------------------------')
+# print (q_stack_desc, '\n\n')
+
 
 # --------------------------------------------------------------------
 # Regression Analysis 
