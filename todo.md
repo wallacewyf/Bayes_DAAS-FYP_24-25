@@ -16,7 +16,8 @@
 
         - cross-compare across BBG, Morningstar Sustainalytics?
     
-4. run regression and correlation analysis
+4. run descriptive, regression and correlation analysis
+    - Descriptive Analysis (done)
     - Time Series Regression Analysis
     - Correlation 
     - Relationship between ESG, E, S, G against Q ratio, YoY returns, ROA, ROE
@@ -25,7 +26,14 @@
 
 
 -- TODO LIST 
-1. EXTRACT S&P 500 TOTAL ASSETS, REPORTED
-2. Q ratio values doesn't seem right, try adding MARKET CAP + TOTAL LIABILITIES, REPORTED and then divide by TOTAL ASSETS, REPORTED and compare
-    - Barclays Q ratio of 0.015752 seems too low
-3. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts?
+1. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts?
+    - after discussing with David, packaging and functions is recommended as it will be graded with a minor weight
+    - use various index as a main branch, and other regional indexes as a second branch
+    - i.e. MSCI for World trends, (STOXX 500 for EU, FTSE350 for UK), and then dive to industry layer etc.
+    - Regression and Statistical methods to check with David in Week 10/11
+    - 
+
+
+
+
+
