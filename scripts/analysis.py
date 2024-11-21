@@ -151,7 +151,7 @@ q_stack_desc = q_ratio.stack().describe().iloc[1:]
 # print ('--------------------------------------------------------------------')
 # print (q_desc, '\n\n')
 
-# print ('Summary Statistics for ESG Scores')
+# print ('Summary Statistics for Financial Performance (FINP) Indicators')
 # print ('Return on Equity (ROE) from 2023 to 2004')
 # print ('--------------------------------------------------------------------')
 # print (roe_stack_desc, '\n')
