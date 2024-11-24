@@ -19,19 +19,8 @@ sys.path.append(data_path)
 # config path
 import config
 
-# import returns 
-import ftse_returns
-# import msci_returns
-# import nasdaq_returns
-# import snp500_returns
-# import stoxx_returns
-
-# import scores
-import ftse_scores
-# import msci_scores
-# import nasdaq_scores
-# import snp500_scores
-# import stoxx_scores
+# data wrangling package
+import wrangle
 
 # FTSE 350
 # inner join
@@ -39,11 +28,11 @@ import ftse_scores
 # TODO: check if this is the best way to do a join between ESG scores?
 # maybe it's better if we just do between ESG, E, S, G instead of ESG and Q
 
-esg_q_df = pd.concat([ftse_scores.esg_scores,
-                      ftse_scores.e_pillars, 
-                      ftse_scores.s_pillars, 
-                      ftse_scores.g_pillars, 
-                      ftse_returns.q_ratio], 
+esg_q_df = pd.concat([wrangle.scores(config.ftse_esg, 'esg'),
+                      wrangle.scores(config.ftse_esg, 'e'), 
+                      wrangle.scores(config.ftse_esg, 's'), 
+                      wrangle.scores(config.ftse_esg, 'g'), 
+                      wrangle.returns(config.ftse_returns, 'q')], 
                       axis=1,
                       join='inner')
 
@@ -75,11 +64,11 @@ g_stack_sum = g_sum.stack().describe().iloc[1:]
 # align q_ratio unique companies with ftse_returns dfs
 # Align ESG Scores with dataframes of returns with non-NaN companies 
 finp_df = pd.concat([esg_scores,
-                       ftse_returns.roe_df, 
-                       ftse_returns.roa_df, 
-                       ftse_returns.yoy_return],
-                       axis=1,
-                       join='inner')
+                    wrangle.returns(config.ftse_returns, 'roe'), 
+                    wrangle.returns(config.ftse_returns, 'roa'), 
+                    wrangle.returns(config.ftse_returns, 'yoy')],
+                    axis=1,
+                    join='inner')
 
 roe_df = finp_df.iloc[:, 20:40]
 roa_df = finp_df.iloc[:, 40:60]
