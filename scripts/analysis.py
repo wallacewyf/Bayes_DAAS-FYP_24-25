@@ -28,6 +28,79 @@ import wrangle
 # TODO: check if this is the best way to do a join between ESG scores?
 # maybe it's better if we just do between ESG, E, S, G instead of ESG and Q
 
+def esg_desc(type):
+    esg_q_df = pd.concat([wrangle.scores(config.ftse_esg, 'esg'),
+                wrangle.scores(config.ftse_esg, 'e'), 
+                wrangle.scores(config.ftse_esg, 's'), 
+                wrangle.scores(config.ftse_esg, 'g'), 
+                wrangle.returns(config.ftse_returns, 'q')], 
+                axis=1,
+                join='inner')
+
+    # separate scores and Q ratio into separate dataframes
+    esg_scores = esg_q_df.iloc[:, :20]
+    e_pillars = esg_q_df.iloc[:, 20:40]
+    s_pillars = esg_q_df.iloc[:, 40:60]
+    g_pillars = esg_q_df.iloc[:, 60:80]
+    q_ratio = esg_q_df.iloc[:, 80:]
+
+    # omit values where 0 for a more macro perspective, excludes count
+    # ESG detailed perspective
+    esg_sum = esg_scores.mask(esg_scores == 0).describe().iloc[1:, :]
+    e_sum = e_pillars.mask(e_pillars == 0).describe().iloc[1:, :]
+    s_sum = s_pillars.mask(s_pillars == 0).describe().iloc[1:, :]
+    g_sum = g_pillars.mask(g_pillars == 0).describe().iloc[1:, :]
+
+    # ESG macro perspective
+    esg_stack_sum = esg_sum.stack().describe().iloc[1:]
+    e_stack_sum = e_sum.stack().describe().iloc[1:]
+    s_stack_sum = s_sum.stack().describe().iloc[1:]
+    g_stack_sum = g_sum.stack().describe().iloc[1:]
+    
+    if type == 'esg': return esg_sum
+    elif type == 'e': return e_sum
+    elif type == 's': return s_sum
+    elif type == 'g': return g_sum
+    elif type == 'macro esg': return esg_stack_sum
+    elif type == 'macro e': return e_stack_sum
+    elif type == 'macro s': return s_stack_sum
+    elif type == 'macro g': return g_stack_sum
+    
+
+
+
+def finp_desc(type):
+    finp_df = pd.concat([esg_scores,
+                        wrangle.returns(config.ftse_returns, 'roe'), 
+                        wrangle.returns(config.ftse_returns, 'roa'), 
+                        wrangle.returns(config.ftse_returns, 'yoy')],
+                        axis=1,
+                        join='inner')
+
+    roe_df = finp_df.iloc[:, 20:40]
+    roa_df = finp_df.iloc[:, 40:60]
+    yoy_return = finp_df.iloc[:, 60:80]
+
+    roe_desc = roe_df.describe().iloc[1:, :]
+    roa_desc = roa_df.describe().iloc[1:, :]
+    yoy_desc = yoy_return.describe().iloc[1:, :]
+    q_desc = q_ratio.describe().iloc[1:, :]
+
+    roe_stack_desc = roe_df.stack().describe().iloc[1:]
+    roa_stack_desc = roa_df.stack().describe().iloc[1:]
+    yoy_stack_desc = yoy_return.stack().describe().iloc[1:]
+    q_stack_desc = q_ratio.stack().describe().iloc[1:]
+    
+    if type == 'q': return q_desc
+    elif type == 'roe': return roe_desc
+    elif type == 'roa': return roa_desc
+    elif type == 'yoy': return yoy_desc
+    elif type == 'macro q': return q_stack_desc
+    elif type == 'macro roe': return roe_stack_desc
+    elif type == 'macro roa': return roa_stack_desc
+    elif type == 'macro yoy': return yoy_stack_desc
+
+
 esg_q_df = pd.concat([wrangle.scores(config.ftse_esg, 'esg'),
                       wrangle.scores(config.ftse_esg, 'e'), 
                       wrangle.scores(config.ftse_esg, 's'), 

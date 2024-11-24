@@ -26,7 +26,7 @@
 
 
 -- TODO LIST 
-1. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts?
+1. Update Returns and Scores file to a fixed format, maybe build function in order to call returns and scores in a script rather than via different scripts (done, rest to follow)
     - after discussing with David, packaging and functions is recommended as it will be graded with a minor weight
     - use various index as a main branch, and other regional indexes as a second branch
     - i.e. MSCI for World trends, (STOXX 500 for EU, FTSE350 for UK), and then dive to industry layer etc.
@@ -35,4 +35,4 @@
 
 
 2. CHECK NASDAQ DATA AGAIN (GICS INDUSTRY NAME IS SO WRONG)
-3. SET UP SORTING ON WRANGLE.PY
+3. OUTPUT DESCRIPTIVE STATISTICS TO A CSV FILE IN RESULTS DIR 
