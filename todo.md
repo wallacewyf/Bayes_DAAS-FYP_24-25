@@ -31,8 +31,6 @@
     - use various index as a main branch, and other regional indexes as a second branch
     - i.e. MSCI for World trends, (STOXX 500 for EU, FTSE350 for UK), and then dive to industry layer etc.
     - Regression and Statistical methods to check with David in Week 10/11
-    - 
-
 
 2. CHECK NASDAQ DATA AGAIN (GICS INDUSTRY NAME IS SO WRONG)
 3. OUTPUT DESCRIPTIVE STATISTICS TO A CSV FILE IN RESULTS DIR 
