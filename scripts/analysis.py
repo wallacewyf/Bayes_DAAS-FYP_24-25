@@ -1,6 +1,7 @@
 # packages
 import sys
 import os
+import timeit
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,219 +18,97 @@ data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
 sys.path.append(data_path)
 
 # config path
-import config
-
-# data wrangling package
-import wrangle
-
-# FTSE 350
-# inner join
+import config, wrangle
 
 # TODO: check if this is the best way to do a join between ESG scores?
 # maybe it's better if we just do between ESG, E, S, G instead of ESG and Q
 
-def esg_desc(type):
-    esg_q_df = pd.concat([wrangle.scores(config.ftse_esg, 'esg'),
-                wrangle.scores(config.ftse_esg, 'e'), 
-                wrangle.scores(config.ftse_esg, 's'), 
-                wrangle.scores(config.ftse_esg, 'g'), 
-                wrangle.returns(config.ftse_returns, 'q')], 
-                axis=1,
-                join='inner')
+# Descriptive Statistics
+# provide descriptive based on cleaned data
+# option to stack together for macro or '' for detailed
+def desc(df, macro):
+    try:
+        df = df.mask(df == 0).describe().iloc[1:, :]
 
-    # separate scores and Q ratio into separate dataframes
-    esg_scores = esg_q_df.iloc[:, :20]
-    e_pillars = esg_q_df.iloc[:, 20:40]
-    s_pillars = esg_q_df.iloc[:, 40:60]
-    g_pillars = esg_q_df.iloc[:, 60:80]
-    q_ratio = esg_q_df.iloc[:, 80:]
+        if macro:
+            df = df.stack().describe()
+            df = df.iloc[1:]
 
-    # omit values where 0 for a more macro perspective, excludes count
-    # ESG detailed perspective
-    esg_sum = esg_scores.mask(esg_scores == 0).describe().iloc[1:, :]
-    e_sum = e_pillars.mask(e_pillars == 0).describe().iloc[1:, :]
-    s_sum = s_pillars.mask(s_pillars == 0).describe().iloc[1:, :]
-    g_sum = g_pillars.mask(g_pillars == 0).describe().iloc[1:, :]
-
-    # ESG macro perspective
-    esg_stack_sum = esg_sum.stack().describe().iloc[1:]
-    e_stack_sum = e_sum.stack().describe().iloc[1:]
-    s_stack_sum = s_sum.stack().describe().iloc[1:]
-    g_stack_sum = g_sum.stack().describe().iloc[1:]
+            return df
+        
+        else: return df
     
-    if type == 'esg': return esg_sum
-    elif type == 'e': return e_sum
-    elif type == 's': return s_sum
-    elif type == 'g': return g_sum
-    elif type == 'macro esg': return esg_stack_sum
-    elif type == 'macro e': return e_stack_sum
-    elif type == 'macro s': return s_stack_sum
-    elif type == 'macro g': return g_stack_sum
-    
+    except ValueError as error_msg:
+        print ('Check your dataframe and type if it''s valid.')
+        print ('Error message:', error_msg)
 
+def output(df, index, type, macro):    
+    if type == 'esg': type = 'ESG Scores'
+    elif type == 'e': type = 'E Scores'
+    elif type == 's': type = 'S Scores'
+    elif type == 'g': type = 'G Scores'
+    elif type == 'roe': type = 'Return on Equity (ROE)'
+    elif type == 'roa': type = 'Return on Assets (ROA)'
+    elif type == 'yoy': type = '52 Week Return'
+    elif type == 'q': type = 'Q Ratio'
 
+    filename = index.upper() + ' '
 
-def finp_desc(type):
-    finp_df = pd.concat([esg_scores,
-                        wrangle.returns(config.ftse_returns, 'roe'), 
-                        wrangle.returns(config.ftse_returns, 'roa'), 
-                        wrangle.returns(config.ftse_returns, 'yoy')],
-                        axis=1,
-                        join='inner')
+    if macro: filename = filename + type + ' Macro Overview'
+    else: filename = filename + type + ' Descriptive Overview'
 
-    roe_df = finp_df.iloc[:, 20:40]
-    roa_df = finp_df.iloc[:, 40:60]
-    yoy_return = finp_df.iloc[:, 60:80]
+    with open (config.results_path + filename + '.csv', 'w') as file:
+        file.write (type + ' Descriptive Statistics from 2023 to 2004 \n')
 
-    roe_desc = roe_df.describe().iloc[1:, :]
-    roa_desc = roa_df.describe().iloc[1:, :]
-    yoy_desc = yoy_return.describe().iloc[1:, :]
-    q_desc = q_ratio.describe().iloc[1:, :]
+    df.to_csv(config.results_path + filename + '.csv',
+                mode = 'a',
+                index=True,
+                header=True)
 
-    roe_stack_desc = roe_df.stack().describe().iloc[1:]
-    roa_stack_desc = roa_df.stack().describe().iloc[1:]
-    yoy_stack_desc = yoy_return.stack().describe().iloc[1:]
-    q_stack_desc = q_ratio.stack().describe().iloc[1:]
-    
-    if type == 'q': return q_desc
-    elif type == 'roe': return roe_desc
-    elif type == 'roa': return roa_desc
-    elif type == 'yoy': return yoy_desc
-    elif type == 'macro q': return q_stack_desc
-    elif type == 'macro roe': return roe_stack_desc
-    elif type == 'macro roa': return roa_stack_desc
-    elif type == 'macro yoy': return yoy_stack_desc
+scoring_type = ['esg', 'e', 's', 'g']
+finp_type = ['roe', 'roa', 'yoy', 'q']
+index_arr = ['msci', 
+             'nasdaq', 
+            'snp', 
+            'stoxx', 
+            'ftse']
 
+start = timeit.default_timer()
 
-esg_q_df = pd.concat([wrangle.scores(config.ftse_esg, 'esg'),
-                      wrangle.scores(config.ftse_esg, 'e'), 
-                      wrangle.scores(config.ftse_esg, 's'), 
-                      wrangle.scores(config.ftse_esg, 'g'), 
-                      wrangle.returns(config.ftse_returns, 'q')], 
-                      axis=1,
-                      join='inner')
+for each_index in index_arr:
+    for each_type in scoring_type:
+        output(
+            df = desc(
+                df = wrangle.scores(
+                    each_index, 
+                    each_type
+                ), 
+                macro=False
+            ), 
+            index = each_index,
+            type = each_type,
+            macro=False
+        )
 
-# separate scores and Q ratio into separate dataframes
-esg_scores = esg_q_df.iloc[:, :20]
-e_pillars = esg_q_df.iloc[:, 20:40]
-s_pillars = esg_q_df.iloc[:, 40:60]
-g_pillars = esg_q_df.iloc[:, 60:80]
-q_ratio = esg_q_df.iloc[:, 80:]
+        output(
+            df = desc(
+                df = wrangle.scores(
+                    each_index, 
+                    each_type
+                ), 
+                macro=True
+            ), 
+            index = each_index,
+            type = each_type,
+            macro = True
+        )
 
-# omit values where 0 for a more macro perspective, excludes count
-# ESG detailed perspective
-esg_sum = esg_scores.mask(esg_scores == 0).describe().iloc[1:, :]
-e_sum = e_pillars.mask(e_pillars == 0).describe().iloc[1:, :]
-s_sum = s_pillars.mask(s_pillars == 0).describe().iloc[1:, :]
-g_sum = g_pillars.mask(g_pillars == 0).describe().iloc[1:, :]
+stop = timeit.default_timer()
 
-# ESG macro perspective
-esg_stack_sum = esg_sum.stack().describe().iloc[1:]
-e_stack_sum = e_sum.stack().describe().iloc[1:]
-s_stack_sum = s_sum.stack().describe().iloc[1:]
-g_stack_sum = g_sum.stack().describe().iloc[1:]
-
+print ('Time taken:', str(stop-start), '\n\n')
 
 # split between pre/post COVID pandemic / Paris Agreement
 # print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
-
-# FINP Indicator
-# align q_ratio unique companies with ftse_returns dfs
-# Align ESG Scores with dataframes of returns with non-NaN companies 
-finp_df = pd.concat([esg_scores,
-                    wrangle.returns(config.ftse_returns, 'roe'), 
-                    wrangle.returns(config.ftse_returns, 'roa'), 
-                    wrangle.returns(config.ftse_returns, 'yoy')],
-                    axis=1,
-                    join='inner')
-
-roe_df = finp_df.iloc[:, 20:40]
-roa_df = finp_df.iloc[:, 40:60]
-yoy_return = finp_df.iloc[:, 60:80]
-
-roe_desc = roe_df.describe().iloc[1:, :]
-roa_desc = roa_df.describe().iloc[1:, :]
-yoy_desc = yoy_return.describe().iloc[1:, :]
-q_desc = q_ratio.describe().iloc[1:, :]
-
-roe_stack_desc = roe_df.stack().describe().iloc[1:]
-roa_stack_desc = roa_df.stack().describe().iloc[1:]
-yoy_stack_desc = yoy_return.stack().describe().iloc[1:]
-q_stack_desc = q_ratio.stack().describe().iloc[1:]
-
-# # Descriptive Analysis for ESG Scores
-# # Time-Series Summary
-# print ('Time Series Descriptive Statistics for ESG Scores')
-# print ('ESG Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (esg_sum, '\n')
-
-# print ('E Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (e_sum, '\n')
-
-# print ('S Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (s_sum, '\n')
-
-# print ('G Scores from 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (g_sum, '\n\n')
-
-# print ('Summary Statistics for ESG Scores')
-# print ('ESG Scores over 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (esg_stack_sum, '\n')
-
-# print ('E Scores over 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (e_stack_sum, '\n')
-
-# print ('S Scores over 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (s_stack_sum, '\n')
-
-# print ('G Scores over 2023 to 2004 (excluding where values = 0)')
-# print ('--------------------------------------------------------------------')
-# print (g_stack_sum, '\n')
-
-# # Descriptive Analysis for Financial Performance (FINP) Indicators
-# # namely: Return on Equity, Return on Assets, 52-Week Returns, Q Ratio
-# Time-Series Summary
-# print ('Time Series Descriptive Statistics for FINP')
-# print ('Return on Equity (ROE) from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (roe_desc, '\n')
-
-# print ('Return on Assets (ROA) from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (roa_desc, '\n')
-
-# print ('52 Week Return from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (yoy_desc, '\n')
-
-# print ('Q Ratio from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (q_desc, '\n\n')
-
-# print ('Summary Statistics for Financial Performance (FINP) Indicators')
-# print ('Return on Equity (ROE) from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (roe_stack_desc, '\n')
-
-# print ('Return on Assets (ROA) from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (roa_stack_desc, '\n')
-
-# print ('52 Week Return from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (yoy_stack_desc, '\n')
-
-# print ('Q Ratio from 2023 to 2004')
-# print ('--------------------------------------------------------------------')
-# print (q_stack_desc, '\n\n')
-
 
 # --------------------------------------------------------------------
 # Regression Analysis 
@@ -271,16 +150,16 @@ q_stack_desc = q_ratio.stack().describe().iloc[1:]
 
 # Correlation Analysis -- this can only be done if you know if the relationship is linear/non-linear
 # correlation analysis -- this is only for 2023, it has to be time series as esg scores evolves over time
-esg_corr = esg_scores.iloc[:, 0].corr(q_ratio.iloc[:, 0])
-e_corr = e_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
-s_corr = s_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
-g_corr = g_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
+# esg_corr = esg_scores.iloc[:, 0].corr(q_ratio.iloc[:, 0])
+# e_corr = e_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
+# s_corr = s_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
+# g_corr = g_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 
-esg_corr = esg_scores.values.flatten()
-q_corr = q_ratio.values.flatten()
+# esg_corr = esg_scores.values.flatten()
+# q_corr = q_ratio.values.flatten()
 
-pearson_corr = np.corrcoef(q_corr, esg_corr)[0,1]
-yearly_corr = q_ratio.corrwith(esg_scores, axis=0)
+# pearson_corr = np.corrcoef(q_corr, esg_corr)[0,1]
+# yearly_corr = q_ratio.corrwith(esg_scores, axis=0)
 
 # print (yearly_corr)
 

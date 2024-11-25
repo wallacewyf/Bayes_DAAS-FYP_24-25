@@ -7,11 +7,20 @@ import numpy as np
 
 col_names = list(range(2023, 2003, -1))
 
-def returns(path, type):
+def returns(index, type):
     # path = filepath from config
     # type = type of table requested
 
-    returns_df = pd.read_excel(path, index_col=[0,1,2,3], skiprows=2)
+    if index == 'nasdaq': data = config.nasdaq_returns
+    elif index == 'snp': data = config.snp_returns
+    elif index == 'stoxx': data = config.stoxx_returns
+    elif index == 'ftse': data = config.ftse_returns
+    elif index == 'msci': data = config.msci_returns
+    else: 
+        print ('Invalid index!')
+        return
+
+    returns_df = pd.read_excel(data, index_col=[0,1,2,3], skiprows=2)
     returns_df.index.names = ['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name']
     returns_df.sort_values(by='Company Name',
                             axis=0,
@@ -110,11 +119,20 @@ def returns(path, type):
 
         return q_ratio
     
-def scores(path, type):
+def scores(index, type):
     # path = filepath from config
     # type = type of table requested
 
-    source_df = pd.read_excel(path, index_col=[0,1,2,3], skiprows=2)
+    if index == 'nasdaq': data = config.nasdaq_esg
+    elif index == 'snp': data = config.snp_esg
+    elif index == 'stoxx': data = config.stoxx_esg
+    elif index == 'ftse': data = config.ftse_esg
+    elif index == 'msci': data = config.msci_esg
+    else: 
+        print ('Invalid index!')
+        return
+
+    source_df = pd.read_excel(data, index_col=[0,1,2,3], skiprows=2)
     source_df.index.names = ['Identifier', 
                              'Company Name', 
                              'GICS Industry Name', 
