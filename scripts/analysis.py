@@ -1,7 +1,5 @@
 # packages
-import sys
-import os
-import timeit
+import sys, os, timeit
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,12 +18,11 @@ sys.path.append(data_path)
 # config path
 import config, wrangle
 
-# TODO: check if this is the best way to do a join between ESG scores?
-# maybe it's better if we just do between ESG, E, S, G instead of ESG and Q
-
-# Descriptive Statistics
+# ------------------------------------------------------------------------
+# Descriptive Statistic
 # provide descriptive based on cleaned data
 # option to stack together for macro or '' for detailed
+
 def desc(df, macro):
     try:
         df = df.mask(df == 0).describe().iloc[1:, :]
@@ -42,7 +39,7 @@ def desc(df, macro):
         print ('Check your dataframe and type if it''s valid.')
         print ('Error message:', error_msg)
 
-def output(df, index, type, macro):    
+def desc_output(df, index, type, macro):    
     if type == 'esg': type = 'ESG Scores'
     elif type == 'e': type = 'E Scores'
     elif type == 's': type = 'S Scores'
@@ -73,39 +70,39 @@ index_arr = ['msci',
             'stoxx', 
             'ftse']
 
-start = timeit.default_timer()
+# start = timeit.default_timer()
 
-for each_index in index_arr:
-    for each_type in scoring_type:
-        output(
-            df = desc(
-                df = wrangle.scores(
-                    each_index, 
-                    each_type
-                ), 
-                macro=False
-            ), 
-            index = each_index,
-            type = each_type,
-            macro=False
-        )
+# for each_index in index_arr:
+#     for each_type in scoring_type:
+#         desc_output(
+#             df = desc(
+#                 df = wrangle.scores(
+#                     each_index, 
+#                     each_type
+#                 ), 
+#                 macro=False
+#             ), 
+#             index = each_index,
+#             type = each_type,
+#             macro=False
+#         )
 
-        output(
-            df = desc(
-                df = wrangle.scores(
-                    each_index, 
-                    each_type
-                ), 
-                macro=True
-            ), 
-            index = each_index,
-            type = each_type,
-            macro = True
-        )
+#         desc_output(
+#             df = desc(
+#                 df = wrangle.scores(
+#                     each_index, 
+#                     each_type
+#                 ), 
+#                 macro=True
+#             ), 
+#             index = each_index,
+#             type = each_type,
+#             macro = True
+#         )
 
-stop = timeit.default_timer()
+# stop = timeit.default_timer()
 
-print ('Time taken:', str(stop-start), '\n\n')
+# print ('Time taken:', str(stop-start), '\n\n')
 
 # split between pre/post COVID pandemic / Paris Agreement
 # print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])

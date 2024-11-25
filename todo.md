@@ -24,4 +24,5 @@
     - i.e. MSCI for World trends, (STOXX 500 for EU, FTSE350 for UK), and then dive to industry layer etc.
     - Regression and Statistical methods to check with David in Week 10/11
 
-2. OUTPUT DESCRIPTIVE STATISTICS TO A CSV FILE IN RESULTS DIR 
+2. Focal points in timeline, enter results into descriptive statistics and dissertation
+3. Regression should wait until next meeting with David
