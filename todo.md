@@ -1,11 +1,3 @@
-1. extract past 20 years returns
-2. extract past 20 years ESG scores
-3. split into dataframe
-
-    - 1, 2 and 3 are done
-        - ROA / ROCE / ROE directly correlated, 
-        - P/E ratio and ROE directly correlated
-    
     - timeframe: 20 years
 
     - extracted scope:
@@ -32,5 +24,4 @@
     - i.e. MSCI for World trends, (STOXX 500 for EU, FTSE350 for UK), and then dive to industry layer etc.
     - Regression and Statistical methods to check with David in Week 10/11
 
-2. CHECK NASDAQ DATA AGAIN (GICS INDUSTRY NAME IS SO WRONG)
-3. OUTPUT DESCRIPTIVE STATISTICS TO A CSV FILE IN RESULTS DIR 
+2. OUTPUT DESCRIPTIVE STATISTICS TO A CSV FILE IN RESULTS DIR 

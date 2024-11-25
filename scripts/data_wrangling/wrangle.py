@@ -26,7 +26,6 @@ def returns(path, type):
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
         roe_df.dropna(inplace=True)
-        
 
         return roe_df
     
@@ -166,5 +165,3 @@ def scores(path, type):
                             inplace=True)
     
         return g_pillars
-    
-
