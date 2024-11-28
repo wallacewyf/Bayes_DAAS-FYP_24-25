@@ -7,9 +7,9 @@ import numpy as np
 
 col_names = list(range(2023, 2003, -1))
 
-def returns(index, type):
+def returns(index, measure):
     # path = filepath from config
-    # type = type of table requested
+    # measure = measure of table requested
 
     if index == 'nasdaq': data = config.nasdaq_returns
     elif index == 'snp': data = config.snp_returns
@@ -27,10 +27,10 @@ def returns(index, type):
                             ascending=True,
                             inplace=True)
 
-    if type == 'all':
+    if measure == 'all':
         return returns_df
     
-    elif type == 'roe':
+    elif measure == 'roe':
         # Return on Equity  - Actual
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
@@ -38,7 +38,7 @@ def returns(index, type):
 
         return roe_df
     
-    elif type == 'roa':
+    elif measure == 'roa':
         # Return on Assets - Actual
         roa_df = returns_df.iloc[:, 20:40]
         roa_df = roa_df.set_axis(col_names, axis=1)
@@ -46,7 +46,7 @@ def returns(index, type):
 
         return roa_df
 
-    elif type == 'yoy':
+    elif measure == 'yoy':
         # 52-Week Total Return
         yoy_return = returns_df.iloc[:, 40:60]
         yoy_return = yoy_return.set_axis(col_names, axis=1)
@@ -54,7 +54,7 @@ def returns(index, type):
 
         return yoy_return
     
-    elif type == 'mktcap':
+    elif measure == 'mktcap':
         # Market Capitalisation
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
@@ -62,7 +62,7 @@ def returns(index, type):
 
         return mkt_cap
 
-    elif type == 'ta':
+    elif measure == 'ta':
         # Total Assets - Reported
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
@@ -70,7 +70,7 @@ def returns(index, type):
 
         return ta_df
 
-    elif type == 'tl':
+    elif measure == 'tl':
         # Total Liabilities
         tl_df = returns_df.iloc[:, 100:120]
         tl_df = tl_df.set_axis(col_names, axis=1)
@@ -78,7 +78,7 @@ def returns(index, type):
 
         return tl_df
 
-    elif type == 'te':
+    elif measure == 'te':
         # Total Equity
         te_df = returns_df.iloc[:, 120:140]
         te_df = te_df.set_axis(col_names, axis=1)
@@ -86,7 +86,7 @@ def returns(index, type):
 
         return te_df
 
-    elif type == 'mi':
+    elif measure == 'mi':
         # Minority Interest
         minority_df = returns_df.iloc[:, 140:160]
         minority_df = minority_df.set_axis(col_names, axis=1)
@@ -94,7 +94,7 @@ def returns(index, type):
 
         return minority_df
 
-    elif type == 'pe':
+    elif measure == 'pe':
         # P/E Ratio
         pe_df = returns_df.iloc[:, 160:180]
         pe_df = minority_df.set_axis(col_names, axis=1)
@@ -102,7 +102,7 @@ def returns(index, type):
 
         return pe_df
 
-    elif type == 'q':
+    elif measure == 'q':
         # Q Ratio
         # Total Assets - Reported
         ta_df = returns_df.iloc[:, 80:100]
@@ -119,9 +119,9 @@ def returns(index, type):
 
         return q_ratio
     
-def scores(index, type):
+def scores(index, measure):
     # path = filepath from config
-    # type = type of table requested
+    # measure = measure of table requested
 
     if index == 'nasdaq': data = config.nasdaq_esg
     elif index == 'snp': data = config.snp_esg
@@ -140,7 +140,7 @@ def scores(index, type):
 
     column_names = col_names
 
-    if type == 'esg':
+    if measure == 'esg':
         esg_scores = source_df.iloc[:, :20]
         esg_scores = esg_scores.set_axis(column_names, axis=1)
         esg_scores.dropna(inplace=True)
@@ -151,7 +151,7 @@ def scores(index, type):
         
         return esg_scores
     
-    elif type == 'e':
+    elif measure == 'e':
         e_pillars = source_df.iloc[:, 20:40]
         e_pillars = e_pillars.set_axis(column_names, axis=1)
         e_pillars.dropna(inplace=True)
@@ -162,7 +162,7 @@ def scores(index, type):
 
         return e_pillars
 
-    elif type == 's':
+    elif measure == 's':
         s_pillars = source_df.iloc[:, 40:60] 
         s_pillars = s_pillars.set_axis(column_names, axis=1)
         s_pillars.dropna(inplace=True)
@@ -173,7 +173,7 @@ def scores(index, type):
                     
         return s_pillars
     
-    elif type == 'g':
+    elif measure == 'g':
         g_pillars = source_df.iloc[:, 60:80]
         g_pillars = g_pillars.set_axis(column_names, axis=1)
         g_pillars.dropna(inplace=True)
@@ -183,3 +183,10 @@ def scores(index, type):
                             inplace=True)
     
         return g_pillars
+    
+def output_df(index, measure):
+    if measure in ['roe', 'roa', 'q', 'yoy']:
+        return returns(index, measure)
+    
+    elif measure in ['esg', 'e', 's', 'g']:
+        return scores(index, measure)

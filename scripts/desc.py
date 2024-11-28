@@ -19,7 +19,7 @@ import config, wrangle
 
 def desc(df, macro):
     try:
-        df = df.mask(df == 0).describe().iloc[1:, :]
+        df = df.mask(df == 0).describe().iloc[1:, ]
 
         if macro:
             df = df.stack().describe()
@@ -56,43 +56,33 @@ def desc_output(df, index, type, macro):
                 index=True,
                 header=True)
 
-scoring_type = ['esg', 'e', 's', 'g']
-finp_type = ['roe', 'roa', 'yoy', 'q']
-index_arr = ['msci', 
-             'nasdaq', 
-            'snp', 
-            'stoxx', 
-            'ftse']
+def export(target, macro_flag):
+    if target == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q']
+    elif target == 'esg': loop_arr = ['esg', 'e', 's', 'g']
+    else: loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q']
+
+    index_arr = ['msci', 
+                'nasdaq', 
+                'snp', 
+                'stoxx', 
+                'ftse']
+
+    for each_index in index_arr:
+        for each_measure in loop_arr:
+            desc_output(
+                df = desc(
+                    df = wrangle.output_df(each_index, 
+                                        each_measure),
+                    macro = macro_flag),
+                index = each_index,
+                type = each_measure,
+                macro = macro_flag
+            )
 
 start = timeit.default_timer()
 
-for each_index in index_arr:
-    for each_type in scoring_type:
-        desc_output(
-            df = desc(
-                df = wrangle.scores(
-                    each_index, 
-                    each_type
-                ), 
-                macro=False
-            ), 
-            index = each_index,
-            type = each_type,
-            macro=False
-        )
-
-        desc_output(
-            df = desc(
-                df = wrangle.scores(
-                    each_index, 
-                    each_type
-                ), 
-                macro=True
-            ), 
-            index = each_index,
-            type = each_type,
-            macro = True
-        )
+export(target='all', 
+       macro_flag=False)
 
 stop = timeit.default_timer()
 
