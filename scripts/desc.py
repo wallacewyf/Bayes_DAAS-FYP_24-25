@@ -81,11 +81,12 @@ def export(target, macro_flag):
 
 start = timeit.default_timer()
 
-export(target='all', 
-       macro_flag=True)
+# export data 
+# export(target='all', 
+#        macro_flag=True)
 
-export(target='all', 
-       macro_flag=False)
+# export(target='all', 
+#        macro_flag=False)
 
 stop = timeit.default_timer()
 
