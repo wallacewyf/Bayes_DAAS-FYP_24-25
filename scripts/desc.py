@@ -18,21 +18,31 @@ import config, wrangle
 # option to stack together for macro or '' for detailed
 
 def desc(df, macro):
-    try:
-        df = df.mask(df == 0).describe()
 
-        if macro:
-            df = df.stack().describe()
-            
-            return df
+    if macro: 
+        df = df.stack().describe()
         
-        else: return df
+        return df
     
-    except ValueError as error_msg:
-        print ('Check your dataframe and type if it''s valid.')
-        print ('Error message:', error_msg)
+    else:
+        return df.describe()
 
-def desc_output(df, index, type, macro):    
+    # try:
+    #     # df = df.mask(df == 0).describe()
+    #     df = df.describe()
+
+    #     if macro:
+    #         df = df.stack().describe()
+            
+    #         return df
+        
+    #     else: return df
+    
+    # except ValueError as error_msg:
+    #     print ('Check your dataframe and type if it''s valid.')
+    #     print ('Error message:', error_msg)
+
+def write_desc(df, index, type, macro):    
     if type == 'esg': type = 'ESG Scores'
     elif type == 'e': type = 'E Scores'
     elif type == 's': type = 'S Scores'
@@ -67,42 +77,45 @@ def desc_output(df, index, type, macro):
                     index=True,
                     header=True)
 
-def export(target, macro_flag):
+def export_file(target, index, macro):
     if target == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q']
-    elif target == 'esg': loop_arr = ['esg', 'e', 's', 'g']
-    else: loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q']
+    elif target == 'scores': loop_arr = ['esg', 'e', 's', 'g']
+    elif target == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q']
+    else: loop_arr = [target]
 
-    index_arr = ['msci', 
-                'nasdaq', 
-                'snp', 
-                'stoxx', 
-                'ftse']
+    if index == 'all':  index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
+    else: index_arr = [index]
 
     for each_index in index_arr:
         for each_measure in loop_arr:
-            desc_output(
+            write_desc(
                 df = desc(
                     df = wrangle.output_df(each_index, 
                                         each_measure),
-                    macro = macro_flag),
+                    macro = macro),
                 index = each_index,
                 type = each_measure,
-                macro = macro_flag
+                macro = macro
             )
 
-print (desc(df=wrangle.output_df('msci', 'esg'),
-            macro=False))
 
+# wrangle.scores(index, measure)
+# wrangle.returns(index, measure)
+# wrangle.output_df(index, measure)
 
-# start = timeit.default_timer()
+start = timeit.default_timer()
 
-# # export data 
-# # export(target='all', 
-# #        macro_flag=True)
+# export data 
+export_file(target='all',
+            index='all', 
+            macro=True)
 
-# # export(target='all', 
-# #        macro_flag=False)
+export_file(target='all', 
+            index='all',
+            macro=False)
 
-# stop = timeit.default_timer()
+print ()
 
-# print ('Time taken:', str(stop-start), '\n\n')
+stop = timeit.default_timer()
+
+print ('Time taken:', str(stop-start), '\n\n')
