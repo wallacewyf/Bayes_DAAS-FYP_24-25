@@ -19,12 +19,11 @@ import config, wrangle
 
 def desc(df, macro):
     try:
-        df = df.mask(df == 0).describe().iloc[1:, ]
+        df = df.mask(df == 0).describe()
 
         if macro:
             df = df.stack().describe()
-            df = df.iloc[1:]
-
+            
             return df
         
         else: return df
@@ -68,7 +67,6 @@ def desc_output(df, index, type, macro):
                     index=True,
                     header=True)
 
-
 def export(target, macro_flag):
     if target == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q']
     elif target == 'esg': loop_arr = ['esg', 'e', 's', 'g']
@@ -92,15 +90,19 @@ def export(target, macro_flag):
                 macro = macro_flag
             )
 
-start = timeit.default_timer()
+print (desc(df=wrangle.output_df('msci', 'esg'),
+            macro=False))
 
-# export data 
-export(target='all', 
-       macro_flag=True)
 
-export(target='all', 
-       macro_flag=False)
+# start = timeit.default_timer()
 
-stop = timeit.default_timer()
+# # export data 
+# # export(target='all', 
+# #        macro_flag=True)
 
-print ('Time taken:', str(stop-start), '\n\n')
+# # export(target='all', 
+# #        macro_flag=False)
+
+# stop = timeit.default_timer()
+
+# print ('Time taken:', str(stop-start), '\n\n')

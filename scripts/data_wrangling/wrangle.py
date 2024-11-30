@@ -31,7 +31,7 @@ def returns(index, measure):
         return returns_df
     
     elif measure == 'roe':
-        # Return on Equity  - Actual
+        # Return on Equity - Actual
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
         roe_df.dropna(inplace=True)
@@ -190,3 +190,6 @@ def output_df(index, measure):
     
     elif measure in ['esg', 'e', 's', 'g']:
         return scores(index, measure)
+    
+    else:
+        print ('Invalid measure!')
