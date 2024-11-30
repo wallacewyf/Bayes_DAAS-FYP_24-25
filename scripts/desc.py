@@ -9,7 +9,7 @@ import seaborn as sns
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
 sys.path.append(data_path)
 
-# config path
+# import packages
 import config, wrangle
 
 # ------------------------------------------------------------------------
