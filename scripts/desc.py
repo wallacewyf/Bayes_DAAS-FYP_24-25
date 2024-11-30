@@ -48,13 +48,26 @@ def desc_output(df, index, type, macro):
     if macro: filename = filename + type + ' Macro Overview'
     else: filename = filename + type + ' Descriptive Overview'
 
-    with open (config.results_path + filename + '.csv', 'w') as file:
-        file.write (type + ' Descriptive Statistics from 2023 to 2004 \n')
+    try:
+        with open (config.results_path + filename + '.csv', 'w') as file:
+            file.write (type + ' Descriptive Statistics from 2023 to 2004 \n')
 
-    df.to_csv(config.results_path + filename + '.csv',
-                mode = 'a',
-                index=True,
-                header=True)
+        df.to_csv(config.results_path + filename + '.csv',
+                    mode = 'a',
+                    index=True,
+                    header=True)
+    
+    except FileNotFoundError:
+        os.mkdir(config.results_path)
+
+        with open (config.results_path + filename + '.csv', 'w') as file:
+            file.write (type + ' Descriptive Statistics from 2023 to 2004 \n')
+
+        df.to_csv(config.results_path + filename + '.csv',
+                    mode = 'a',
+                    index=True,
+                    header=True)
+
 
 def export(target, macro_flag):
     if target == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q']
@@ -82,11 +95,11 @@ def export(target, macro_flag):
 start = timeit.default_timer()
 
 # export data 
-# export(target='all', 
-#        macro_flag=True)
+export(target='all', 
+       macro_flag=True)
 
-# export(target='all', 
-#        macro_flag=False)
+export(target='all', 
+       macro_flag=False)
 
 stop = timeit.default_timer()
 
