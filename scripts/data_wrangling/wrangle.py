@@ -70,38 +70,6 @@ def returns(index, measure):
 
         return ta_df
 
-    elif measure == 'tl':
-        # Total Liabilities
-        tl_df = returns_df.iloc[:, 100:120]
-        tl_df = tl_df.set_axis(col_names, axis=1)
-        tl_df.dropna(inplace=True)
-
-        return tl_df
-
-    elif measure == 'te':
-        # Total Equity
-        te_df = returns_df.iloc[:, 120:140]
-        te_df = te_df.set_axis(col_names, axis=1)
-        te_df.dropna(inplace=True)
-
-        return te_df
-
-    elif measure == 'mi':
-        # Minority Interest
-        minority_df = returns_df.iloc[:, 140:160]
-        minority_df = minority_df.set_axis(col_names, axis=1)
-        minority_df.dropna(inplace=True)
-
-        return minority_df
-
-    elif measure == 'pe':
-        # P/E Ratio
-        pe_df = returns_df.iloc[:, 160:180]
-        pe_df = minority_df.set_axis(col_names, axis=1)
-        pe_df.dropna(inplace=True)
-
-        return pe_df
-
     elif measure == 'q':
         # Q Ratio
         # Total Assets - Reported
@@ -193,3 +161,15 @@ def output_df(index, measure):
     
     else:
         print ('Invalid measure!')
+
+def debug(index, measure, type):
+    if type == 'csv':
+        output_df(index, measure).to_csv('debug.csv',
+                                        header=True,
+                                        index=True)
+
+    elif type == 'excel':
+        output_df(index, measure).to_excel('debug.xlsx',
+                                        header=True,
+                                        index=True)
+        

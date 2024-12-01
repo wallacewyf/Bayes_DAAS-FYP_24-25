@@ -13,12 +13,11 @@ sys.path.append(data_path)
 import config, wrangle
 
 # ------------------------------------------------------------------------
-# Descriptive Statistic
+# Descriptive Statistics
 # provide descriptive based on cleaned data
 # option to stack together for macro or '' for detailed
 
 def desc(df, macro):
-
     if macro: 
         df = df.stack().describe()
         
@@ -26,21 +25,6 @@ def desc(df, macro):
     
     else:
         return df.describe()
-
-    # try:
-    #     # df = df.mask(df == 0).describe()
-    #     df = df.describe()
-
-    #     if macro:
-    #         df = df.stack().describe()
-            
-    #         return df
-        
-    #     else: return df
-    
-    # except ValueError as error_msg:
-    #     print ('Check your dataframe and type if it''s valid.')
-    #     print ('Error message:', error_msg)
 
 def write_desc(df, index, type, macro):    
     if type == 'esg': type = 'ESG Scores'
@@ -61,7 +45,9 @@ def write_desc(df, index, type, macro):
         with open (config.results_path + filename + '.csv', 'w') as file:
             file.write (type + ' Descriptive Statistics from 2023 to 2004 \n')
 
-        df.to_csv(config.results_path + filename + '.csv',
+        result_df = desc(df, macro)
+
+        result_df.to_csv(config.results_path + filename + '.csv',
                     mode = 'a',
                     index=True,
                     header=True)
@@ -72,7 +58,9 @@ def write_desc(df, index, type, macro):
         with open (config.results_path + filename + '.csv', 'w') as file:
             file.write (type + ' Descriptive Statistics from 2023 to 2004 \n')
 
-        df.to_csv(config.results_path + filename + '.csv',
+        result_df = desc(df, macro)
+
+        result_df.to_csv(config.results_path + filename + '.csv',
                     mode = 'a',
                     index=True,
                     header=True)
@@ -88,31 +76,62 @@ def export_file(target, index, macro):
 
     for each_index in index_arr:
         for each_measure in loop_arr:
-            write_desc(
-                df = desc(
-                    df = wrangle.output_df(each_index, 
-                                        each_measure),
-                    macro = macro),
-                index = each_index,
-                type = each_measure,
-                macro = macro
-            )
+            write_desc(df = wrangle.output_df(each_index, each_measure), 
+                       index = each_index,
+                        type = each_measure,
+                        macro = macro)
 
+def macro_desc():
+    index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
+    loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q']
+
+    for each_measure in loop_arr:
+        dfs = []
+
+        for each_index in index_arr:
+            df = desc(df=wrangle.output_df(each_index, each_measure),
+                        macro=True)
+            
+            df.rename(each_index)
+            dfs.append(df)
+            
+        df = pd.concat(dfs, axis=1)
+        df.columns = ['MSCI World', 
+                    'NASDAQ 100',
+                    'S&P 500',
+                    'STOXX 600',
+                    'FTSE 350']
+
+        print (each_measure)
+        print (df)
+
+        df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive.csv', 
+                header=True, 
+                index=True)
+        
+        print ('-------------------------------------------------------------------------------------')
+
+        df.drop(df.index, inplace=True)
 
 # wrangle.scores(index, measure)
 # wrangle.returns(index, measure)
 # wrangle.output_df(index, measure)
+# wrangle.debug(index, measure, type = "csv/excel")
 
 start = timeit.default_timer()
 
-# export data 
-export_file(target='all',
-            index='all', 
-            macro=True)
+wrangle.debug(
+    index='snp', 
+    measure='q',
+    type='excel'
+)
 
-export_file(target='all', 
-            index='all',
-            macro=False)
+print (desc(wrangle.output_df('snp', 'q'), macro=True))
+
+macro_desc()
+
+# TODO: error with finp returns
+# why is microsoft q ratio at 14672??
 
 print ()
 
