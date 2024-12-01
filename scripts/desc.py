@@ -35,6 +35,8 @@ def write_desc(df, index, type, macro):
     elif type == 'roa': type = 'Return on Assets (ROA)'
     elif type == 'yoy': type = '52 Week Return'
     elif type == 'q': type = 'Q Ratio'
+    elif type == 'mktcap': type = 'Market Capitalization'
+    elif type == 'ta': type = 'Total Assets'
 
     filename = index.upper() + ' '
 
@@ -66,9 +68,9 @@ def write_desc(df, index, type, macro):
                     header=True)
 
 def export_file(target, index, macro):
-    if target == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q']
+    if target == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q', 'ta' ,'mktcap']
     elif target == 'scores': loop_arr = ['esg', 'e', 's', 'g']
-    elif target == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q']
+    elif target == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q', 'ta' ,'mktcap']
     else: loop_arr = [target]
 
     if index == 'all':  index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
@@ -81,9 +83,12 @@ def export_file(target, index, macro):
                         type = each_measure,
                         macro = macro)
 
-def macro_desc():
+def macro_desc(type):
     index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
-    loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q']
+
+    if type == 'esg': loop_arr = ['esg', 'e', 's', 'g']
+    elif type == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q', 'mktcap', 'ta']
+    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q', 'mktcap', 'ta']
 
     for each_measure in loop_arr:
         dfs = []
@@ -105,7 +110,7 @@ def macro_desc():
         print (each_measure)
         print (df)
 
-        df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive.csv', 
+        df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive Overview.csv', 
                 header=True, 
                 index=True)
         
@@ -116,22 +121,21 @@ def macro_desc():
 # wrangle.scores(index, measure)
 # wrangle.returns(index, measure)
 # wrangle.output_df(index, measure)
-# wrangle.debug(index, measure, type = "csv/excel")
+# wrangle.debug(index, measure, filename, type = "csv/excel")
 
 start = timeit.default_timer()
 
-wrangle.debug(
-    index='snp', 
-    measure='q',
-    type='excel'
-)
+macro_desc('finp')
 
-print (desc(wrangle.output_df('snp', 'q'), macro=True))
 
-macro_desc()
+# wrangle.debug('snp', 'ta', 'csv')
+# wrangle.debug('nasdaq', 'ta', 'csv')
 
 # TODO: error with finp returns
 # why is microsoft q ratio at 14672??
+# issue with TA col
+# TA different between NASDAQ & SNP FOR MICROSOFT
+# recommended to extract data again for both
 
 print ()
 

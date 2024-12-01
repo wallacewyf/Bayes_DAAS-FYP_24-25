@@ -153,23 +153,21 @@ def scores(index, measure):
         return g_pillars
     
 def output_df(index, measure):
-    if measure in ['roe', 'roa', 'q', 'yoy']:
+    if measure in ['roe', 'roa', 'q', 'yoy', 'mktcap', 'ta']:
         return returns(index, measure)
     
     elif measure in ['esg', 'e', 's', 'g']:
         return scores(index, measure)
     
-    else:
-        print ('Invalid measure!')
 
 def debug(index, measure, type):
     if type == 'csv':
-        output_df(index, measure).to_csv('debug.csv',
+        output_df(index, measure).to_csv(index + '_' + measure + '.csv',
                                         header=True,
                                         index=True)
 
     elif type == 'excel':
-        output_df(index, measure).to_excel('debug.xlsx',
+        output_df(index, measure).to_excel(index + '_' + measure + '.xlsx',
                                         header=True,
                                         index=True)
         
