@@ -127,9 +127,8 @@ start = timeit.default_timer()
 
 macro_desc('finp')
 
-
-# wrangle.debug('snp', 'ta', 'csv')
-# wrangle.debug('nasdaq', 'ta', 'csv')
+wrangle.debug('snp', 'ta', 'csv')
+wrangle.debug('nasdaq', 'ta', 'csv')
 
 # TODO: error with finp returns
 # why is microsoft q ratio at 14672??

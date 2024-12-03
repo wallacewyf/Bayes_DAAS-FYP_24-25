@@ -162,12 +162,12 @@ def output_df(index, measure):
 
 def debug(index, measure, type):
     if type == 'csv':
-        output_df(index, measure).to_csv(index + '_' + measure + '.csv',
+        output_df(index, measure).to_csv(config.results_path + index + '_' + measure + '.csv',
                                         header=True,
                                         index=True)
 
     elif type == 'excel':
-        output_df(index, measure).to_excel(index + '_' + measure + '.xlsx',
+        output_df(index, measure).to_excel(config.results_path + index + '_' + measure + '.xlsx',
                                         header=True,
                                         index=True)
         
