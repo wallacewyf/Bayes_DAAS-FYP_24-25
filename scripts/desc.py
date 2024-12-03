@@ -130,10 +130,6 @@ macro_desc('finp')
 # wrangle.debug('msci', 'roa', 'csv')
 # wrangle.debug('msci', 'yoy', 'csv')
 
-# TODO: error with finp returns
-# ROA / YOY weird for MSCI
-# recommended to extract data again for both
-
 print ()
 
 stop = timeit.default_timer()
