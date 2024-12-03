@@ -112,8 +112,6 @@ import config, wrangle
 
 # plt.show()
 
-
-
 # print (q_ratio.columns)
 
 # q_ratio_x = q_ratio.columns

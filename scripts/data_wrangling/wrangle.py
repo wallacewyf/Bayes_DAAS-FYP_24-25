@@ -4,6 +4,7 @@ import config
 # import libraries
 import pandas as pd
 import numpy as np
+import os
 
 col_names = list(range(2023, 2003, -1))
 
@@ -161,12 +162,20 @@ def output_df(index, measure):
     
 
 def debug(index, measure, type):
-    if type == 'csv':
-        output_df(index, measure).to_csv(config.results_path + index + '_' + measure + '.csv',
-                                        header=True,
-                                        index=True)
+    while True:
+        try:
+            if type == 'csv':
+                output_df(index, measure).to_csv(config.results_path + index + '_' + measure + '.csv',
+                                                header=True,
+                                                index=True)
 
-    elif type == 'excel':
-        output_df(index, measure).to_excel(config.results_path + index + '_' + measure + '.xlsx',
-                                        header=True,
-                                        index=True)
+            elif type == 'excel':
+                output_df(index, measure).to_excel(config.results_path + index + '_' + measure + '.xlsx',
+                                                header=True,
+                                                index=True)
+                
+        
+        except OSError: 
+            os.mkdir(config.results_path)
+
+        break

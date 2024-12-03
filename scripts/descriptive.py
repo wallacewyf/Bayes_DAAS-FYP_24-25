@@ -1,9 +1,6 @@
 # packages
-import sys, os, timeit
+import sys, os
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -110,9 +107,9 @@ def macro_desc(type):
         print (each_measure)
         print (df)
 
-        # df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive Overview.csv', 
-        #         header=True, 
-        #         index=True)
+        df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive Overview.csv', 
+                header=True, 
+                index=True)
         
         print ('-------------------------------------------------------------------------------------')
 
@@ -123,15 +120,4 @@ def macro_desc(type):
 # wrangle.output_df(index, measure)
 # wrangle.debug(index, measure, filename, type = "csv/excel")
 
-start = timeit.default_timer()
-
 macro_desc('finp')
-
-# wrangle.debug('msci', 'roa', 'csv')
-# wrangle.debug('msci', 'yoy', 'csv')
-
-print ()
-
-stop = timeit.default_timer()
-
-print ('Time taken:', str(stop-start), '\n\n')
