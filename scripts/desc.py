@@ -87,8 +87,8 @@ def macro_desc(type):
     index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
 
     if type == 'esg': loop_arr = ['esg', 'e', 's', 'g']
-    elif type == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'q', 'mktcap', 'ta']
-    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'q', 'mktcap', 'ta']
+    elif type == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'mktcap', 'ta', 'q']
+    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'mktcap', 'ta', 'q']
 
     for each_measure in loop_arr:
         dfs = []
@@ -127,13 +127,10 @@ start = timeit.default_timer()
 
 macro_desc('finp')
 
-wrangle.debug('snp', 'q', 'csv')
-wrangle.debug('nasdaq', 'q', 'csv')
+# wrangle.debug('msci', 'roa', 'csv')
+# wrangle.debug('msci', 'yoy', 'csv')
 
 # TODO: error with finp returns
-# why is microsoft q ratio at 14672??
-# issue with TA col
-# TA different between NASDAQ & SNP FOR MICROSOFT
 # ROA / YOY weird for MSCI
 # recommended to extract data again for both
 
