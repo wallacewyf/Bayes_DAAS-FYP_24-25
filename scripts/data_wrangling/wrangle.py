@@ -170,4 +170,7 @@ def debug(index, measure, type):
         output_df(index, measure).to_excel(config.results_path + index + '_' + measure + '.xlsx',
                                         header=True,
                                         index=True)
-        
+
+debug('snp', 'mktcap', 'csv')
+debug('snp', 'ta', 'csv')
+debug('snp', 'q', 'csv')

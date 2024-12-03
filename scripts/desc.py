@@ -110,9 +110,9 @@ def macro_desc(type):
         print (each_measure)
         print (df)
 
-        df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive Overview.csv', 
-                header=True, 
-                index=True)
+        # df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive Overview.csv', 
+        #         header=True, 
+        #         index=True)
         
         print ('-------------------------------------------------------------------------------------')
 
@@ -127,13 +127,14 @@ start = timeit.default_timer()
 
 macro_desc('finp')
 
-wrangle.debug('snp', 'ta', 'csv')
-wrangle.debug('nasdaq', 'ta', 'csv')
+wrangle.debug('snp', 'q', 'csv')
+wrangle.debug('nasdaq', 'q', 'csv')
 
 # TODO: error with finp returns
 # why is microsoft q ratio at 14672??
 # issue with TA col
 # TA different between NASDAQ & SNP FOR MICROSOFT
+# ROA / YOY weird for MSCI
 # recommended to extract data again for both
 
 print ()
