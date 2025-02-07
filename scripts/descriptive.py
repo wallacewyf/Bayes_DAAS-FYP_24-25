@@ -114,10 +114,3 @@ def macro_desc(type):
         print ('-------------------------------------------------------------------------------------')
 
         df.drop(df.index, inplace=True)
-
-# wrangle.scores(index, measure)
-# wrangle.returns(index, measure)
-# wrangle.output_df(index, measure)
-# wrangle.debug(index, measure, filename, type = "csv/excel")
-
-macro_desc('finp')
