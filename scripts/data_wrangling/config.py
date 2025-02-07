@@ -5,13 +5,13 @@ import sys
 
 # file path - windows
 if sys.platform == 'win32':
-    data_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/raw_data/"
+    data_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/data/"
     script_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/scripts/"
     results_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/"
 
 # file path - mac
 elif sys.platform == 'darwin':
-    data_path = '/Users/wallace/Documents/code/python/fyp_24/raw_data/'
+    data_path = '/Users/wallace/Documents/code/python/fyp_24/data/'
     script_path = '/Users/wallace/Documents/code/python/fyp_24/scripts/'
     results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
 
