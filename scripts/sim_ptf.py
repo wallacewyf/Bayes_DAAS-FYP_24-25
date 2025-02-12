@@ -73,39 +73,45 @@ q4_ident = avg_ident[int(round((len(avg)/4*3),0)):len(avg)][::-1]
 q1_companies = avg[0:int(round((len(avg)/4),0))]
 q4_companies = avg[int(round((len(avg)/4*3),0)):len(avg)][::-1]
 
+# Q1 - top 25% quartile
 q1_cond = roe_5y.index.get_level_values('Company Name').isin(q1_companies)
 q1_df = roe_5y[q1_cond]
 q1_df.reset_index(['Identifier', 'GICS Industry Name', 'Exchange Name'], drop=True, inplace=True)
-q1_df = q1_df.T
 q1_df *= 100
 
+q1_roe_yoy = pd.DataFrame(q1_df.describe().iloc[1,])
+q1_roe_yoy.sort_index(ascending=True, inplace=True)
+# print (q1_roe_yoy)
+
+# Q4 - bottom 25% quartile
 q4_cond = roe_5y.index.get_level_values('Company Name').isin(q4_companies)
 q4_df = roe_5y[q4_cond]
 q4_df.reset_index(['Identifier', 'GICS Industry Name', 'Exchange Name'], drop=True, inplace=True)
+q4_df *= 100
 
+q4_roe_yoy = pd.DataFrame(q4_df.describe().iloc[1,])
+q4_roe_yoy.sort_index(ascending=True, inplace=True)
+# print (q4_roe_yoy)
 
-# TODO: once I get the intersection, there's still an existing problem where NaN will still be picked up 
-# I'm guessing its because of the .isin scope that's causing this issue
-# If we use the keys from the set intersection earlier above - it should only pick up companies without NaNs.
+# all companies
+roe_5y.reset_index(['Identifier', 'GICS Industry Name', 'Exchange Name'], drop=True, inplace=True)
+roe_5y *= 100
+roe_5y = roe_5y.describe().iloc[1,:]
+roe_5y.sort_index(ascending=True, inplace=True)
 
-# update: resolved using reindex (but to confirm if dropna is really needed in wrangle.py)
-
-print (q1_df)
-print (q4_df)
 print (roe_5y)
 
-# TODO: plot roe returns on graph
+# # TODO: plot roe returns on graph
 
-for each_company in q1_df.columns:
-    plt.plot(q1_df.index, q1_df[each_company], marker="x", label=each_company)
+plt.plot(q1_roe_yoy, marker="x", label="Top 25% ESG Scores Companies")
+plt.plot(q4_roe_yoy, marker="o", label="Bottom 25% ESG Scores Companies")
+plt.plot(roe_5y, marker="^", label="All Companies")
 
-plt.xlabel ('Year')
-plt.ylabel ('Return on Equity (%)')
-plt.title ('ROE % Trends (2019 - 2023)')
+plt.xlabel("Year")
+plt.ylabel("Average ROE %")
+plt.title("Average ROE % Trends (2019 - 2023)")
+plt.xticks(range(2023,2018,-1))  # Ensure correct year spacing
+plt.legend(title="Company Group")
 
-plt.xticks(q1_df.index)  # Ensure correct year spacing
-
-plt.legend(title="Company")
-# plt.gca().invert_xaxis()  # Reverse X-axis to show most recent year first
-plt.grid(True)
+plt.grid (True)
 plt.show()
