@@ -10,6 +10,7 @@ col_names = list(range(2023, 2003, -1))
 
 # Notes: 
 
+
 # dropna not needed - intersection should be ran first and then NA dropped
 
 def returns(index, measure):
@@ -39,7 +40,7 @@ def returns(index, measure):
         # Return on Equity - Actual
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
-        roe_df.dropna(inplace=True)
+        # roe_df.dropna(inplace=True)
 
         return roe_df
     
@@ -80,12 +81,12 @@ def returns(index, measure):
         # Total Assets - Reported
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
-        # ta_df.dropna(inplace=True)
+        ta_df.dropna(inplace=True)
 
         # Market Capitalisation
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
-        # mkt_cap.dropna(inplace=True)        
+        mkt_cap.dropna(inplace=True)        
         
         q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
         q_ratio = q_mktcap / q_ta

@@ -58,30 +58,77 @@ import config, wrangle
 # plt.show()
 
 # --------------------------------------------------------------------
-
 # Correlation Analysis -- this can only be done if you know if the relationship is linear/non-linear
 # correlation analysis -- this is only for 2023, it has to be time series as esg scores evolves over time
-# esg_corr = esg_scores.iloc[:, 0].corr(q_ratio.iloc[:, 0])
-# e_corr = e_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
-# s_corr = s_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
-# g_corr = g_pillars.iloc[:, 0].corr(q_ratio.iloc[:, 0])
 
-# esg_corr = esg_scores.values.flatten()
-# q_corr = q_ratio.values.flatten()
+# TODO: maybe write a output function as a log backtracker to write all terminal outputs into a .txt file like for G1's logs
+#       so function should only return data in arrays that could be iterated
 
-# pearson_corr = np.corrcoef(q_corr, esg_corr)[0,1]
-# yearly_corr = q_ratio.corrwith(esg_scores, axis=0)
+def corr(df_1, df_2):
+    while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
+        df_1.dropna(inplace=True)
+        df_2.dropna(inplace=True)
 
-# print (yearly_corr)
+        scope = df_1.index.intersection(df_2.index)
+
+        df_1 = df_1.reindex(scope)
+        df_2 = df_2.reindex(scope)
+
+        while len(df_1.columns) == len(df_2.columns):
+            total_year_avg = 0
+
+            for x in range (len(df_1.columns)):
+                avg_sum = 0 
+                avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
+
+                print (f"correlation for year {df_1.columns[x]} = {avg_sum}")
+
+                total_year_avg += avg_sum
+
+            break
+        
+        print ()
+        print (f"total average correlation = {total_year_avg/len(df_1.columns)}")
+
+        break
+
+    else:
+        scope = df_1.index.intersection(df_2.index)
+
+        df_1 = df_1.reindex(scope)
+        df_2 = df_2.reindex(scope)
+
+        while len(df_1.columns) == len(df_2.columns):
+            total_year_avg = 0
+
+            for x in range (len(df_1.columns)):
+                avg_sum = 0 
+                avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
+
+                print (f"correlation for year {df_1.columns[x]} = {avg_sum}")
+
+                total_year_avg += avg_sum
+
+            break
+        
+        print ()
+        print (f"total average correlation = {total_year_avg/len(df_1.columns)}")
 
 # print ('Correlation Analysis')
 # print ('--------------------------------------------------------------------')
-# print (f'Pearson product-moment correlation coefficient: {pearson_corr}')
 
-# print(f'Correlation between ESG scores and Q ratio: {round(esg_corr, 5)}')
-# print(f'Correlation between E scores and Q ratio: {round(e_corr, 5)}')
-# print(f'Correlation between S scores and Q ratio: {round(s_corr, 5)}')
-# print(f'Correlation between G scores and Q ratio: {round(g_corr, 5)}')
+print ('Correlation Analysis for MSCI Index and ROE of its components')
+print ('--------------------------------------------------------------------')
+corr(df_1=wrangle.scores('msci', 'esg'), 
+     df_2=wrangle.returns('msci', 'roe'))
+
+print ('\n\n\n\n\n')
+
+print ('Correlation Analysis for NASDAQ 100 Index and ROE of its components')
+print ('--------------------------------------------------------------------')
+corr(df_1=wrangle.scores('nasdaq', 'esg'), 
+     df_2=wrangle.returns('nasdaq', 'roe'))
+
 
 # Data Visualization
 # line graph for relationship between average of Q ratio and ESG scores
