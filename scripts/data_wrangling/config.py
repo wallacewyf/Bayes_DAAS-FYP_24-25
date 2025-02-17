@@ -8,6 +8,7 @@ if sys.platform == 'win32':
     data_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/data/"
     script_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/scripts/"
     results_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/"
+    log = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/logs/"
 
 # file path - mac
 elif sys.platform == 'darwin':

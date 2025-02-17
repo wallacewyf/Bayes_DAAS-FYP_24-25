@@ -5,11 +5,19 @@ import config
 import pandas as pd
 import numpy as np
 import os
+import logging
+
+logging.basicConfig(
+                    filename=config.log + "/log.txt",
+                    format='[%(asctime)s] [%(levelname)s]: %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filemode='a',
+                    level=logging.DEBUG
+                    )
 
 col_names = list(range(2023, 2003, -1))
 
 # Notes: 
-
 
 # dropna not needed - intersection should be ran first and then NA dropped
 
@@ -17,11 +25,21 @@ def returns(index, measure):
     # path = filepath from config
     # measure = measure of table requested
 
-    if index == 'nasdaq': data = config.nasdaq_returns
-    elif index == 'snp': data = config.snp_returns
-    elif index == 'stoxx': data = config.stoxx_returns
-    elif index == 'ftse': data = config.ftse_returns
-    elif index == 'msci': data = config.msci_returns
+    if index == 'nasdaq': 
+        logging.info('Retrieving NASDAQ data...')
+        data = config.nasdaq_returns
+    elif index == 'snp': 
+        logging.info('Retrieving S&P 500 data...')
+        data = config.snp_returns
+    elif index == 'stoxx': 
+        logging.info('Retrieving STOXX data...')
+        data = config.stoxx_returns
+    elif index == 'ftse': 
+        logging.info('Retrieving FTSE data...')
+        data = config.ftse_returns
+    elif index == 'msci': 
+        logging.info('Retrieving MSCI data...')
+        data = config.msci_returns
     else: 
         print ('Invalid index!')
         return
@@ -34,10 +52,13 @@ def returns(index, measure):
                             inplace=True)
 
     if measure == 'all':
+        logging.info ('Extracting all financial returns...')
         return returns_df
     
     elif measure == 'roe':
         # Return on Equity - Actual
+        logging.info ('Extracting Return on Equity...')
+
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
         # roe_df.dropna(inplace=True)
@@ -46,6 +67,8 @@ def returns(index, measure):
     
     elif measure == 'roa':
         # Return on Assets - Actual
+        logging.info ('Extracting Return on Assets...')
+
         roa_df = returns_df.iloc[:, 20:40]
         roa_df = roa_df.set_axis(col_names, axis=1)
         # roa_df.dropna(inplace=True)
@@ -62,6 +85,9 @@ def returns(index, measure):
     
     elif measure == 'mktcap':
         # Market Capitalisation
+
+        logging.info( 'Extracting Market Capitalisation...')
+
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         # mkt_cap.dropna(inplace=True)
@@ -79,6 +105,9 @@ def returns(index, measure):
     elif measure == 'q':
         # Q Ratio
         # Total Assets - Reported
+
+        logging.info ('Extracting Q Ratio...')
+
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
         ta_df.dropna(inplace=True)
@@ -88,8 +117,12 @@ def returns(index, measure):
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         mkt_cap.dropna(inplace=True)        
         
+        logging.info ('Aligning dataframes for Q Ratio calculation...')
+
         q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
         q_ratio = q_mktcap / q_ta
+
+        logging.info ('Q Ratio calculation completed.')
 
         return q_ratio
     
@@ -194,7 +227,7 @@ def export(df, filename, type):
                           index=True)
 
             elif type == 'excel':
-                df.to_excel(config.results_path + filename + '.csv',
+                df.to_excel(config.results_path + filename + '.xlsx',
                           header=True, 
                           index=True)
         

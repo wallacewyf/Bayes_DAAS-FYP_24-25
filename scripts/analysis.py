@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import logging
 
 # statistical packages
 from sklearn.linear_model import LinearRegression
@@ -17,6 +18,16 @@ sys.path.append(data_path)
 
 # config path
 import config, wrangle
+
+logging.basicConfig(
+                    filename=config.log + "/log.txt",
+                    format='[%(asctime)s] [%(levelname)s]: %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filemode='a',
+                    level=logging.DEBUG
+                    )
+
+
 
 # split between pre/post COVID pandemic / Paris Agreement
 # print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
@@ -65,6 +76,10 @@ import config, wrangle
 #       so function should only return data in arrays that could be iterated
 
 def corr(df_1, df_2):
+    avg_corrcoef = []
+    logging.info ('Running correlation analysis...')
+    logging.info ('--------------------------------------------------------------------')
+
     while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
         df_1.dropna(inplace=True)
         df_2.dropna(inplace=True)
@@ -80,19 +95,24 @@ def corr(df_1, df_2):
             for x in range (len(df_1.columns)):
                 avg_sum = 0 
                 avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
+                avg_corrcoef.append(avg_sum)
 
-                print (f"correlation for year {df_1.columns[x]} = {avg_sum}")
+                logging.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
 
                 total_year_avg += avg_sum
 
             break
         
-        print ()
-        print (f"total average correlation = {total_year_avg/len(df_1.columns)}")
+        logging.info ('')
+        logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
+        logging.info ('--------------------------------------------------------------------')
 
         break
 
     else:
+        logging.info ('Running correlation analysis...')
+        logging.info ('--------------------------------------------------------------------')
+
         scope = df_1.index.intersection(df_2.index)
 
         df_1 = df_1.reindex(scope)
@@ -105,30 +125,34 @@ def corr(df_1, df_2):
                 avg_sum = 0 
                 avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
 
-                print (f"correlation for year {df_1.columns[x]} = {avg_sum}")
+                logging.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
 
                 total_year_avg += avg_sum
 
             break
         
-        print ()
-        print (f"total average correlation = {total_year_avg/len(df_1.columns)}")
+        logging.info ('')
+        logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
+        logging.info ('--------------------------------------------------------------------')
+    
+    return avg_corrcoef
 
 # print ('Correlation Analysis')
 # print ('--------------------------------------------------------------------')
 
-print ('Correlation Analysis for MSCI Index and ROE of its components')
-print ('--------------------------------------------------------------------')
-corr(df_1=wrangle.scores('msci', 'esg'), 
-     df_2=wrangle.returns('msci', 'roe'))
+index = ['nasdaq', 'snp', 'stoxx', 'ftse', 'msci']
+measures = ['roe', 'roa', 'mktcap', 'q']
+esg = ['esg', 'e', 's', 'g']
 
-print ('\n\n\n\n\n')
+for each_index in index:
+    for each_measure in measures:
+        corr(df_1=wrangle.scores(each_index, 'esg'), 
+             df_2=wrangle.returns(each_index, each_measure))
+        
+        logging.info (f"Correlation analysis between {each_index.upper()}'s ESG scores and {each_measure.upper()} completed.")
 
-print ('Correlation Analysis for NASDAQ 100 Index and ROE of its components')
-print ('--------------------------------------------------------------------')
-corr(df_1=wrangle.scores('nasdaq', 'esg'), 
-     df_2=wrangle.returns('nasdaq', 'roe'))
-
+print ('Correlation Analysis completed.')
+print ('Check log file for results.')
 
 # Data Visualization
 # line graph for relationship between average of Q ratio and ESG scores
