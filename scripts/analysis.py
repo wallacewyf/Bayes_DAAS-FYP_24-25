@@ -83,6 +83,8 @@ def index_corr(df_1, df_2):
     logging.info ('--------------------------------------------------------------------')
 
     while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
+
+        # TODO: dropna(axis = 1, inplace = True)
         df_1.dropna(inplace=True)
         df_2.dropna(inplace=True)
 
@@ -217,6 +219,8 @@ def industry_corr(df_1, df_2):
         logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
         logging.info ('--------------------------------------------------------------------')
 
+    print (df_1, df_2)
+
     return industry_corr_arr
 
 index = ['nasdaq', 'snp', 'stoxx', 'ftse', 'msci']
@@ -249,12 +253,10 @@ def init_corr():
     return [index_val, industry_val]
 
 
-func = init_corr()
-
-index_val, industry_val = func[0], func[1]
-
-print ()
-print (func)
+industry_corr(
+    df_1 = wrangle.scores('nasdaq', 'esg'),
+    df_2 = wrangle.returns('nasdaq', 'roe')
+)
 
 # Data Visualization
 # line graph for relationship between average of Q ratio and ESG scores
