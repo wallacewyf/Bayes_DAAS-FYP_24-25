@@ -7,13 +7,17 @@ import numpy as np
 import os
 import logging
 
-logging.basicConfig(
-                    filename=config.log + "/log.txt",
-                    format='[%(asctime)s] [%(levelname)s]: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    filemode='a',
-                    level=logging.DEBUG
-                    )
+try:
+    logging.basicConfig(
+                        filename=config.log + "/log.txt",
+                        format='[%(asctime)s] [%(levelname)s]: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        filemode='a',
+                        level=logging.DEBUG
+                        )
+
+except FileNotFoundError:
+    os.mkdir(config.log)
 
 col_names = list(range(2023, 2003, -1))
 
@@ -61,6 +65,7 @@ def returns(index, measure):
 
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
+        roe_df = roe_df.iloc[:, ::-1]
         # roe_df.dropna(inplace=True)
 
         return roe_df
@@ -71,6 +76,7 @@ def returns(index, measure):
 
         roa_df = returns_df.iloc[:, 20:40]
         roa_df = roa_df.set_axis(col_names, axis=1)
+        roa_df = roa_df.iloc[:, ::-1]
         # roa_df.dropna(inplace=True)
 
         return roa_df
@@ -79,6 +85,7 @@ def returns(index, measure):
         # 52-Week Total Return
         yoy_return = returns_df.iloc[:, 40:60]
         yoy_return = yoy_return.set_axis(col_names, axis=1)
+        yoy_return = yoy_return.iloc[:, ::-1]
         # yoy_return.dropna(inplace=True)
 
         return yoy_return
@@ -90,6 +97,7 @@ def returns(index, measure):
 
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
+        mkt_cap = mkt_cap.iloc[:, ::-1]
         # mkt_cap.dropna(inplace=True)
 
         return mkt_cap
@@ -98,6 +106,7 @@ def returns(index, measure):
         # Total Assets - Reported
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
+        ta_df = ta_df.iloc[:, ::-1]
         # ta_df.dropna(inplace=True)
 
         return ta_df
@@ -121,6 +130,7 @@ def returns(index, measure):
 
         q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
         q_ratio = q_mktcap / q_ta
+        q_ratio = q_ratio.iloc[:, ::-1]
 
         logging.info ('Q Ratio calculation completed.')
 
@@ -156,6 +166,8 @@ def scores(index, measure):
                             ascending=[True, False],
                             inplace=True)
         
+        esg_scores = esg_scores.iloc[:, ::-1]
+        
         return esg_scores
     
     elif measure == 'e':
@@ -166,6 +178,8 @@ def scores(index, measure):
                             axis=0,
                             ascending=[True, False],
                             inplace=True)
+        
+        e_pillars = e_pillars.iloc[:, ::-1]
 
         return e_pillars
 
@@ -177,6 +191,8 @@ def scores(index, measure):
                             axis=0,
                             ascending=[True, False],
                             inplace=True)        
+        
+        s_pillars = s_pillars.iloc[:, ::-1]
                     
         return s_pillars
     
@@ -189,6 +205,8 @@ def scores(index, measure):
                             ascending=[True, False],
                             inplace=True)
     
+        g_pillars = g_pillars.iloc[:, ::-1]
+
         return g_pillars
     
 def output_df(index, measure):

@@ -1,7 +1,7 @@
 # parameter file
 
 # lib to check platform
-import sys
+import sys, os
 
 # file path - windows
 if sys.platform == 'win32':
@@ -15,6 +15,7 @@ elif sys.platform == 'darwin':
     data_path = '/Users/wallace/Documents/code/python/fyp_24/data/'
     script_path = '/Users/wallace/Documents/code/python/fyp_24/scripts/'
     results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
+    log = '/Users/wallace/Documents/code/python/fyp_24/logs/'
 
 # esg files
 nasdaq_esg = data_path + 'ESG_Scores_NASDAQ100_20Y.xlsx'
