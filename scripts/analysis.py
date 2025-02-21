@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import logging
+import log
 
 # statistical packages
 from sklearn.linear_model import LinearRegression
@@ -22,17 +22,8 @@ sys.path.append(data_path)
 # config path
 import config, wrangle
 
-try:
-    logging.basicConfig(
-                        filename=config.log + "/log.txt",
-                        format='[%(asctime)s] [%(levelname)s]: %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        filemode='a',
-                        level=logging.DEBUG
-                        )
-
-except FileNotFoundError:
-    os.mkdir(config.log)
+# initialize logger module 
+log = config.logging
 
 # split between pre/post COVID pandemic / Paris Agreement
 # print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
@@ -86,8 +77,8 @@ print (roe_data.describe())
 # Correlation between Index Components and Financial Returns
 def index_corr(df_1, df_2):
     index_corr_arr = []
-    logging.info ('Running correlation analysis between index components and financial returns...')
-    logging.info ('--------------------------------------------------------------------')
+    log.info ('Running correlation analysis between index components and financial returns...')
+    log.info ('--------------------------------------------------------------------')
 
     while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
 
@@ -101,14 +92,14 @@ def index_corr(df_1, df_2):
         df_2 = df_2.reindex(scope)
 
         while len(df_1.columns) == len(df_2.columns):
-            logging.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
+            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
             total_year_avg = 0
 
             for x in range (len(df_1.columns)):
                 avg_sum = 0 
                 avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
 
-                logging.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
+                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
 
                 total_year_avg += avg_sum
             
@@ -116,15 +107,15 @@ def index_corr(df_1, df_2):
 
             break
         
-        logging.info ('')
-        logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        logging.info ('--------------------------------------------------------------------')
+        log.info ('')
+        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
+        log.info ('--------------------------------------------------------------------')
 
         break
 
     else:
-        logging.info ('Running correlation analysis...')
-        logging.info ('--------------------------------------------------------------------')
+        log.info ('Running correlation analysis...')
+        log.info ('--------------------------------------------------------------------')
 
         scope = df_1.index.intersection(df_2.index)
 
@@ -132,7 +123,7 @@ def index_corr(df_1, df_2):
         df_2 = df_2.reindex(scope)
 
         while len(df_1.columns) == len(df_2.columns):
-            logging.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
+            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
 
             total_year_avg = 0
 
@@ -140,7 +131,7 @@ def index_corr(df_1, df_2):
                 avg_sum = 0 
                 avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
 
-                logging.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
+                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
 
                 total_year_avg += avg_sum
 
@@ -148,9 +139,9 @@ def index_corr(df_1, df_2):
 
             break
         
-        logging.info ('')
-        logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        logging.info ('--------------------------------------------------------------------')
+        log.info ('')
+        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
+        log.info ('--------------------------------------------------------------------')
 
     return index_corr_arr
 
@@ -158,8 +149,8 @@ def index_corr(df_1, df_2):
 def industry_corr(df_1, df_2):
     industry_corr_arr = []
 
-    logging.info ('Running correlation analysis between industries and financial returns...')
-    logging.info ('--------------------------------------------------------------------')
+    log.info ('Running correlation analysis between industries and financial returns...')
+    log.info ('--------------------------------------------------------------------')
 
     while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
         df_1.dropna(inplace=True)
@@ -171,7 +162,7 @@ def industry_corr(df_1, df_2):
         df_2 = df_2.reindex(scope)
 
         while len(df_1.columns) == len(df_2.columns):
-            logging.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
+            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
 
             df_1 = df_1.groupby(['GICS Industry Name']).mean()      # ESG Scores
             df_2 = df_2.groupby(['GICS Industry Name']).mean()      # Financial Ratio
@@ -182,7 +173,7 @@ def industry_corr(df_1, df_2):
                 avg_sum = 0 
                 avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
 
-                logging.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
+                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
 
                 total_year_avg += avg_sum
 
@@ -190,9 +181,9 @@ def industry_corr(df_1, df_2):
 
             break
         
-        logging.info ('')
-        logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        logging.info ('--------------------------------------------------------------------')
+        log.info ('')
+        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
+        log.info ('--------------------------------------------------------------------')
 
         break
 
@@ -203,7 +194,7 @@ def industry_corr(df_1, df_2):
         df_2 = df_2.reindex(scope)
 
         while len(df_1.columns) == len(df_2.columns):
-            logging.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
+            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
 
             total_year_avg = 0
 
@@ -214,7 +205,7 @@ def industry_corr(df_1, df_2):
                 avg_sum = 0 
                 avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
 
-                logging.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
+                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
 
                 total_year_avg += avg_sum
             
@@ -222,9 +213,9 @@ def industry_corr(df_1, df_2):
 
             break
 
-        logging.info ('')
-        logging.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        logging.info ('--------------------------------------------------------------------')
+        log.info ('')
+        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
+        log.info ('--------------------------------------------------------------------')
 
     print (df_1, df_2)
 
@@ -240,19 +231,19 @@ def init_corr():
     for each_index in index:
         for each_measure in measures:
             for each_esg in esg:
-                logging.info (f'Correlation by index initializing...')
+                log.info (f'Correlation by index initializing...')
 
                 index_val = index_corr(df_1 = wrangle.scores(each_index, each_esg), 
                                     df_2 = wrangle.returns(each_index, each_measure))
                 
-                logging.info (f'Correlation by index completed.')
-                logging.info (f'Correlation by industry initializing...')
+                log.info (f'Correlation by index completed.')
+                log.info (f'Correlation by industry initializing...')
 
                 industry_val = industry_corr(df_1= wrangle.scores(each_index, each_esg),
                                         df_2 = wrangle.returns(each_index, each_measure))
                 
-                logging.info (f"Correlation by industry completed.")
-                logging.info (f"Correlation analysis between {each_index.upper()}'s {each_esg.upper()} scores and {each_measure.upper()} completed.")
+                log.info (f"Correlation by industry completed.")
+                log.info (f"Correlation analysis between {each_index.upper()}'s {each_esg.upper()} scores and {each_measure.upper()} completed.")
 
     print ('Correlation Analysis completed.')
     print ('Check log file for results.')

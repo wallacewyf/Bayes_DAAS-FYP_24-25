@@ -9,6 +9,9 @@ sys.path.append(data_path)
 # import packages
 import config, wrangle
 
+# initialize logger module 
+log = config.logging
+
 # ------------------------------------------------------------------------
 # Descriptive Statistics
 # provide descriptive based on cleaned data
@@ -46,6 +49,8 @@ def write_desc(df, index, type, macro):
 
         result_df = desc(df, macro)
 
+        log.info (f'{filename} saved in .../results/ directory')
+
         result_df.to_csv(config.results_path + filename + '.csv',
                     mode = 'a',
                     index=True,
@@ -59,6 +64,7 @@ def write_desc(df, index, type, macro):
 
         result_df = desc(df, macro)
 
+        log.info (f'{filename} saved in .../results/ directory')
         result_df.to_csv(config.results_path + filename + '.csv',
                     mode = 'a',
                     index=True,
@@ -75,42 +81,50 @@ def export_file(target, index, macro):
 
     for each_index in index_arr:
         for each_measure in loop_arr:
+            log.info(f"Writing descriptive stats for {each_index.upper()}'s {each_measure.upper()} data")
+
             write_desc(df = wrangle.output_df(each_index, each_measure), 
                        index = each_index,
                         type = each_measure,
                         macro = macro)
 
 def macro_desc(type):
+    log.info(f'Descriptive Statistics called for {type} scores')
+
     index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
 
     if type == 'esg': loop_arr = ['esg', 'e', 's', 'g']
-    elif type == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'mktcap', 'ta', 'q']
-    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'mktcap', 'ta', 'q']
+    elif type == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'mktcap', 'q']
+    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'mktcap', 'q']
 
     for each_measure in loop_arr:
         dfs = []
 
         for each_index in index_arr:
+            log.info(f"Accessing {each_measure.upper()} data from {each_index.upper()}'s dataframe")
             df = desc(df=wrangle.output_df(each_index, each_measure),
                         macro=True)
             
             df.rename(each_index)
             dfs.append(df)
             
+        log.info(f"Merging all {each_measure.upper()} data into a single dataframe...")
+
         df = pd.concat(dfs, axis=1)
         df.columns = ['MSCI World', 
                     'NASDAQ 100',
                     'S&P 500',
                     'STOXX 600',
                     'FTSE 350']
-
-        print (each_measure)
-        print (df)
+        
+        log.info(f'Exporting {each_measure.upper()} dataframe into csv file in .../results/ path')
 
         df.to_csv(config.results_path + ' ' + each_measure.upper() + ' Descriptive Overview.csv', 
                 header=True, 
                 index=True)
         
-        print ('-------------------------------------------------------------------------------------')
-
         df.drop(df.index, inplace=True)
+
+export_file (target = 'roe', 
+             index = 'msci',
+             macro=False)
