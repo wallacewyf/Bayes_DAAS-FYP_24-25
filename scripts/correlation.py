@@ -5,112 +5,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# statistical packages
-from sklearn.linear_model import LinearRegression
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
-from sklearn.preprocessing import PolynomialFeatures
-from scipy import stats
-
-import statsmodels.api as sm
-
-# set path to retrieve returns/scores files
+# set path to access local packages
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
 sys.path.append(data_path)
 
-# config path
+# local packages
 import config, wrangle
 
 # initialize logger module 
 log = config.logging
 
-# split between pre/post COVID pandemic / Paris Agreement
-# print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
-
-# --------------------------------------------------------------------
-# Regression Analysis 
-# notes: 
-# After discussion with Pietro, run a normal linear regression first by ensuring all returns 
-# are normally distributed. 
-# If normally distributed, linearity is proven and therefore linear or multivariate regression 
-# could then be fitted.
-
-# Test for Normality
-
-def test_norm(measure, index):
-    log.info(f"Running Sharpio-Wilk Test for Normality on {index.upper()}'s {measure.upper()}")
-
-    if measure in ['roe', 'roa', 'mktcap', 'q']: df = wrangle.returns(index, measure)
-
-    df.reset_index(inplace=True)
-
-    df = df.melt(
-        id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
-        var_name='Year',
-        value_name=measure.upper()
-    )
-
-    df.dropna(inplace=True)
-
-    shapiro_stat, shapiro_p = stats.shapiro(df[measure.upper()])
-
-    print("Shapiro-Wilk Test statistic:", shapiro_stat)
-    print("Shapiro-Wilk Test p-value:", shapiro_p)
-    print ()
-
-    if shapiro_p < 0.05:
-        log.info(f"{measure.upper()} is not normally distributed")
-        log.info("")
-        return False
-    
-    else: 
-        log.info(f"{measure.upper()} is normally distributed")
-        log.info('')
-        return True
-    
-# test_norm('roe', 'msci')
-# test_norm('roa', 'msci')
-# test_norm('q', 'msci')
-
-# existing outlier for home depot in 2022
-
-df = wrangle.returns('msci', 'roe')
-df.reset_index(inplace=True)
-df.dropna(inplace=True)
-
-df = df.melt(
-    id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
-    var_name='Year',
-    value_name='ROE'
-)
-
-print (df)
-
-# omitting 2008 data due to financial crisis
-
-roe_data = df[df['Year'] != 2008]
-roe_data = roe_data['ROE']
-
-print (roe_data)
-
-# # 1. Histogram
-plt.figure(figsize=(10, 4))
-sns.histplot(roe_data, kde=True, bins=20)
-plt.title('Histogram of ROE')
-plt.xlabel('ROE')
-plt.ylabel('Frequency')
-plt.show()
-
-# # 2. Boxplot to identify outliers
-# plt.figure(figsize=(10, 5))
-# sns.boxplot(x=roe_data)
-# plt.title("Boxplot of ROE")
-# plt.show()
-
-# --------------------------------------------------------------------
 # Correlation Analysis
-
-# TODO: return all correlation in a suitable dataframe for export to .csv for further analysis
 
 # Correlation between Index Components and Financial Returns
 def index_corr(df_1, df_2):
@@ -288,55 +193,4 @@ def init_corr():
 
     return [index_val, industry_val]
 
-
-# industry_corr(
-#     df_1 = wrangle.scores('nasdaq', 'esg'),
-#     df_2 = wrangle.returns('nasdaq', 'roe')
-# )
-
-# Data Visualization
-# line graph for relationship between average of Q ratio and ESG scores
-# esg_avg = esg_scores.mean(axis=0)
-# q_avg = q_ratio.mean(axis=0)
-
-# years = np.arange(2023, 2003, -1)
-# figure, ax1 = plt.subplots(figsize=(10, 6))
-
-# # primary axis
-# ax1.plot(years, esg_avg, label='Average ESG Scores', color='blue')
-# ax1.set_xlabel('Year')
-# ax1.set_ylabel('Average ESG Scores', color='blue')
-# ax1.tick_params(axis='y', labelcolor='blue')
-# ax1.set_xticks(np.arange(2024, 2002, -2))
-
-# # secondary axis
-# ax2 = ax1.twinx()
-# ax2.plot(years, q_avg, label="Average Tobin's Q", color='green')
-# ax2.set_ylabel("Average Tobin's Q", color='green')
-# ax2.tick_params(axis='y', labelcolor='green')
-
-# # title, legend, label
-# plt.title('Yearly Trends of ESG Scores and Tobin\'s Q')
-# lines_1, labels_1 = ax1.get_legend_handles_labels()
-# lines_2, labels_2 = ax2.get_legend_handles_labels()
-# plt.legend(lines_1 + lines_2, labels_1 + labels_2, loc='lower right')
-
-# plt.show()
-
-# print (q_ratio.columns)
-
-# q_ratio_x = q_ratio.columns
-# q_ratio_y = q_ratio.mean(axis=0)
-
-# plt.plot(q_ratio.columns, q_ratio.mean(axis=0), label='Avg Q Ratio')
-# plt.title('Average Q Ratio over time (2023 to 2004)')
-# plt.xlabel('Year')
-# plt.ylabel('Avg Q')
-# plt.grid(True)
-
-# plt.show()
-
-# print (q_ratio_y)
-
-# TODO: Correlation, Relationship, Regression, Cluster Analysis 
-#       (cross-compare with methods on cited literatures on types of analysis used)
+init_corr()
