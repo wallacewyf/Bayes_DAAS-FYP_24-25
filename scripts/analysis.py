@@ -11,6 +11,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
 from sklearn.preprocessing import PolynomialFeatures
+from scipy import stats
+
+import statsmodels.api as sm
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -31,44 +34,48 @@ try:
 except FileNotFoundError:
     os.mkdir(config.log)
 
-
 # split between pre/post COVID pandemic / Paris Agreement
 # print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
 
 # --------------------------------------------------------------------
 # Regression Analysis 
 # notes: 
-#   - there probably isn't any linearity
-#   - but fix the Q ratio value, then figure out again if we should use r2 or OLS to 
-#     to calculate linearity
+# After discussion with Pietro, run a normal linear regression first by ensuring all returns 
+# are normally distributed. 
+# If normally distributed, linearity is proven and therefore linear or multivariate regression 
+# could then be fitted.
 
-# r2_values = []
-# years = list(range(2004, 2024))
+# Check if normally distributed.
 
-# for year in years:
-#     # Extract data for the current year
-#     X = q_ratio[year].values.reshape(-1, 1)  # Q Ratio for the year
-#     y = esg_scores[year].values             # ESG Scores for the year
+roe_df = wrangle.returns('msci', 'roe')
+roe_df.reset_index(inplace=True)
 
-#     # Fit a linear regression model
-#     model = LinearRegression()
-#     model.fit(X, y)
-#     y_pred = model.predict(X)
+roe_df = roe_df.melt(
+    id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
+    var_name='Year',
+    value_name='ROE'
+)
 
-#     # Calculate R² (linearity measure)
-#     r2 = r2_score(y, y_pred)
-#     r2_values.append(r2)
+roe_df.dropna(inplace=True)
 
-# print (r2_values)
+roe_data = roe_df['ROE']
 
-# # Plot R² values over time
-# plt.figure(figsize=(10, 6))
-# plt.plot(years, r2_values, marker='o', label='R² (Linearity Measure)')
-# plt.title("Linearity (R²) Between ESG Scores and Q Ratio Over Time")
-# plt.xlabel("Year")
-# plt.ylabel("R² Value")
-# plt.grid()
-# plt.legend()
+print (roe_df.query('ROE < -100'))
+
+print (roe_data.describe())
+
+# 1. Histogram
+# plt.figure(figsize=(10, 4))
+# sns.histplot(roe_data, kde=True, bins=30)
+# plt.title('Histogram of ROE')
+# plt.xlabel('ROE')
+# plt.ylabel('Frequency')
+# plt.show()
+
+# 2. Q-Q Plot
+# plt.figure(figsize=(6, 6))
+# sm.qqplot(roe_data, line='45', fit=True)
+# plt.title('Q-Q Plot of ROE')
 # plt.show()
 
 # --------------------------------------------------------------------
@@ -253,10 +260,10 @@ def init_corr():
     return [index_val, industry_val]
 
 
-industry_corr(
-    df_1 = wrangle.scores('nasdaq', 'esg'),
-    df_2 = wrangle.returns('nasdaq', 'roe')
-)
+# industry_corr(
+#     df_1 = wrangle.scores('nasdaq', 'esg'),
+#     df_2 = wrangle.returns('nasdaq', 'roe')
+# )
 
 # Data Visualization
 # line graph for relationship between average of Q ratio and ESG scores
