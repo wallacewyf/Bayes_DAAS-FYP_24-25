@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import log
 
 # statistical packages
 from sklearn.linear_model import LinearRegression
@@ -36,24 +35,41 @@ log = config.logging
 # If normally distributed, linearity is proven and therefore linear or multivariate regression 
 # could then be fitted.
 
-# Check if normally distributed.
+# Test for Normality
 
-roe_df = wrangle.returns('msci', 'roe')
-roe_df.reset_index(inplace=True)
+def test_norm(measure, index):
+    log.info(f"Running Sharpio-Wilk Test for Normality on {index.upper()}'s {measure.upper()}")
 
-roe_df = roe_df.melt(
-    id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
-    var_name='Year',
-    value_name='ROE'
-)
+    if measure in ['roe', 'roa', 'mktcap', 'q']: df = wrangle.returns(index, measure)
 
-roe_df.dropna(inplace=True)
+    df.reset_index(inplace=True)
 
-roe_data = roe_df['ROE']
+    df = df.melt(
+        id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
+        var_name='Year',
+        value_name=measure.upper()
+    )
 
-print (roe_df.query('ROE < -100'))
+    df.dropna(inplace=True)
 
-print (roe_data.describe())
+    shapiro_stat, shapiro_p = stats.shapiro(df[measure.upper()])
+
+    print("Shapiro-Wilk Test statistic:", shapiro_stat)
+    print("Shapiro-Wilk Test p-value:", shapiro_p)
+    print ()
+
+    if shapiro_p < 0.05:
+        log.info(f"{measure.upper()} is not normally distributed")
+        return False
+    
+    else: 
+        log.info(f"{measure.upper()} is normally distributed")
+        return True
+    
+test_norm('roe', 'msci')
+test_norm('roa', 'msci')
+test_norm('q', 'msci')
+    
 
 # 1. Histogram
 # plt.figure(figsize=(10, 4))
@@ -68,6 +84,8 @@ print (roe_data.describe())
 # sm.qqplot(roe_data, line='45', fit=True)
 # plt.title('Q-Q Plot of ROE')
 # plt.show()
+
+
 
 # --------------------------------------------------------------------
 # Correlation Analysis

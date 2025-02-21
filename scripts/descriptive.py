@@ -14,8 +14,8 @@ log = config.logging
 
 # ------------------------------------------------------------------------
 # Descriptive Statistics
-# provide descriptive based on cleaned data
-# option to stack together for macro or '' for detailed
+# NA's are automatically ignored from pd.describe() function
+# (cited from: Pandas Documentation)
 
 def desc(df, macro):
     if macro: 
