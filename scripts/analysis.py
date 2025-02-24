@@ -11,6 +11,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
 from sklearn.preprocessing import PolynomialFeatures
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
 from scipy import stats
 
 import statsmodels.api as sm
@@ -45,6 +47,10 @@ log = config.logging
 # We could also try applying log transformation on the data to ensure strictly positive values 
 # and then reapply the inverse of the transformation after regression model to 
 # interpret the predictor
+
+# 20250224 TODO: 
+# ESG Change Analysis (see ChatGPT convo history)
+# GLM for linear regressions
 
 # Converting DataFrames from wide format to long format (series) for regression analysis
 def melt_df(df, measure):
@@ -104,18 +110,41 @@ def linear_reg(index, measure):
 
     measure_df = melt_df(wrangle.returns(index, measure), measure)
     esg_df = melt_df(wrangle.scores(index, 'esg'), 'esg')
-    e_df   = melt_df(wrangle.scores(index, 'e'), 'e')
-    s_df   = melt_df(wrangle.scores(index, 's'), 's')
-    g_df   = melt_df(wrangle.scores(index, 'g'), 'g')
+    e_df = melt_df(wrangle.scores(index, 'e'), 'e')
+    s_df = melt_df(wrangle.scores(index, 's'), 's')
+    g_df = melt_df(wrangle.scores(index, 'g'), 'g')
+    
+    # TEST FOR EXPLANATORY VARIABLES
+    # if we proceed with this, remember to figure out a way to only 
+    # select explanatory variables that are not being predicted
 
+    mktcap_df = melt_df(wrangle.returns(index, 'mktcap'), 'mktcap')
+    ta_df = melt_df(wrangle.returns(index, 'ta'), 'ta')
+    q_df = melt_df(wrangle.returns(index, 'q'), 'q')
+    
     log.info (f'Running inner join on dataframes...')
     data = pd.merge(measure_df, esg_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
     data = pd.merge(data, e_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
     data = pd.merge(data, s_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
     data = pd.merge(data, g_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    data = pd.merge(data, mktcap_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    data = pd.merge(data, ta_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    data = pd.merge(data, q_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
 
-    X1 = data[['ESG']]
-    X2 = data[['E', 'S', 'G']]
+    # WARNING: if log-transformation is not applied
+    # AND MKTCAP and TA is not removed from the model 
+    # P-value does make sense?
+
+
+    # applying log-transformation to avoid skewness
+    data['MKTCAP'] = np.log1p(data['MKTCAP'])
+    data['TA'] = np.log1p(data['TA'])
+
+    # if log-transformation is applied, multicolinearity detected for MKTCAP and TA
+    # as such, we should remove MKTCAP and TA from model 
+
+    X1 = data[['ESG', 'Q']]
+    X2 = data[['E', 'S', 'G', 'Q']]
     Y = data[measure.upper()]
 
     if 0 in X1.values: log.warning(f'{index.upper()} ESG scores contain zero values.')
@@ -127,6 +156,16 @@ def linear_reg(index, measure):
     log.info (f'Running ESG / {measure.upper()} regression model for {index.upper()}...')
     log.info (f'Running statsmodels regression...')
     X1 = sm.add_constant(X1)
+
+    log.info (f'Testing for multicolinearity...')
+    print ('Variance Inflation Factor Computation')
+    vif_data = pd.DataFrame()
+    vif_data["Variable"] = X1.columns
+    vif_data["VIF"] = [variance_inflation_factor(X1.values, i) for i in range(X1.shape[1])]
+
+    print (vif_data)
+    print ()
+
     model = sm.OLS(Y, X1).fit()
     print (f'ESG / {measure.upper()} Linear Regression Model for {index.upper()} \n')
     print (model.summary())
@@ -162,6 +201,16 @@ def linear_reg(index, measure):
     log.info (f'Running statsmodels regression...')
 
     X2 = sm.add_constant(X2)
+
+    log.info (f'Testing for multicolinearity...')
+    print ('Variance Inflation Factor Computation')
+    vif_data = pd.DataFrame()
+    vif_data["Variable"] = X2.columns
+    vif_data["VIF"] = [variance_inflation_factor(X2.values, i) for i in range(X2.shape[1])]
+
+    print (vif_data)
+    print ()
+
     model = sm.OLS(Y, X2).fit()
     print (f'E, S, G / {measure.upper()} Linear Regression Model for {index.upper()} \n')
     print (model.summary())
@@ -190,7 +239,7 @@ def linear_reg(index, measure):
     print ()
 
 # Linear Regression on MSCI's measures
-# linear_reg(index = 'msci', measure = 'roe')
+linear_reg(index = 'msci', measure = 'roe')
 # linear_reg(index = 'msci', measure = 'roa')
 # linear_reg(index = 'msci', measure = 'mktcap')
 # linear_reg(index = 'msci', measure = 'q')
@@ -236,7 +285,7 @@ def lagged_reg(index, measure, max_lag):
         log.info (f'Running statsmodels regression...')
         X1 = sm.add_constant(X1)
         model = sm.OLS(Y, X1).fit()
-        print (f'ESG / {measure.upper()} Linear Regression Model for {index.upper()} \n')
+        print (f'ESG / {measure.upper()} Linear Regression Model for {index.upper()} with {lag}-year lag \n')
         print (model.summary())
         print ()
 
@@ -253,7 +302,6 @@ def lagged_reg(index, measure, max_lag):
 
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
-        print (f'ESG/{measure.upper()} Linear Regression Model w/ {lag}-Year Lag')
 
         baseline_pred = np.full_like(y_test, y_train.mean())
         baseline_mse = mean_squared_error(y_test, baseline_pred)
@@ -265,14 +313,14 @@ def lagged_reg(index, measure, max_lag):
 
         # --------------------------------------------------------------------------------------------
         # model for E, S, G and Measure
-        
+
         log.info ('')
         log.info (f'Running E, S, G / {measure.upper()} regression model for {index.upper()}...')
         log.info (f'Running statsmodels regression...')
 
         X2 = sm.add_constant(X2)
         model = sm.OLS(Y, X2).fit()
-        print (f'E, S, G / {measure.upper()} Linear Regression Model for {index.upper()} \n')
+        print (f'E, S, G / {measure.upper()} Linear Regression Model for {index.upper()} with {lag}-year lag \n')
         print (model.summary())
         print ()
 
@@ -292,7 +340,6 @@ def lagged_reg(index, measure, max_lag):
         baseline_pred = np.full_like(y_test, y_train.mean())
         baseline_mse = mean_squared_error(y_test, baseline_pred)
 
-        print (f'E,S,G/{measure.upper()} Linear Regression Model w/ {lag}-Year Lag')
         print (f'Baseline MSE (mean): {baseline_mse}')
         print ("Mean Squared Error:", mse)
         print ("R^2 Score:", r2)
@@ -300,7 +347,7 @@ def lagged_reg(index, measure, max_lag):
 
         residuals = y_test - y_pred
 
-lagged_reg(index = 'msci', measure = 'roe', max_lag = 5)
+# lagged_reg(index = 'msci', measure = 'roe', max_lag = 5)
 
 end = datetime.datetime.now()
 
