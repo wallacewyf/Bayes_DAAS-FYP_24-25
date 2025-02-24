@@ -1,5 +1,5 @@
 # packages
-import sys, os, timeit
+import sys, os, datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,6 +7,7 @@ import seaborn as sns
 
 # statistical packages
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
 from sklearn.preprocessing import PolynomialFeatures
@@ -20,6 +21,8 @@ sys.path.append(data_path)
 
 # config path
 import config, wrangle
+
+start = datetime.datetime.now()
 
 # initialize logger module 
 log = config.logging
@@ -35,27 +38,45 @@ log = config.logging
 # If normally distributed, linearity is proven and therefore linear or multivariate regression 
 # could then be fitted.
 
-# Test for Normality
+# Second discussion with Pietro, try various tests by excluding outliers and see if the model fits
+# Or, slice post 2008 data and since we've verified normally distributed
+# Run linear regression on the data
 
-def test_norm(measure, index):
-    log.info(f"Running Sharpio-Wilk Test for Normality on {index.upper()}'s {measure.upper()}")
+# We could also try applying log transformation on the data to ensure strictly positive values 
+# and then reapply the inverse of the transformation after regression model to 
+# interpret the predictor
 
-    if measure in ['roe', 'roa', 'mktcap', 'q']: df = wrangle.returns(index, measure)
-
-    df.reset_index(inplace=True)
-
-    df = df.melt(
-        id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
+# Converting DataFrames from wide format to long format (series) for regression analysis
+def melt_df(df, measure):
+    df = df.reset_index()
+    
+    df.drop(columns=['GICS Industry Name', 'Exchange Name'], inplace=True)
+    df.dropna(inplace=True)
+    
+    df= df.melt(
+        id_vars=['Identifier', 'Company Name'],
         var_name='Year',
         value_name=measure.upper()
     )
 
-    df.dropna(inplace=True)
+    return df 
 
+# Test for Normality
+def test_norm(measure, index):
+    log.info(f"Running Shapiro-Wilk Test for Normality on {index.upper()}'s {measure.upper()}")
+
+    if measure in ['roe', 'roa', 'mktcap', 'q']: df = wrangle.returns(index, measure)
+
+    df = melt_df(df, measure)
+
+    df.dropna(inplace=True)
+    df = df[df['Year'] > 2014]         # omitting 2008 data due to financial crisis
+
+    # taking subset of N = 4500 from data due to large sample size
     shapiro_stat, shapiro_p = stats.shapiro(df[measure.upper()])
 
-    print("Shapiro-Wilk Test statistic:", shapiro_stat)
-    print("Shapiro-Wilk Test p-value:", shapiro_p)
+    print("Shapiro-Wilk Test statistic:", round(shapiro_stat, 15))
+    print("Shapiro-Wilk Test p-value:", round(shapiro_p, 15))
     print ()
 
     if shapiro_p < 0.05:
@@ -67,276 +88,224 @@ def test_norm(measure, index):
         log.info(f"{measure.upper()} is normally distributed")
         log.info('')
         return True
-    
-# test_norm('roe', 'msci')
+
 # test_norm('roa', 'msci')
+# test_norm('roe', 'msci')
 # test_norm('q', 'msci')
+# test_norm('mktcap', 'msci')
 
-# existing outlier for home depot in 2022
+# --------------------------------------------------------------------------------------------------------------------
 
-df = wrangle.returns('msci', 'roe')
-df.reset_index(inplace=True)
-df.dropna(inplace=True)
+# Linear Regression between Measure and ESG + E/S/G
+# Included both scikit-learn and statsmodels for more detailed analysis/interpretation
+def linear_reg(index, measure):
+    log.info (f'{measure.upper()} for {index.upper()} recognized.')
+    log.info (f'Melting dataframes into long format...')
 
-df = df.melt(
-    id_vars=['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name'],
-    var_name='Year',
-    value_name='ROE'
-)
+    measure_df = melt_df(wrangle.returns(index, measure), measure)
+    esg_df = melt_df(wrangle.scores(index, 'esg'), 'esg')
+    e_df   = melt_df(wrangle.scores(index, 'e'), 'e')
+    s_df   = melt_df(wrangle.scores(index, 's'), 's')
+    g_df   = melt_df(wrangle.scores(index, 'g'), 'g')
 
-print (df)
+    log.info (f'Running inner join on dataframes...')
+    data = pd.merge(measure_df, esg_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    data = pd.merge(data, e_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    data = pd.merge(data, s_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    data = pd.merge(data, g_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
 
-# omitting 2008 data due to financial crisis
+    X1 = data[['ESG']]
+    X2 = data[['E', 'S', 'G']]
+    Y = data[measure.upper()]
 
-roe_data = df[df['Year'] != 2008]
-roe_data = roe_data['ROE']
+    if 0 in X1.values: log.warning(f'{index.upper()} ESG scores contain zero values.')
+    if 0 in X2.values: log.warning(f'{index.upper()} E/S/G scores contain zero values.')
+    if 0 in Y.values: log.warning(f'{index.upper()} {measure.upper()} contain zero values.')
 
-print (roe_data)
+    # model for ESG and Measure
+    
+    log.info (f'Running ESG / {measure.upper()} regression model for {index.upper()}...')
+    log.info (f'Running statsmodels regression...')
+    X1 = sm.add_constant(X1)
+    model = sm.OLS(Y, X1).fit()
+    print (f'ESG / {measure.upper()} Linear Regression Model for {index.upper()} \n')
+    print (model.summary())
+    print ()
 
-# # 1. Histogram
-plt.figure(figsize=(10, 4))
-sns.histplot(roe_data, kde=True, bins=20)
-plt.title('Histogram of ROE')
-plt.xlabel('ROE')
-plt.ylabel('Frequency')
-plt.show()
+    # scikit-learn
+    log.info(f'Running scikit-learn regression...')
+    X_train, X_test, y_train, y_test = train_test_split(
+        X1, 
+        Y, 
+        test_size=0.2, 
+        random_state=0)
 
-# # 2. Boxplot to identify outliers
-# plt.figure(figsize=(10, 5))
-# sns.boxplot(x=roe_data)
-# plt.title("Boxplot of ROE")
-# plt.show()
+    model = LinearRegression()
+    model.fit(X_train, y_train)
 
-# --------------------------------------------------------------------
-# Correlation Analysis
+    y_pred = model.predict(X_test)
 
-# TODO: return all correlation in a suitable dataframe for export to .csv for further analysis
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
 
-# Correlation between Index Components and Financial Returns
-def index_corr(df_1, df_2):
-    index_corr_arr = []
-    log.info ('Running correlation analysis between index components and financial returns...')
-    log.info ('--------------------------------------------------------------------')
+    baseline_pred = np.full_like(y_test, y_train.mean())
+    baseline_mse = mean_squared_error(y_test, baseline_pred)
 
-    while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
+    print (f'Baseline MSE (mean): {baseline_mse}')
+    print (f"Mean Squared Error: {mse}")
+    print (f"R^2 Score: {r2} \n")
 
-        # TODO: dropna(axis = 1, inplace = True)
-        df_1.dropna(inplace=True)
-        df_2.dropna(inplace=True)
+    # --------------------------------------------------------------------------------------------
+    # model for E, S, G and Measure
+    log.info ('')
+    log.info (f'Running E, S, G / {measure.upper()} regression model for {index.upper()}...')
+    log.info (f'Running statsmodels regression...')
 
-        scope = df_1.index.intersection(df_2.index)
+    X2 = sm.add_constant(X2)
+    model = sm.OLS(Y, X2).fit()
+    print (f'E, S, G / {measure.upper()} Linear Regression Model for {index.upper()} \n')
+    print (model.summary())
+    print ()
 
-        df_1 = df_1.reindex(scope)
-        df_2 = df_2.reindex(scope)
+    log.info(f'Running scikit-learn regression...')
+    X_train, X_test, y_train, y_test = train_test_split(
+        X2, 
+        Y, 
+        test_size=0.2, 
+        random_state=0)
 
-        while len(df_1.columns) == len(df_2.columns):
-            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
-            total_year_avg = 0
+    model = LinearRegression()
+    model.fit(X_train, y_train)
 
-            for x in range (len(df_1.columns)):
-                avg_sum = 0 
-                avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
+    y_pred = model.predict(X_test)
 
-                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    baseline_pred = np.full_like(y_test, y_train.mean())
+    baseline_mse = mean_squared_error(y_test, baseline_pred)
 
-                total_year_avg += avg_sum
-            
-            index_corr_arr.append(total_year_avg/len(df_1.columns))
+    print (f'Baseline MSE (mean): {baseline_mse}')
+    print (f"Mean Squared Error: {mse}")
+    print (f"R^2 Score: {r2} \n")
+    print ()
 
-            break
+# Linear Regression on MSCI's measures
+# linear_reg(index = 'msci', measure = 'roe')
+# linear_reg(index = 'msci', measure = 'roa')
+# linear_reg(index = 'msci', measure = 'mktcap')
+# linear_reg(index = 'msci', measure = 'q')
+
+# Lagged Regression
+def lagged_reg(index, measure, max_lag):
+    for lag in range (1, max_lag+1):
+        log.info (f'{measure.upper()} for {index.upper()} with {max_lag} lag period recognized.')
+        
+        log.info (f'Melting dataframes into long format...')
+        measure_df = melt_df(wrangle.returns(index, measure), measure)
+        esg_df = melt_df(wrangle.scores(index, 'esg'), 'esg')
+        e_df   = melt_df(wrangle.scores(index, 'e'), 'e')
+        s_df   = melt_df(wrangle.scores(index, 's'), 's')
+        g_df   = melt_df(wrangle.scores(index, 'g'), 'g')
+
+        log.info (f'Running inner join on dataframes...')
+        data = pd.merge(measure_df, esg_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+        data = pd.merge(data, e_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+        data = pd.merge(data, s_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+        data = pd.merge(data, g_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+
+        data.sort_values(by=['Identifier', 'Year'], inplace=True)
+
+        # shifted values by x year downwards (i.e. 2004 values reassigned to 2005)
+        log.info (f'Running regression with {lag}-year lag...')
+        for cat in [measure.upper(), 'ESG', 'E', 'S', 'G']:
+            data[cat] = data.groupby('Identifier')[cat].shift(lag)
+
+        data.dropna(inplace=True)
+
+        X1 = data[['ESG']]
+        X2 = data[['E', 'S', 'G']]
+        Y = data[measure.upper()]
+
+        if 0 in X1.values: log.warning(f'{index.upper()} ESG scores contain zero values.')
+        if 0 in X2.values: log.warning(f'{index.upper()} E/S/G scores contain zero values.')
+        if 0 in Y.values: log.warning(f'{index.upper()} {measure.upper()} contain zero values.')
+
+        # model for ESG and Measure
+        
+        log.info (f'Running ESG / {measure.upper()} regression model for {index.upper()}...')
+        log.info (f'Running statsmodels regression...')
+        X1 = sm.add_constant(X1)
+        model = sm.OLS(Y, X1).fit()
+        print (f'ESG / {measure.upper()} Linear Regression Model for {index.upper()} \n')
+        print (model.summary())
+        print ()
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X1, 
+            Y, 
+            test_size=0.2, 
+            random_state=0)
+
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+        print (f'ESG/{measure.upper()} Linear Regression Model w/ {lag}-Year Lag')
+
+        baseline_pred = np.full_like(y_test, y_train.mean())
+        baseline_mse = mean_squared_error(y_test, baseline_pred)
+
+        print (f'Baseline MSE (mean): {baseline_mse}')
+        print ("Mean Squared Error:", mse)
+        print ("R^2 Score:", r2)
+        print ('\n')
+
+        # --------------------------------------------------------------------------------------------
+        # model for E, S, G and Measure
         
         log.info ('')
-        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        log.info ('--------------------------------------------------------------------')
+        log.info (f'Running E, S, G / {measure.upper()} regression model for {index.upper()}...')
+        log.info (f'Running statsmodels regression...')
 
-        break
+        X2 = sm.add_constant(X2)
+        model = sm.OLS(Y, X2).fit()
+        print (f'E, S, G / {measure.upper()} Linear Regression Model for {index.upper()} \n')
+        print (model.summary())
+        print ()
 
-    else:
-        log.info ('Running correlation analysis...')
-        log.info ('--------------------------------------------------------------------')
+        X_train, X_test, y_train, y_test = train_test_split(
+            X2, 
+            Y, 
+            test_size=0.2, 
+            random_state=0)
 
-        scope = df_1.index.intersection(df_2.index)
+        model = LinearRegression()
+        model.fit(X_train, y_train)
 
-        df_1 = df_1.reindex(scope)
-        df_2 = df_2.reindex(scope)
+        y_pred = model.predict(X_test)
 
-        while len(df_1.columns) == len(df_2.columns):
-            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+        baseline_pred = np.full_like(y_test, y_train.mean())
+        baseline_mse = mean_squared_error(y_test, baseline_pred)
 
-            total_year_avg = 0
+        print (f'E,S,G/{measure.upper()} Linear Regression Model w/ {lag}-Year Lag')
+        print (f'Baseline MSE (mean): {baseline_mse}')
+        print ("Mean Squared Error:", mse)
+        print ("R^2 Score:", r2)
+        print ('\n')
 
-            for x in range (len(df_1.columns)):
-                avg_sum = 0 
-                avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
+        residuals = y_test - y_pred
 
-                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
+lagged_reg(index = 'msci', measure = 'roe', max_lag = 5)
 
-                total_year_avg += avg_sum
+end = datetime.datetime.now()
 
-            index_corr_arr.append(total_year_avg/len(df_1.columns))
+print (f'\n\nTime taken: {end - start}')
 
-            break
-        
-        log.info ('')
-        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        log.info ('--------------------------------------------------------------------')
-
-    return index_corr_arr
-
-# Correlation between GICS Industry Name and Financial Returns
-def industry_corr(df_1, df_2):
-    industry_corr_arr = []
-
-    log.info ('Running correlation analysis between industries and financial returns...')
-    log.info ('--------------------------------------------------------------------')
-
-    while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
-        df_1.dropna(inplace=True)
-        df_2.dropna(inplace=True)
-
-        scope = df_1.index.intersection(df_2.index)
-
-        df_1 = df_1.reindex(scope)
-        df_2 = df_2.reindex(scope)
-
-        while len(df_1.columns) == len(df_2.columns):
-            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
-
-            df_1 = df_1.groupby(['GICS Industry Name']).mean()      # ESG Scores
-            df_2 = df_2.groupby(['GICS Industry Name']).mean()      # Financial Ratio
-
-            total_year_avg = 0
-
-            for x in range (len(df_1.columns)):
-                avg_sum = 0 
-                avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
-
-                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
-
-                total_year_avg += avg_sum
-
-            industry_corr_arr.append(total_year_avg/len(df_1.columns))
-
-            break
-        
-        log.info ('')
-        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        log.info ('--------------------------------------------------------------------')
-
-        break
-
-    else:
-        scope = df_1.index.intersection(df_2.index)
-
-        df_1 = df_1.reindex(scope)
-        df_2 = df_2.reindex(scope)
-
-        while len(df_1.columns) == len(df_2.columns):
-            log.info (f"{len(df_1.columns)} columns successfully aligned and extracted")
-
-            total_year_avg = 0
-
-            df_1 = df_1.groupby(['GICS Industry Name']).mean()      # ESG Scores
-            df_2 = df_2.groupby(['GICS Industry Name']).mean()      # Financial Ratio
-
-            for x in range (len(df_1.columns)):
-                avg_sum = 0 
-                avg_sum += np.corrcoef(df_1.iloc[:,x], df_2.iloc[:,x])[0][1]
-
-                log.info (f"Correlation for {df_1.columns[x]} = {avg_sum}")
-
-                total_year_avg += avg_sum
-            
-            industry_corr_arr.append(total_year_avg/len(df_1.columns))
-
-            break
-
-        log.info ('')
-        log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        log.info ('--------------------------------------------------------------------')
-
-    print (df_1, df_2)
-
-    return industry_corr_arr
-
-index = ['nasdaq', 'snp', 'stoxx', 'ftse', 'msci']
-measures = ['roe', 'roa', 'mktcap', 'q']
-esg = ['esg', 'e', 's', 'g']
-
-def init_corr():
-    print ('Initializing correlation analysis...')
-
-    for each_index in index:
-        for each_measure in measures:
-            for each_esg in esg:
-                log.info (f'Correlation by index initializing...')
-
-                index_val = index_corr(df_1 = wrangle.scores(each_index, each_esg), 
-                                    df_2 = wrangle.returns(each_index, each_measure))
-                
-                log.info (f'Correlation by index completed.')
-                log.info (f'Correlation by industry initializing...')
-
-                industry_val = industry_corr(df_1= wrangle.scores(each_index, each_esg),
-                                        df_2 = wrangle.returns(each_index, each_measure))
-                
-                log.info (f"Correlation by industry completed.")
-                log.info (f"Correlation analysis between {each_index.upper()}'s {each_esg.upper()} scores and {each_measure.upper()} completed.")
-
-    print ('Correlation Analysis completed.')
-    print ('Check log file for results.')
-
-    return [index_val, industry_val]
-
-
-# industry_corr(
-#     df_1 = wrangle.scores('nasdaq', 'esg'),
-#     df_2 = wrangle.returns('nasdaq', 'roe')
-# )
-
-# Data Visualization
-# line graph for relationship between average of Q ratio and ESG scores
-# esg_avg = esg_scores.mean(axis=0)
-# q_avg = q_ratio.mean(axis=0)
-
-# years = np.arange(2023, 2003, -1)
-# figure, ax1 = plt.subplots(figsize=(10, 6))
-
-# # primary axis
-# ax1.plot(years, esg_avg, label='Average ESG Scores', color='blue')
-# ax1.set_xlabel('Year')
-# ax1.set_ylabel('Average ESG Scores', color='blue')
-# ax1.tick_params(axis='y', labelcolor='blue')
-# ax1.set_xticks(np.arange(2024, 2002, -2))
-
-# # secondary axis
-# ax2 = ax1.twinx()
-# ax2.plot(years, q_avg, label="Average Tobin's Q", color='green')
-# ax2.set_ylabel("Average Tobin's Q", color='green')
-# ax2.tick_params(axis='y', labelcolor='green')
-
-# # title, legend, label
-# plt.title('Yearly Trends of ESG Scores and Tobin\'s Q')
-# lines_1, labels_1 = ax1.get_legend_handles_labels()
-# lines_2, labels_2 = ax2.get_legend_handles_labels()
-# plt.legend(lines_1 + lines_2, labels_1 + labels_2, loc='lower right')
-
-# plt.show()
-
-# print (q_ratio.columns)
-
-# q_ratio_x = q_ratio.columns
-# q_ratio_y = q_ratio.mean(axis=0)
-
-# plt.plot(q_ratio.columns, q_ratio.mean(axis=0), label='Avg Q Ratio')
-# plt.title('Average Q Ratio over time (2023 to 2004)')
-# plt.xlabel('Year')
-# plt.ylabel('Avg Q')
-# plt.grid(True)
-
-# plt.show()
-
-# print (q_ratio_y)
 
 # TODO: Correlation, Relationship, Regression, Cluster Analysis 
 #       (cross-compare with methods on cited literatures on types of analysis used)

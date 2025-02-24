@@ -7,19 +7,19 @@ import numpy as np
 import os
 import logging
 
-try:
-    logging.basicConfig(
-                        filename=config.log + "/log.txt",
-                        format='[%(asctime)s] [%(levelname)s]: %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        filemode='a',
-                        level=logging.DEBUG
-                        )
-
-except FileNotFoundError:
-    os.mkdir(config.log)
+# initialize logger module 
+log = config.logging
 
 col_names = list(range(2023, 2003, -1))
+
+industry_list = [
+    'IT Services',
+    'Software',
+    'Communications Equipment',
+    'Technology Hardware, Storage & Peripherals',
+    'Electronic Equipment, Instruments & Components',
+    'Semiconductors & Semiconductor Equipment'
+]
 
 # Notes: 
 
@@ -66,6 +66,9 @@ def returns(index, measure):
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
         roe_df = roe_df.iloc[:, ::-1]
+
+        # extract only Tech components
+        roe_df = roe_df.loc[roe_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
         # roe_df.dropna(inplace=True)
 
         return roe_df
@@ -77,6 +80,9 @@ def returns(index, measure):
         roa_df = returns_df.iloc[:, 20:40]
         roa_df = roa_df.set_axis(col_names, axis=1)
         roa_df = roa_df.iloc[:, ::-1]
+
+        # extract only Tech components
+        roa_df = roa_df.loc[roa_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
         # roa_df.dropna(inplace=True)
 
         return roa_df
@@ -87,6 +93,9 @@ def returns(index, measure):
         yoy_return = yoy_return.set_axis(col_names, axis=1)
         yoy_return = yoy_return.iloc[:, ::-1]
         # yoy_return.dropna(inplace=True)
+
+        # extract only Tech components
+        yoy_return = yoy_return.loc[yoy_return.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         return yoy_return
     
@@ -99,6 +108,9 @@ def returns(index, measure):
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         mkt_cap = mkt_cap.iloc[:, ::-1]
         # mkt_cap.dropna(inplace=True)
+
+        # extract only Tech components
+        mkt_cap = mkt_cap.loc[mkt_cap.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         return mkt_cap
 
@@ -132,6 +144,9 @@ def returns(index, measure):
         q_ratio = q_mktcap / q_ta
         q_ratio = q_ratio.iloc[:, ::-1]
 
+        # extract only Tech components
+        q_ratio = q_ratio.loc[q_ratio.index.get_level_values('GICS Industry Name').isin(industry_list)]
+
         logging.info ('Q Ratio calculation completed.')
 
         return q_ratio
@@ -158,9 +173,11 @@ def scores(index, measure):
     column_names = col_names
 
     if measure == 'esg':
+        log.info(f'Extracting ESG Scores...')
+
         esg_scores = source_df.iloc[:, :20]
         esg_scores = esg_scores.set_axis(column_names, axis=1)
-        esg_scores.dropna(inplace=True)
+        # esg_scores.dropna(inplace=True)
         esg_scores.sort_values(by=['Company Name', 2023],
                             axis=0,
                             ascending=[True, False],
@@ -168,9 +185,13 @@ def scores(index, measure):
         
         esg_scores = esg_scores.iloc[:, ::-1]
         
+        esg_scores = esg_scores.loc[esg_scores.index.get_level_values('GICS Industry Name').isin(industry_list)]
+        
         return esg_scores
     
     elif measure == 'e':
+        log.info('Extracting E scores...')
+
         e_pillars = source_df.iloc[:, 20:40]
         e_pillars = e_pillars.set_axis(column_names, axis=1)
         # e_pillars.dropna(inplace=True)
@@ -180,10 +201,13 @@ def scores(index, measure):
                             inplace=True)
         
         e_pillars = e_pillars.iloc[:, ::-1]
+        
+        e_pillars = e_pillars.loc[e_pillars.index.get_level_values('GICS Industry Name').isin(industry_list) ]
 
         return e_pillars
 
     elif measure == 's':
+        log.info('Extracting S scores...')
         s_pillars = source_df.iloc[:, 40:60] 
         s_pillars = s_pillars.set_axis(column_names, axis=1)
         # s_pillars.dropna(inplace=True)
@@ -193,10 +217,13 @@ def scores(index, measure):
                             inplace=True)        
         
         s_pillars = s_pillars.iloc[:, ::-1]
+        
+        s_pillars = s_pillars.loc[s_pillars.index.get_level_values('GICS Industry Name').isin(industry_list)]
                     
         return s_pillars
     
     elif measure == 'g':
+        log.info('Extracting G scores...')
         g_pillars = source_df.iloc[:, 60:80]
         g_pillars = g_pillars.set_axis(column_names, axis=1)
         # g_pillars.dropna(inplace=True)
@@ -206,6 +233,7 @@ def scores(index, measure):
                             inplace=True)
     
         g_pillars = g_pillars.iloc[:, ::-1]
+        g_pillars = g_pillars.loc[g_pillars.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         return g_pillars
     
@@ -240,6 +268,8 @@ def export(df, filename, type):
     while True: 
         try:
             if type == 'csv':
+                log.info(f'Exporting {filename} to CSV...')
+
                 df.to_csv(config.results_path + filename + '.csv',
                           header=True, 
                           index=True)

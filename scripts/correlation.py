@@ -24,7 +24,6 @@ def index_corr(df_1, df_2):
     log.info ('--------------------------------------------------------------------')
 
     while sum(df_1.isnull().sum()) != sum(df_2.isnull().sum()):
-
         # TODO: dropna(axis = 1, inplace = True)
         df_1.dropna(inplace=True)
         df_2.dropna(inplace=True)
@@ -57,9 +56,6 @@ def index_corr(df_1, df_2):
         break
 
     else:
-        log.info ('Running correlation analysis...')
-        log.info ('--------------------------------------------------------------------')
-
         scope = df_1.index.intersection(df_2.index)
 
         df_1 = df_1.reindex(scope)
@@ -158,39 +154,63 @@ def industry_corr(df_1, df_2):
 
         log.info ('')
         log.info (f"Total average correlation = {total_year_avg/len(df_1.columns)}")
-        log.info ('--------------------------------------------------------------------')
-
-    print (df_1, df_2)
+        log.info ('')
 
     return industry_corr_arr
+
+index_corr(df_1=
+           wrangle.scores('msci', 'esg'),
+           df_2=
+           wrangle.returns('msci', 'roe'))
 
 index = ['nasdaq', 'snp', 'stoxx', 'ftse', 'msci']
 measures = ['roe', 'roa', 'mktcap', 'q']
 esg = ['esg', 'e', 's', 'g']
 
-def init_corr():
+def init_corr(idx):
     print ('Initializing correlation analysis...')
 
-    for each_index in index:
+    if idx in index:
         for each_measure in measures:
             for each_esg in esg:
                 log.info (f'Correlation by index initializing...')
 
-                index_val = index_corr(df_1 = wrangle.scores(each_index, each_esg), 
-                                    df_2 = wrangle.returns(each_index, each_measure))
+                index_val = index_corr(df_1 = wrangle.scores(idx, each_esg), 
+                                    df_2 = wrangle.returns(idx, each_measure))
                 
                 log.info (f'Correlation by index completed.')
                 log.info (f'Correlation by industry initializing...')
 
-                industry_val = industry_corr(df_1= wrangle.scores(each_index, each_esg),
-                                        df_2 = wrangle.returns(each_index, each_measure))
+                industry_val = industry_corr(df_1= wrangle.scores(idx, each_esg),
+                                        df_2 = wrangle.returns(idx, each_measure))
                 
                 log.info (f"Correlation by industry completed.")
-                log.info (f"Correlation analysis between {each_index.upper()}'s {each_esg.upper()} scores and {each_measure.upper()} completed.")
+                log.info (f"Correlation analysis between {idx.upper()}'s {each_esg.upper()} scores and {each_measure.upper()} completed.")
 
-    print ('Correlation Analysis completed.')
-    print ('Check log file for results.')
+        print ('Correlation Analysis completed.')
+        print ('Check log file for results.')
 
-    return [index_val, industry_val]
+    elif idx == 'all':
+        for each_index in index:
+            for each_measure in measures:
+                for each_esg in esg:
+                    log.info (f'Correlation by index initializing...')
 
-init_corr()
+                    index_val = index_corr(df_1 = wrangle.scores(each_index, each_esg), 
+                                        df_2 = wrangle.returns(each_index, each_measure))
+                    
+                    log.info (f'Correlation by index completed.')
+                    log.info ('')
+                    log.info (f'Correlation by industry initializing...')
+
+                    industry_val = industry_corr(df_1= wrangle.scores(each_index, each_esg),
+                                            df_2 = wrangle.returns(each_index, each_measure))
+                    
+                    log.info (f"Correlation by industry completed.")
+                    log.info ('')
+                    log.info (f"Correlation analysis between {each_index.upper()}'s {each_esg.upper()} scores and {each_measure.upper()} completed.")
+
+        print ('Correlation Analysis completed.')
+        print ('Check log file for results.')
+
+        return [index_val, industry_val]
