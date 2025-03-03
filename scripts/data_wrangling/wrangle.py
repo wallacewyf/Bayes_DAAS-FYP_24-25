@@ -29,6 +29,8 @@ def returns(index, measure):
     # path = filepath from config
     # measure = measure of table requested
 
+    index, measure = index.lower(), measure.lower()
+
     if index == 'nasdaq': 
         logging.info('Retrieving NASDAQ data...')
         data = config.nasdaq_returns
@@ -153,7 +155,9 @@ def returns(index, measure):
     
 def scores(index, measure):
     # path = filepath from config
-    # measure = measure of table requested
+    # measure = measure of table requested 
+    
+    index, measure = index.lower(), measure.lower()
 
     if index == 'nasdaq': data = config.nasdaq_esg
     elif index == 'snp': data = config.snp_esg
