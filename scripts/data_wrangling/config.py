@@ -9,6 +9,8 @@ if sys.platform == 'win32':
     data_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/data/"
     script_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/scripts/"
     results_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/"
+    desc_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/desc/"
+    glm_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/glm/"
     log = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/logs/"
 
 # file path - mac
@@ -16,6 +18,8 @@ elif sys.platform == 'darwin':
     data_path = '/Users/wallace/Documents/code/python/fyp_24/data/'
     script_path = '/Users/wallace/Documents/code/python/fyp_24/scripts/'
     results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
+    desc_path = '/Users/wallace/Documents/code/python/fyp_24/results/desc/'
+    glm_path = '/Users/wallace/Documents/code/python/fyp_24/results/glm'
     log = '/Users/wallace/Documents/code/python/fyp_24/logs/'
 
 # esg files
@@ -33,32 +37,19 @@ msci_returns = data_path + 'Returns_MSCIWorld_20Y.xlsx'
 ftse_returns = data_path + 'Returns_FTSE350_20Y.xlsx'
 
 # logging basic config
-try:
-    file_prefix = datetime.today().strftime('%Y%m%d')
-    
-    if os.path.exists(log + f"/{file_prefix}_log.txt"):
-        logging.basicConfig(
-                    filename=log + f"/{file_prefix}_log.txt",
-                    format='[%(asctime)s] [%(levelname)s]: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S',
-                    filemode='w',
-                    level=logging.DEBUG
-                    )
-    
-    else:
-        logging.basicConfig(
-                            filename=log + f"/{file_prefix}_log.txt",
-                            format='[%(asctime)s] [%(levelname)s]: %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            filemode='a',
-                            level=logging.DEBUG
-                            )
+os.makedirs(log, exist_ok=True)
 
-except FileNotFoundError:
-    os.mkdir(log)
+filename = f"{datetime.today().strftime('%Y%m%d')}_log.txt"
+logging.basicConfig(
+            filename=log + filename,
+            format='[%(asctime)s] [%(levelname)s]: %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S',
+            filemode='a',
+            level=logging.DEBUG
+            )
 
 logging = logging.getLogger(__name__)
 logging.info('New session initialized.')
-logging.info(f"Log saved in directory with filename {file_prefix}_log.txt")
+logging.info(f"Log saved in directory with filename {filename}")
 logging.info('Logging module successfully initialized.')
 logging.info('')

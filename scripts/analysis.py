@@ -8,16 +8,13 @@ import seaborn as sns
 # statistical packages
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.multioutput import MultiOutputRegressor
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from statsmodels.graphics.gofplots import qqplot
 from statsmodels.stats.outliers_influence import variance_inflation_factor
-
+from statsmodels import api as sm 
+from statsmodels.formula import api as smf
 from scipy import stats
-
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -36,34 +33,10 @@ log = config.logging
 
 # --------------------------------------------------------------------
 # Regression Analysis 
-# notes: 
-# After discussion with Pietro, run a normal linear regression first by ensuring all returns 
-# are normally distributed. 
-# If normally distributed, linearity is proven and therefore linear or multivariate regression 
-# could then be fitted.
-
-# Second discussion with Pietro, try various tests by excluding outliers and see if the model fits
-# Or, slice post 2008 data and since we've verified normally distributed
-# Run linear regression on the data
-
-# We could also try applying log transformation on the data to ensure strictly positive values 
-# and then reapply the inverse of the transformation after regression model to 
-# interpret the predictor
-
-# 20250224 TODO: 
-# ESG Change Analysis (see ChatGPT convo history)
-# GLM for linear regressions
-
-# 20250225 TODO:
-# Maybe non-linearity exists between ESG and Returns
-# Non-linear model maybe?
-
-# 20250227 TODO:
-# PROCEED WITH GLM - TRY OTHER GLM MODELS LIKE INVERSE GAUSSIAN OR GAMMA
-# THESE TESTS HAS PROVEN THAT LINEAR MODELS DO NOT WORK
 
 # Converting DataFrames from wide format to long format (series) for regression analysis
 def melt_df(df, measure):
+    log.info (f"Melting {measure.upper()} dataframe into long format...")
     df = df.reset_index()
     
     df.drop(columns=['GICS Industry Name', 'Exchange Name'], inplace=True)
@@ -78,13 +51,12 @@ def melt_df(df, measure):
     return df 
 
 # Test for Normality
+# We've confirmed that the returns aren't normally distributed
 def test_norm(measure, index):
     log.info(f"Running Shapiro-Wilk Test for Normality on {index.upper()}'s {measure.upper()}")
 
-    df = melt_df(df, measure)
-
+    df = melt_df(wrangle.returns(index, measure), measure)
     df.dropna(inplace=True)
-    df = df[df['Year'] > 2008]         # omitting 2008 data due to financial crisis
 
     # taking subset of N = 4500 from data due to large sample size
     shapiro_stat, shapiro_p = stats.shapiro(df[measure.upper()])
@@ -421,13 +393,6 @@ def gamma_glm():
     data = pd.merge(data, ta_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
     data = pd.merge(data, q_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
 
-
-    # for cat in ['ROE', 'ESG', 'E', 'S', 'G']:
-    #     data[cat] = data.groupby('Identifier')[cat].shift(1)
-
-    # only shift ESG_lag and reinsert as a copy 
-    # to review past/present ESG scores effect on ROE 
-    data = data[data['Year'] > 2008]
     data['ESG'] = data['ESG'].shift(1)
     data.dropna(inplace=True)
 
@@ -460,89 +425,156 @@ def gamma_glm():
     
     # print (inv_gauss_glm.summary())
     
+# gamma_glm()
 
+def gaussian_glm(index, measure, scores):    
+    # transforming dataframes into long format
+    measure_df = melt_df(wrangle.returns(index, measure), measure)
+    esg_df = melt_df(wrangle.scores(index, 'esg'), 'esg')
+    e_df = melt_df(wrangle.scores(index, 'e'), 'e')
+    s_df = melt_df(wrangle.scores(index, 's'), 's')
+    g_df = melt_df(wrangle.scores(index, 'g'), 'g')
+    q_df = melt_df(wrangle.returns(index, 'q'), 'q')
 
-gamma_glm()
+    if not scores: 
+        scores = ['E','S','G']
 
-# constant e
+        data = pd.merge(left=measure_df, 
+                        right=e_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
 
-measure_df = melt_df(wrangle.returns('MSCI', 'roe'), 'roe')
-esg_df = melt_df(wrangle.scores('MSCI', 'esg'), 'esg')
-e_df = melt_df(wrangle.scores('MSCI', 'e'), 'e')
-s_df = melt_df(wrangle.scores('MSCI', 's'), 's')
-g_df = melt_df(wrangle.scores('MSCI', 'g'), 'g')
+        data = pd.merge(left=data, 
+                        right=s_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
 
-# TEST FOR EXPLANATORY VARIABLES
-# if we proceed with this, remember to figure out a way to only 
-# select explanatory variables that are not being predicted
+        data = pd.merge(left=data, 
+                        right=g_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
 
-mktcap_df = melt_df(wrangle.returns('MSCI', 'mktcap'), 'mktcap')
-ta_df = melt_df(wrangle.returns('MSCI', 'ta'), 'ta')
-q_df = melt_df(wrangle.returns('MSCI', 'q'), 'q')
+        data = pd.merge(left=data, 
+                        right=q_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
 
-data = pd.merge(measure_df, esg_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
-data = pd.merge(data, e_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
-data = pd.merge(data, s_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
-data = pd.merge(data, g_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
-data = pd.merge(data, mktcap_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
-data = pd.merge(data, ta_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
-data = pd.merge(data, q_df, on=['Identifier', 'Company Name', 'Year'], how='inner')
+    else: 
+        scores = 'ESG'
 
-# only shift ESG_lag and reinsert as a copy 
-# to review past/present ESG scores effect on ROE 
-data = data[data['Year'] > 2008]
-data['ESG'] = data['ESG'].shift(1)
-data.dropna(inplace=True)
+        # merging to ensure PK on table (removing duplicates)
+        data = pd.merge(left=measure_df, 
+                        right=esg_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
 
-print (f"pre shift = min val: {data['ROE'].min()}, max val: {data['ROE'].max()}")
+        data = pd.merge(left=data, 
+                        right=q_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
 
-# for gaussian
-eps = 1e-4
-data['ROE'] = data['ROE'] - data['ROE'].min() + eps
-data['ROE'] = np.sign(data['ROE']) * np.log1p(np.abs(data['ROE']))
+    if type(scores) == list:
+        log.info(f"Running GLM for {index.upper()} and {measure.upper()} for E,S,G individual pillars")
 
-# for inverse gaussian
-# eps = 1e-4
-# data['ROE'] = data['ROE'] - data['ROE'].min() + eps
+        # for each_score in scores: 
+        #     log.info(f"Adding 1-year time lag on {each_score} data")
+        #     data[each_score.upper()] = data[each_score.upper()].shift(1)
+        
+        data.dropna(inplace=True)
+        
+        scores = 'E,S,G'
+        X = data[['E', 'S', 'G', 'Q']]
 
-print (f"post shift = min val: {data['ROE'].min()}, max val: {data['ROE'].max()}")
+        eqn = f"{measure.upper()} ~ E + S + G + Q"
 
-print(data['ROE'].skew(), data['ROE'].kurtosis())
-       
-X = data[['ESG', 'Q']]
-vif_data = pd.DataFrame()
-vif_data["Variable"] = X.columns
-vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
-print(vif_data)
+        scaler = StandardScaler()
+        data[['E', 'S', 'G', 'Q']] = scaler.fit_transform(data[['E', 'S', 'G', 'Q']])
 
-scaler = StandardScaler()
-data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
+    else:
+        log.info (f"Running GLM for {index.upper()} and {measure.upper()} for {scores} scores")
 
-# Gaussian regression eqn 
-gaussian_glm = smf.glm("ROE ~ ESG + Q", 
-                    data=data,
-                    family=sm.families.Gaussian()).fit()
+        # inserting 1-year time lag on ESG data
+        # log.info (f"Adding 1-year time lag on {scores.upper()} data")
+        # data['ESG'] = data['ESG'].shift(1)
 
-print (gaussian_glm.summary())
-print ()
+        # removing n-1 year ESG data
+        data.dropna(inplace=True)
 
-# tweedie glm
-tweed = smf.glm('ROE ~ ESG + Q', 
-                data=data, 
-                family=sm.families.Tweedie(
-                    var_power=2, 
-                    link=sm.genmod.families.links.Log()
-                )).fit()
+        X = data[['ESG', 'Q']]
+        eqn = f"{measure.upper()} ~ ESG + Q"
 
-print (tweed.summary())
+        scaler = StandardScaler()
+        data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
 
+    log.info (f"old: min val: {round(data[measure.upper()].min(), 5)}, max val: {round(data[measure.upper()].max(), 5)}")
+    log.info ('')
+
+    # minimum value set as 0.00001 (1e-4)
+    # transforms to strictly positive
+    eps = 1e-4
+    data[measure.upper()] = data[measure.upper()] - data[measure.upper()].min() + eps
+
+    # log (1+x) transformation
+    data[measure.upper()] = np.sign(data[measure.upper()]) * np.log1p(np.abs(data[measure.upper()]))
+
+    log.info (f"new: min val: {round(data[measure.upper()].min(), 5)}, max val: {round(data[measure.upper()].max(), 5)}")
+    log.info ('')
+    log.info (f"skewness: {data[measure.upper()].skew()}, kurtosis: {data[measure.upper()].kurtosis()}")
+    log.info ('')
+    
+    # calculating variance inflation factor to test for multicollinearity
+    vif_data = pd.DataFrame()
+    vif_data["Variable"] = X.columns
+    vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
+
+    # Gaussian regression eqn 
+    gaussian_glm = smf.glm(eqn, 
+                        data=data,
+                        family=sm.families.Gaussian()).fit()
+
+    os.makedirs(config.glm_path,
+                exist_ok = True)
+
+    filename = f"{index.upper()}_{scores.upper()}_{measure.upper()}_results.txt"
+    output_path = os.path.join(config.glm_path, filename)
+
+    with open (output_path, 'w') as result:
+        result.write(f'Variance Inflation Factor for {scores} / {measure.upper()} \n')
+        result.write(f"{str(vif_data)} \n\n")
+        result.write(str(gaussian_glm.summary()))
+
+    log.info (f"{filename} saved to .../results/glm directory")
+
+# --------------------------------------------------------------------------------------------------------------------
+
+# codespace starts HERE
+for each_index in ['msci', 'nasdaq', 'ftse', 'stoxx', 'snp']:
+    gaussian_glm(
+        index=each_index,
+        measure='roe',
+        scores=True
+    )
+
+    gaussian_glm(
+        index=each_index,
+        measure='roa',
+        scores=True
+    )
+
+    gaussian_glm(
+        index=each_index,
+        measure='roe',
+        scores=False
+    )
+
+    gaussian_glm(
+        index=each_index,
+        measure='roa',
+        scores=False
+    )
 end = datetime.datetime.now()
 
 print (f'\n\nTime taken: {end - start}')
-
-# NOTES @ 20250228:
-# either a Tweedie or a Gaussian model would be the best fit
-
 
 # TODO: Correlation, Relationship, Regression, Cluster Analysis 
 #       (cross-compare with methods on cited literatures on types of analysis used)
