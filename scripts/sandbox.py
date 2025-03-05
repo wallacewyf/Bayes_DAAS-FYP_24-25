@@ -25,41 +25,53 @@ sys.path.append(data_path)
 # config path
 import config, wrangle
 
+filepath = config.results_path + 'sandbox/'
+index = 'ftse'
+filename = f"{index.upper()} Financial Returns.xlsx"
 
-def melt_df(df, measure):
-    df = df.reset_index()
+os.makedirs(filepath,
+            exist_ok=True)
+
+# """
+
+#     elif type == 'roe': type = 'Return on Equity (ROE)'
+#     elif type == 'roa': type = 'Return on Assets (ROA)'
+#     elif type == 'yoy': type = '52 Week Return'
+#     elif type == 'q': type = 'Q Ratio'
+#     elif type == 'mktcap': type = 'Market Capitalization'
+#     elif type == 'ta': type = 'Total Assets'
     
-    df.drop(columns=['GICS Industry Name', 'Exchange Name'], inplace=True)
-    df.dropna(inplace=True)
-    
-    df= df.melt(
-        id_vars=['Identifier', 'Company Name'],
-        var_name='Year',
-        value_name=measure.upper()
-    )
+# """
 
-    return df 
+data = pd.merge(left=wrangle.returns(index, measure='roe'),
+                right=wrangle.returns(index,measure='roa'),
+                on=['Identifier', 'Company Name'], 
+                how='inner',
+                suffixes=('_ROE', '_ROA'))
 
-roe = melt_df(wrangle.returns('msci', 'roe'), 'roe')
-roe = roe['ROE']
+data = pd.merge(left=data,
+                right=wrangle.returns(index, measure='yoy'),
+                on=['Identifier', 'Company Name'], 
+                how='inner',
+                suffixes=('_ROA','_YOY'))
 
-print (f"Sample mean: {roe.sample(n=1000, random_state=1).mean()}")
-print (f"Actual mean: {roe.mean()}")
+data = pd.merge(left=data,
+                right = wrangle.returns(index, measure='ta'),
+                on=['Identifier', 'Company Name'], 
+                how='inner',
+                suffixes=('_YOY', '_TA'))
 
-mean = []
+data = pd.merge(left=data,
+                right = wrangle.returns(index, measure='mktcap'),
+                on=['Identifier', 'Company Name'], 
+                how='inner',
+                suffixes=('_TA', '_MKTCAP'))
 
-def calc_sample_mean(sample_size, no_of_sample_means):
-    for i in range(no_of_sample_means):        
-        sample_base_salary = roe.sample(n=sample_size)
-        sample_mean=sample_base_salary.mean()
-        mean.append(sample_mean)
-    return mean
+data = pd.merge(left=data,
+                right = wrangle.returns(index, measure='q'),
+                on=['Identifier', 'Company Name'], 
+                how='inner',
+                suffixes=('_MKTCAP', '_Q'))
 
-
-
-# sns.histplot(roe, color='grey')
-# plt.show()
-
-mean_2=calc_sample_mean(sample_size=150, no_of_sample_means=5000)
-sns.histplot(mean_2, color='b')
-plt.show()
+data.to_excel(f"{filepath}{filename}",
+              sheet_name = 'Financial Returns')

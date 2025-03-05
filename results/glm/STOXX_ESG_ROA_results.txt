@@ -1,0 +1,23 @@
+Variance Inflation Factor for ESG / ROA 
+  Variable       VIF
+0      ESG  2.882335
+1        Q  2.882335 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROA   No. Observations:                  120
+Model:                            GLM   Df Residuals:                      117
+Model Family:                Gaussian   Df Model:                            2
+Link Function:               Identity   Scale:                       0.0010460
+Method:                          IRLS   Log-Likelihood:                 243.01
+Date:                Tue, 04 Mar 2025   Deviance:                      0.12238
+Time:                        16:00:34   Pearson chi2:                    0.122
+No. Iterations:                     3   Pseudo R-squ. (CS):             0.6389
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.1714      0.003     58.070      0.000       0.166       0.177
+ESG            0.0074      0.003      2.479      0.013       0.002       0.013
+Q              0.0306      0.003     10.215      0.000       0.025       0.036
+==============================================================================

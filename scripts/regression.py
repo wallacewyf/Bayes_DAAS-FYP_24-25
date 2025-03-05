@@ -28,8 +28,14 @@ start = datetime.datetime.now()
 # initialize logger module 
 log = config.logging
 
-# split between pre/post COVID pandemic / Paris Agreement
-# print (esg_sum.loc[:, [2023, 2022, 2021, 2020, 2019, 2017, 2016, 2015, 2014, 2013, 2008, 2004]])
+# Notes
+# """
+# work on visualizing residuals to prove why gaussian glm is best fit
+# visuals are to be added into fyp doc
+# to prove confirmation on goodness of fit
+# """
+
+
 
 # --------------------------------------------------------------------
 # Regression Analysis 
@@ -493,6 +499,7 @@ def gaussian_glm(index, measure, scores):
     else:
         log.info (f"Running GLM for {index.upper()} and {measure.upper()} for {scores} scores")
 
+        # same - before/after comparison but concl market reaction is immediate and p-val > 0.05
         # inserting 1-year time lag on ESG data
         # log.info (f"Adding 1-year time lag on {scores.upper()} data")
         # data['ESG'] = data['ESG'].shift(1)
@@ -503,6 +510,7 @@ def gaussian_glm(index, measure, scores):
         X = data[['ESG', 'Q']]
         eqn = f"{measure.upper()} ~ ESG + Q"
 
+        # to do a before/after comparison - concl: not needed
         scaler = StandardScaler()
         data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
 

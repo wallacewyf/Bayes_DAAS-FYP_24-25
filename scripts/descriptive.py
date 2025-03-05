@@ -15,6 +15,11 @@ log = config.logging
 # initialize runtime module
 start = datetime.datetime.now()
 
+# Notes
+# """
+# work on cleaning up functions since they're quite redundant
+# """
+
 # ------------------------------------------------------------------------
 # Descriptive Statistics
 # NA's are automatically ignored from pd.describe() function

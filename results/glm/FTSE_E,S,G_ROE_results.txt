@@ -1,0 +1,27 @@
+Variance Inflation Factor for E,S,G / ROE 
+  Variable        VIF
+0        E   6.548805
+1        S  10.873178
+2        G   8.876352
+3        Q   7.235451 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                   80
+Model:                            GLM   Df Residuals:                       75
+Model Family:                Gaussian   Df Model:                            4
+Link Function:               Identity   Scale:                       0.0028620
+Method:                          IRLS   Log-Likelihood:                 123.32
+Date:                Tue, 04 Mar 2025   Deviance:                      0.21465
+Time:                        16:00:13   Pearson chi2:                    0.215
+No. Iterations:                     3   Pseudo R-squ. (CS):             0.1121
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.1394      0.006     23.314      0.000       0.128       0.151
+E              0.0018      0.008      0.220      0.826      -0.014       0.018
+S             -0.0092      0.007     -1.231      0.218      -0.024       0.005
+G             -0.0093      0.007     -1.258      0.208      -0.024       0.005
+Q              0.0178      0.007      2.730      0.006       0.005       0.031
+==============================================================================

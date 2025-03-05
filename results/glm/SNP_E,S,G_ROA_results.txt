@@ -1,0 +1,27 @@
+Variance Inflation Factor for E,S,G / ROA 
+  Variable        VIF
+0        E  10.309298
+1        S  19.283677
+2        G  10.833522
+3        Q   2.499664 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROA   No. Observations:                  440
+Model:                            GLM   Df Residuals:                      435
+Model Family:                Gaussian   Df Model:                            4
+Link Function:               Identity   Scale:                       0.0020455
+Method:                          IRLS   Log-Likelihood:                 740.45
+Date:                Tue, 04 Mar 2025   Deviance:                      0.88979
+Time:                        16:01:09   Pearson chi2:                    0.890
+No. Iterations:                     3   Pseudo R-squ. (CS):             0.5918
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.2519      0.002    116.822      0.000       0.248       0.256
+E              0.0043      0.004      1.184      0.236      -0.003       0.011
+S              0.0048      0.004      1.313      0.189      -0.002       0.012
+G             -0.0004      0.003     -0.142      0.887      -0.006       0.005
+Q              0.0413      0.002     18.592      0.000       0.037       0.046
+==============================================================================

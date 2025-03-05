@@ -21,6 +21,14 @@ industry_list = [
     'Semiconductors & Semiconductor Equipment'
 ]
 
+industry_list = [
+    'Health Care Equipment & Supplies',
+    'Health Care Providers & Services',
+    'Health Care Technology',
+    'Biotechnology',
+    'Pharmaceuticals',
+    'Life Sciences Tools & Services'
+]
 # Notes: 
 
 # dropna not needed - intersection should be ran first and then NA dropped
