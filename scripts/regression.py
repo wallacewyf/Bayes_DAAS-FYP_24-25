@@ -569,17 +569,18 @@ for each_index in ['msci', 'nasdaq', 'ftse', 'stoxx', 'snp']:
         scores=True
     )
 
-    gaussian_glm(
-        index=each_index,
-        measure='roe',
-        scores=False
-    )
+    # gaussian_glm(
+    #     index=each_index,
+    #     measure='roe',
+    #     scores=False
+    # )
 
-    gaussian_glm(
-        index=each_index,
-        measure='roa',
-        scores=False
-    )
+    # gaussian_glm(
+    #     index=each_index,
+    #     measure='roa',
+    #     scores=False
+    # )
+
 end = datetime.datetime.now()
 
 print (f'\n\nTime taken: {end - start}')

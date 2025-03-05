@@ -157,8 +157,8 @@ def macro_desc(type, format):
         
         df.drop(df.index, inplace=True)
 
-# macro_desc(type='finp', 
-#            format='csv')
+macro_desc(type='finp', 
+           format='csv')
 
 stop = datetime.datetime.now()
 
