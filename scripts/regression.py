@@ -33,6 +33,10 @@ log = config.logging
 # work on visualizing residuals to prove why gaussian glm is best fit
 # visuals are to be added into fyp doc
 # to prove confirmation on goodness of fit
+# maybe add a for loop to retrieve max log-likelihood
+# to deem best fit and export results?
+# but for consistency it might be best to stick to one model
+# and quote limitations in paper
 # """
 
 

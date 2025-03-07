@@ -1,5 +1,10 @@
 # parameter file
 
+# notes
+# industry list should be moved over here from wrangle.py
+# to specify filter on GICS industry 
+# maybe add a table file as txt or csv
+
 # lib to check platform
 import sys, os, logging
 from datetime import datetime
