@@ -14,17 +14,19 @@ if sys.platform == 'win32':
     data_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/data/"
     script_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/scripts/"
     results_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/"
-    desc_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/desc/"
+    desc_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/descriptive/"
     glm_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/glm/"
+    
     log = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/logs/"
+
 
 # file path - mac
 elif sys.platform == 'darwin':
     data_path = '/Users/wallace/Documents/code/python/fyp_24/data/'
     script_path = '/Users/wallace/Documents/code/python/fyp_24/scripts/'
     results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
-    desc_path = '/Users/wallace/Documents/code/python/fyp_24/results/desc/'
-    glm_path = '/Users/wallace/Documents/code/python/fyp_24/results/glm'
+    desc_path = '/Users/wallace/Documents/code/python/fyp_24/results/descriptive/'
+    glm_path = '/Users/wallace/Documents/code/python/fyp_24/results/glm/'
     log = '/Users/wallace/Documents/code/python/fyp_24/logs/'
 
 # esg files

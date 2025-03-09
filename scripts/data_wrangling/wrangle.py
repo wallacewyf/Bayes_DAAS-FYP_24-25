@@ -21,39 +21,17 @@ industry_list = [
     'Semiconductors & Semiconductor Equipment'
 ]
 
-industry_list = [
-    'Health Care Equipment & Supplies',
-    'Health Care Providers & Services',
-    'Health Care Technology',
-    'Biotechnology',
-    'Pharmaceuticals',
-    'Life Sciences Tools & Services'
-]
-# Notes: 
-
-# dropna not needed - intersection should be ran first and then NA dropped
-
 def returns(index, measure):
     # path = filepath from config
     # measure = measure of table requested
 
     index, measure = index.lower(), measure.lower()
 
-    if index == 'nasdaq': 
-        logging.info('Retrieving NASDAQ data...')
-        data = config.nasdaq_returns
-    elif index == 'snp': 
-        logging.info('Retrieving S&P 500 data...')
-        data = config.snp_returns
-    elif index == 'stoxx': 
-        logging.info('Retrieving STOXX data...')
-        data = config.stoxx_returns
-    elif index == 'ftse': 
-        logging.info('Retrieving FTSE data...')
-        data = config.ftse_returns
-    elif index == 'msci': 
-        logging.info('Retrieving MSCI data...')
-        data = config.msci_returns
+    if index == 'nasdaq': data = config.nasdaq_returns
+    elif index == 'snp': data = config.snp_returns
+    elif index == 'stoxx': data = config.stoxx_returns
+    elif index == 'ftse': data = config.ftse_returns
+    elif index == 'msci': data = config.msci_returns
     else: 
         print ('Invalid index!')
         return
@@ -66,12 +44,12 @@ def returns(index, measure):
                             inplace=True)
 
     if measure == 'all':
-        logging.info ('Extracting all financial returns...')
+        logging.info (f'Extracting all financial returns for {index.upper()}...')
         return returns_df
     
     elif measure == 'roe':
         # Return on Equity - Actual
-        logging.info ('Extracting Return on Equity...')
+        logging.info (f'Extracting Return on Equity for {index.upper()}...')
 
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
@@ -85,7 +63,7 @@ def returns(index, measure):
     
     elif measure == 'roa':
         # Return on Assets - Actual
-        logging.info ('Extracting Return on Assets...')
+        logging.info (f'Extracting Return on Assets for {index.upper()}...')
 
         roa_df = returns_df.iloc[:, 20:40]
         roa_df = roa_df.set_axis(col_names, axis=1)
@@ -111,8 +89,7 @@ def returns(index, measure):
     
     elif measure == 'mktcap':
         # Market Capitalisation
-
-        logging.info( 'Extracting Market Capitalisation...')
+        logging.info(f'Extracting Market Capitalisation for {index.upper()}...')
 
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
@@ -137,7 +114,7 @@ def returns(index, measure):
         # Q Ratio
         # Total Assets - Reported
 
-        logging.info ('Extracting Q Ratio...')
+        logging.info (f'Extracting Q Ratio for {index.upper()}...')
 
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
@@ -185,7 +162,7 @@ def scores(index, measure):
     column_names = col_names
 
     if measure == 'esg':
-        log.info(f'Extracting ESG Scores...')
+        log.info(f'Extracting ESG Scores for {index.upper()}...')
 
         esg_scores = source_df.iloc[:, :20]
         esg_scores = esg_scores.set_axis(column_names, axis=1)
@@ -202,7 +179,7 @@ def scores(index, measure):
         return esg_scores
     
     elif measure == 'e':
-        log.info('Extracting E scores...')
+        log.info(f'Extracting E scores for {index.upper()}...')
 
         e_pillars = source_df.iloc[:, 20:40]
         e_pillars = e_pillars.set_axis(column_names, axis=1)
@@ -219,7 +196,7 @@ def scores(index, measure):
         return e_pillars
 
     elif measure == 's':
-        log.info('Extracting S scores...')
+        log.info(f'Extracting S scores for {index.upper()}...')
         s_pillars = source_df.iloc[:, 40:60] 
         s_pillars = s_pillars.set_axis(column_names, axis=1)
         # s_pillars.dropna(inplace=True)
@@ -235,7 +212,7 @@ def scores(index, measure):
         return s_pillars
     
     elif measure == 'g':
-        log.info('Extracting G scores...')
+        log.info(f'Extracting G scores for {index.upper()}...')
         g_pillars = source_df.iloc[:, 60:80]
         g_pillars = g_pillars.set_axis(column_names, axis=1)
         # g_pillars.dropna(inplace=True)

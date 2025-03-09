@@ -23,8 +23,6 @@ sys.path.append(data_path)
 # config path
 import config, wrangle
 
-start = datetime.datetime.now()
-
 # initialize logger module 
 log = config.logging
 
@@ -37,8 +35,10 @@ log = config.logging
 # to deem best fit and export results?
 # but for consistency it might be best to stick to one model
 # and quote limitations in paper
-# """
 
+# NEW: DS said to just do visualization.py instead of visualizing residuals
+# only visualise them if additional word count quota
+# """
 
 
 # --------------------------------------------------------------------
@@ -544,34 +544,36 @@ def gaussian_glm(index, measure, scores):
                         data=data,
                         family=sm.families.Gaussian()).fit()
 
-    os.makedirs(config.glm_path,
+    output_path = f"{config.glm_path}/{index.upper()}/"
+
+    os.makedirs(output_path,
                 exist_ok = True)
 
-    filename = f"{index.upper()}_{scores.upper()}_{measure.upper()}_results.txt"
-    output_path = os.path.join(config.glm_path, filename)
+    filename = f"{measure.upper()} ~ {scores.upper()} GLM results.txt"
+    output_path = os.path.join(output_path, filename)
 
     with open (output_path, 'w') as result:
         result.write(f'Variance Inflation Factor for {scores} / {measure.upper()} \n')
         result.write(f"{str(vif_data)} \n\n")
         result.write(str(gaussian_glm.summary()))
 
-    log.info (f"{filename} saved to .../results/glm directory")
+    log.info (f"{filename} saved to .../results/glm/{index.upper()} directory")
 
 # --------------------------------------------------------------------------------------------------------------------
 
 # codespace starts HERE
-for each_index in ['msci', 'nasdaq', 'ftse', 'stoxx', 'snp']:
-    gaussian_glm(
-        index=each_index,
-        measure='roe',
-        scores=True
-    )
+# for each_index in ['msci', 'nasdaq', 'ftse', 'stoxx', 'snp']:
+#     gaussian_glm(
+#         index=each_index,
+#         measure='roe',
+#         scores=True
+#     )
 
-    gaussian_glm(
-        index=each_index,
-        measure='roa',
-        scores=True
-    )
+#     gaussian_glm(
+#         index=each_index,
+#         measure='roa',
+#         scores=True
+#     )
 
     # gaussian_glm(
     #     index=each_index,
@@ -584,10 +586,6 @@ for each_index in ['msci', 'nasdaq', 'ftse', 'stoxx', 'snp']:
     #     measure='roa',
     #     scores=False
     # )
-
-end = datetime.datetime.now()
-
-print (f'\n\nTime taken: {end - start}')
 
 # TODO: Correlation, Relationship, Regression, Cluster Analysis 
 #       (cross-compare with methods on cited literatures on types of analysis used)
