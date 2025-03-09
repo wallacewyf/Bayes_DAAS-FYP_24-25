@@ -12,14 +12,20 @@ log = config.logging
 
 col_names = list(range(2023, 2003, -1))
 
-industry_list = [
-    'IT Services',
-    'Software',
-    'Communications Equipment',
-    'Technology Hardware, Storage & Peripherals',
-    'Electronic Equipment, Instruments & Components',
-    'Semiconductors & Semiconductor Equipment'
-]
+# extracting industry list
+log.info (f"Extracting GICS Industry Names...")
+industry = pd.read_excel(config.gics, skiprows=3, usecols=[1,3,5,7])
+industry.ffill(inplace=True)
+industry = industry.set_axis(['Sector', 'Industry Group', 'Industry', 'Sub-Industry'],
+                              axis=1)
+industry.set_index(['Sector'], inplace=True)
+
+log.info (f"{config.gics_industry_name} recognized.")
+industry = industry.loc[config.gics_industry_name]
+industry = industry.iloc[:, 1].unique()
+industry_list = industry
+log.info (f"Industries scope = {industry_list}")
+log.info ('')
 
 def returns(index, measure):
     # path = filepath from config
