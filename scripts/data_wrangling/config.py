@@ -1,10 +1,5 @@
 # parameter file
 
-# notes
-# industry list should be moved over here from wrangle.py
-# to specify filter on GICS industry 
-# maybe add a table file as txt or csv
-
 # lib to check platform
 import sys, os, logging
 from datetime import datetime
@@ -40,6 +35,10 @@ snp_returns = data_path + 'Returns_SNP500_20Y.xlsx'
 stoxx_returns = data_path + 'Returns_STOXX600_20Y.xlsx'
 msci_returns = data_path + 'Returns_MSCIWorld_20Y.xlsx'
 ftse_returns = data_path + 'Returns_FTSE350_20Y.xlsx'
+
+# gics table
+gics = data_path + 'GICS_table.xlsx'
+gics_industry_name = 'Information Technology'
 
 # logging basic config
 os.makedirs(log, exist_ok=True)
