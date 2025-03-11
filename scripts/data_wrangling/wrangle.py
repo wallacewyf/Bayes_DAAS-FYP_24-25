@@ -5,7 +5,7 @@ import config
 import pandas as pd
 import numpy as np
 import os
-import logging
+
 
 # initialize logger module 
 log = config.logging
@@ -50,12 +50,12 @@ def returns(index, measure):
                             inplace=True)
 
     if measure == 'all':
-        logging.info (f'Extracting all financial returns for {index.upper()}...')
+        log.info (f'Extracting all financial returns for {index.upper()}...')
         return returns_df
     
     elif measure == 'roe':
         # Return on Equity - Actual
-        logging.info (f'Extracting Return on Equity for {index.upper()}...')
+        log.info (f'Extracting Return on Equity for {index.upper()}...')
 
         roe_df = returns_df.iloc[:, :20]
         roe_df = roe_df.set_axis(col_names, axis=1)
@@ -69,7 +69,7 @@ def returns(index, measure):
     
     elif measure == 'roa':
         # Return on Assets - Actual
-        logging.info (f'Extracting Return on Assets for {index.upper()}...')
+        log.info (f'Extracting Return on Assets for {index.upper()}...')
 
         roa_df = returns_df.iloc[:, 20:40]
         roa_df = roa_df.set_axis(col_names, axis=1)
@@ -95,7 +95,7 @@ def returns(index, measure):
     
     elif measure == 'mktcap':
         # Market Capitalisation
-        logging.info(f'Extracting Market Capitalisation for {index.upper()}...')
+        log.info(f'Extracting Market Capitalisation for {index.upper()}...')
 
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
@@ -120,7 +120,7 @@ def returns(index, measure):
         # Q Ratio
         # Total Assets - Reported
 
-        logging.info (f'Extracting Q Ratio for {index.upper()}...')
+        log.info (f'Extracting Q Ratio for {index.upper()}...')
 
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
@@ -131,7 +131,7 @@ def returns(index, measure):
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         mkt_cap.dropna(inplace=True)        
         
-        logging.info ('Aligning dataframes for Q Ratio calculation...')
+        log.info ('Aligning dataframes for Q Ratio calculation...')
 
         q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
         q_ratio = q_mktcap / q_ta
@@ -140,7 +140,7 @@ def returns(index, measure):
         # extract only Tech components
         q_ratio = q_ratio.loc[q_ratio.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
-        logging.info ('Q Ratio calculation completed.')
+        log.info ('Q Ratio calculation completed.')
 
         return q_ratio
     

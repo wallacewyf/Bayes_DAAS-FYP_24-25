@@ -22,18 +22,18 @@ descriptive.agg_desc(
     type='scores'
 )
 
-descriptive.desc(
-    index='msci', 
-    measure='roe', 
-    macro=False
-)
+# descriptive.desc(
+#     index='msci', 
+#     measure='roe', 
+#     macro=False
+# )
 
-# Gaussian GLM Regression
-regression.gaussian_glm(
-    index='msci', 
-    measure='roe', 
-    scores=True
-)
+# # Gaussian GLM Regression
+# regression.gaussian_glm(
+#     index='msci', 
+#     measure='roe', 
+#     scores=True
+# )
 
 
 stop = datetime.datetime.now()
