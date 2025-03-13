@@ -43,11 +43,22 @@ def returns(index, measure):
         return
 
     returns_df = pd.read_excel(data, index_col=[0,1,2,3], skiprows=2)
-    returns_df.index.names = ['Identifier', 'Company Name', 'GICS Industry Name', 'Exchange Name']
+    # set index names
+    returns_df.index.names = ['Identifier', 
+                              'Company Name', 
+                              'GICS Industry Name', 
+                              'Exchange Name']
+    
+    # filter on specified industry
+    log.info (f'Filtering returns_df according to specified industry...')
+    returns_df = returns_df.loc[returns_df.index.get_level_values('GICS Industry Name'.isin(industry_list))]
+    
+    # sort Company Name in ascending order
     returns_df.sort_values(by='Company Name',
                             axis=0,
                             ascending=True,
                             inplace=True)
+    
 
     if measure == 'all':
         log.info (f'Extracting all financial returns for {index.upper()}...')
@@ -61,10 +72,6 @@ def returns(index, measure):
         roe_df = roe_df.set_axis(col_names, axis=1)
         roe_df = roe_df.iloc[:, ::-1]
 
-        # extract only Tech components
-        roe_df = roe_df.loc[roe_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
-        # roe_df.dropna(inplace=True)
-
         return roe_df
     
     elif measure == 'roa':
@@ -75,10 +82,6 @@ def returns(index, measure):
         roa_df = roa_df.set_axis(col_names, axis=1)
         roa_df = roa_df.iloc[:, ::-1]
 
-        # extract only Tech components
-        roa_df = roa_df.loc[roa_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
-        # roa_df.dropna(inplace=True)
-
         return roa_df
 
     elif measure == 'yoy':
@@ -86,10 +89,6 @@ def returns(index, measure):
         yoy_return = returns_df.iloc[:, 40:60]
         yoy_return = yoy_return.set_axis(col_names, axis=1)
         yoy_return = yoy_return.iloc[:, ::-1]
-        # yoy_return.dropna(inplace=True)
-
-        # extract only Tech components
-        yoy_return = yoy_return.loc[yoy_return.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         return yoy_return
     
@@ -100,10 +99,6 @@ def returns(index, measure):
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         mkt_cap = mkt_cap.iloc[:, ::-1]
-        # mkt_cap.dropna(inplace=True)
-
-        # extract only Tech components
-        mkt_cap = mkt_cap.loc[mkt_cap.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         return mkt_cap
 
@@ -112,7 +107,6 @@ def returns(index, measure):
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
         ta_df = ta_df.iloc[:, ::-1]
-        # ta_df.dropna(inplace=True)
 
         return ta_df
 
@@ -124,21 +118,16 @@ def returns(index, measure):
 
         ta_df = returns_df.iloc[:, 80:100]
         ta_df = ta_df.set_axis(col_names, axis=1)
-        ta_df.dropna(inplace=True)
 
         # Market Capitalisation
         mkt_cap = returns_df.iloc[:, 60:80]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
-        mkt_cap.dropna(inplace=True)        
         
         log.info ('Aligning dataframes for Q Ratio calculation...')
 
         q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
         q_ratio = q_mktcap / q_ta
         q_ratio = q_ratio.iloc[:, ::-1]
-
-        # extract only Tech components
-        q_ratio = q_ratio.loc[q_ratio.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         log.info ('Q Ratio calculation completed.')
 
@@ -165,6 +154,10 @@ def scores(index, measure):
                              'GICS Industry Name', 
                              'Exchange Name']
 
+    # filter on specified industry
+    log.info (f'Filtering source_df according to specified industry...')
+    source_df = source_df.loc[source_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
+
     column_names = col_names
 
     if measure == 'esg':
@@ -172,16 +165,13 @@ def scores(index, measure):
 
         esg_scores = source_df.iloc[:, :20]
         esg_scores = esg_scores.set_axis(column_names, axis=1)
-        # esg_scores.dropna(inplace=True)
         esg_scores.sort_values(by=['Company Name', 2023],
                             axis=0,
                             ascending=[True, False],
                             inplace=True)
         
         esg_scores = esg_scores.iloc[:, ::-1]
-        
-        esg_scores = esg_scores.loc[esg_scores.index.get_level_values('GICS Industry Name').isin(industry_list)]
-        
+                
         return esg_scores
     
     elif measure == 'e':
@@ -189,7 +179,6 @@ def scores(index, measure):
 
         e_pillars = source_df.iloc[:, 20:40]
         e_pillars = e_pillars.set_axis(column_names, axis=1)
-        # e_pillars.dropna(inplace=True)
         e_pillars.sort_values(by=['Company Name', 2023],
                             axis=0,
                             ascending=[True, False],
@@ -197,24 +186,19 @@ def scores(index, measure):
         
         e_pillars = e_pillars.iloc[:, ::-1]
         
-        e_pillars = e_pillars.loc[e_pillars.index.get_level_values('GICS Industry Name').isin(industry_list) ]
-
         return e_pillars
 
     elif measure == 's':
         log.info(f'Extracting S scores for {index.upper()}...')
         s_pillars = source_df.iloc[:, 40:60] 
         s_pillars = s_pillars.set_axis(column_names, axis=1)
-        # s_pillars.dropna(inplace=True)
         s_pillars.sort_values(by=['Company Name', 2023],
                             axis=0,
                             ascending=[True, False],
                             inplace=True)        
         
         s_pillars = s_pillars.iloc[:, ::-1]
-        
-        s_pillars = s_pillars.loc[s_pillars.index.get_level_values('GICS Industry Name').isin(industry_list)]
-                    
+                            
         return s_pillars
     
     elif measure == 'g':
@@ -228,7 +212,6 @@ def scores(index, measure):
                             inplace=True)
     
         g_pillars = g_pillars.iloc[:, ::-1]
-        g_pillars = g_pillars.loc[g_pillars.index.get_level_values('GICS Industry Name').isin(industry_list)]
 
         return g_pillars
     
