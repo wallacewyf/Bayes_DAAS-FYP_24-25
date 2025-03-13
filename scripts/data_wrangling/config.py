@@ -38,7 +38,10 @@ stoxx_returns = data_path + 'Returns_STOXX600_20Y.xlsx'
 msci_returns = data_path + 'Returns_MSCIWorld_20Y.xlsx'
 ftse_returns = data_path + 'Returns_FTSE350_20Y.xlsx'
 
-# gics table
+# GICS Mapping Table
+# MSCI, 2025. The Global Industry Classification Standard (GICS®) 
+# Available at: https://www.msci.com/our-solutions/indexes/gics (Accessed: 13 March 2025)
+
 gics = data_path + 'GICS_table.xlsx'
 gics_industry_name = 'Information Technology'
 

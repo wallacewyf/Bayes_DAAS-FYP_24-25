@@ -15,19 +15,10 @@ log = config.logging
 # initialize runtime module
 start = datetime.datetime.now()
 
-# Notes
-# """
-# work on cleaning up functions since they're quite redundant
-# """
 
 # ------------------------------------------------------------------------
 # Descriptive Statistics
-# NA's are automatically ignored from pd.describe() function
-# (cited from: Pandas Documentation)
 
-# this should be combined with write_desc() and export_desc()
-
-# should be combined with export_desc() below
 def desc(index, measure, macro):    
     """
     Parameters: 
@@ -39,10 +30,9 @@ def desc(index, measure, macro):
 
     It can either create one or multiple files, depending on the argument passed into index / measure variable 
 
-    For all aggregated statistics, please run the agg_desc() function below
+    For all statistics aggregated by index, please run the agg_desc() function below
 
     """
-
     mapping = {
         'finp': ['roe', 'roa', 'yoy', 'q', 'ta', 'mktcap'],
         'scores': ['esg', 'e', 's', 'g'],
@@ -80,13 +70,13 @@ def desc(index, measure, macro):
             log.info(f"{filename} saved in .../results/ directory")
             
 
-# Descriptive Statistics for all of the years accordingly to measure and index
+# Aggreagetd Descriptive Statistics
 def agg_desc(type):
     """
     Parameters: 
     type = e.g. finp / scores/ all
 
-    Creates aggregated descriptive statistics file to be saved in .../results/ directory 
+    Creates aggregated by index descriptive statistics file to be saved in .../results/ directory 
 
     It can either create one or multiple files, depending on the argument passed into "type" variable     
     """
@@ -106,7 +96,7 @@ def agg_desc(type):
 
         for each_index in index_arr:
             log.info(f"Accessing {each_measure.upper()} data from {each_index.upper()}'s dataframe")
-            df = wrangle.output_df(each_index, each_measure).stack().describe()
+            df = wrangle.output(each_index, each_measure).stack().describe()
             
             df.rename(each_index)
             dfs.append(df)

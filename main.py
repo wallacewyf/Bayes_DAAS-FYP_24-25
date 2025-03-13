@@ -5,6 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+data_path = os.path.join(os.path.dirname(__file__), "scripts")
+sys.path.append(data_path)
+
 import descriptive, regression
 
 # set path to retrieve returns/scores files
@@ -14,13 +17,19 @@ sys.path.append(data_path)
 # config path
 import config, wrangle
 
-
 start = datetime.datetime.now()
 
+# Data Wrangling
+# ---------------------------------------------------
+# wrangle.returns(index = 'msci', 
+#                 measure = 'roe')
+
+# wrangle.scores(index = 'msci', 
+#                measure = 'esg')
+
 # Descriptive Statistics
-descriptive.agg_desc(
-    type='scores'
-)
+# ---------------------------------------------------
+# descriptive.agg_desc(type='scores')
 
 # descriptive.desc(
 #     index='msci', 

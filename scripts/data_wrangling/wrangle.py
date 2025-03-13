@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import os
 
-
 # initialize logger module 
 log = config.logging
 
@@ -84,19 +83,11 @@ def returns(index, measure):
 
         return roa_df
 
-    elif measure == 'yoy':
-        # 52-Week Total Return
-        yoy_return = returns_df.iloc[:, 40:60]
-        yoy_return = yoy_return.set_axis(col_names, axis=1)
-        yoy_return = yoy_return.iloc[:, ::-1]
-
-        return yoy_return
-    
     elif measure == 'mktcap':
         # Market Capitalisation
         log.info(f'Extracting Market Capitalisation for {index.upper()}...')
 
-        mkt_cap = returns_df.iloc[:, 60:80]
+        mkt_cap = returns_df.iloc[:, 40:60]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         mkt_cap = mkt_cap.iloc[:, ::-1]
 
@@ -104,7 +95,7 @@ def returns(index, measure):
 
     elif measure == 'ta':
         # Total Assets - Reported
-        ta_df = returns_df.iloc[:, 80:100]
+        ta_df = returns_df.iloc[:, 60:80]
         ta_df = ta_df.set_axis(col_names, axis=1)
         ta_df = ta_df.iloc[:, ::-1]
 
@@ -116,11 +107,11 @@ def returns(index, measure):
 
         log.info (f'Extracting Q Ratio for {index.upper()}...')
 
-        ta_df = returns_df.iloc[:, 80:100]
+        ta_df = returns_df.iloc[:, 60:80]
         ta_df = ta_df.set_axis(col_names, axis=1)
 
         # Market Capitalisation
-        mkt_cap = returns_df.iloc[:, 60:80]
+        mkt_cap = returns_df.iloc[:, 40:60]
         mkt_cap = mkt_cap.set_axis(col_names, axis=1)
         
         log.info ('Aligning dataframes for Q Ratio calculation...')
@@ -215,51 +206,10 @@ def scores(index, measure):
 
         return g_pillars
     
-def output_df(index, measure):
+def output(index, measure):
     if measure in ['roe', 'roa', 'q', 'yoy', 'mktcap', 'ta']:
         return returns(index, measure)
     
     elif measure in ['esg', 'e', 's', 'g']:
         return scores(index, measure)
     
-
-def debug(index, measure, type):
-    while True:
-        try:
-            if type == 'csv':
-                output_df(index, measure).to_csv(config.results_path + index + '_' + measure + '.csv',
-                                                header=True,
-                                                index=True)
-
-            elif type == 'excel':
-                output_df(index, measure).to_excel(config.results_path + index + '_' + measure + '.xlsx',
-                                                header=True,
-                                                index=True)
-                
-        
-        except OSError: 
-            os.mkdir(config.results_path)
-
-        break
-
-def export(df, filename, type):
-    while True: 
-        try:
-            if type == 'csv':
-                log.info(f'Exporting {filename} to CSV...')
-
-                df.to_csv(config.results_path + filename + '.csv',
-                          header=True, 
-                          index=True)
-
-            elif type == 'excel':
-                df.to_excel(config.results_path + filename + '.xlsx',
-                          header=True, 
-                          index=True)
-        
-        except OSError: 
-            os.mkdir(config.results_path)
-
-            continue
-
-        break
