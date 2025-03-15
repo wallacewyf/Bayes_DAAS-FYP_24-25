@@ -1,0 +1,40 @@
+Variance Inflation Factor for ESG / ROE 
+  Variable       VIF
+0      ESG  2.851797
+1        Q  5.525026
+2      ROA  7.991038 
+
+Regression Equation: ROE ~ ESG + Q + ROA + crisis_year 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                  497
+Model:                            GLM   Df Residuals:                      492
+Model Family:                Gaussian   Df Model:                            4
+Link Function:               Identity   Scale:                       0.0096984
+Method:                          IRLS   Log-Likelihood:                 449.30
+Date:                Sat, 15 Mar 2025   Deviance:                       4.7716
+Time:                        23:19:54   Pearson chi2:                     4.77
+No. Iterations:                     3   Pseudo R-squ. (CS):            0.02157
+Covariance Type:            nonrobust                                         
+=======================================================================================
+                          coef    std err          z      P>|z|      [0.025      0.975]
+---------------------------------------------------------------------------------------
+Intercept               2.0219      0.015    133.239      0.000       1.992       2.052
+crisis_year[T.True]     0.0095      0.015      0.646      0.518      -0.019       0.038
+ESG                     0.0003      0.000      1.336      0.182      -0.000       0.001
+Q                      -0.0041      0.003     -1.335      0.182      -0.010       0.002
+ROA                     0.2301      0.087      2.652      0.008       0.060       0.400
+=======================================================================================
+
+Shapiro-Wilks p-value: 0.0
+Fail to reject H0; not normally distributed
+
+Breusch-Pagan p-value: 0.92957
+Fail to reject H0; Homoscedasticity present
+
+Pearson Chi-2 p-value: 1.0
+Fail to reject H0; good fit
+
+AIC Value: -888.59218
+BIC Value: -867.54923

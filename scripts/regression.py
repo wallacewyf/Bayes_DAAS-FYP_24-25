@@ -549,20 +549,21 @@ def gaussian_glm(index, measure, scores):
     # pt = PowerTransformer('yeo-johnson')
     # data[measure.upper()] = pt.fit_transform(data[measure.upper()].values.reshape(-1,1))
 
+    '''
+    Shapiro-Wilks Normality Test
+
+    H0: Not normally distributed; p-value < 0.05
+    H1: Normally distributed; p-value >= 0.05
+    '''
     shapiro_stat, shapiro_p = stats.shapiro(data[measure.upper()])
 
     print("Shapiro-Wilk Test statistic:", round(shapiro_stat, 15))
     print("Shapiro-Wilk Test p-value:", round(shapiro_p, 15))
     print ()
 
-    if shapiro_p < 0.05:
-        log.info(f"{measure.upper()} is not normally distributed")
-        log.info("")
+    if shapiro_p < 0.05: shapiro_res = "Fail to reject H0; not normally distributed"
+    else: shapiro_res = "Reject H0; normally distributed"
     
-    else: 
-        log.info(f"{measure.upper()} is normally distributed")
-        log.info('')
-
     '''
     dummy variable for crisis year to model them separately
     crisis year = 2008, 2020
@@ -643,6 +644,7 @@ def gaussian_glm(index, measure, scores):
         result.write(f"Regression Equation: {eqn} \n\n")
         result.write(str(gaussian_glm.summary()))
         result.write('\n\n')
+        result.write(f"Shapiro-Wilks p-value: {round(shapiro_p, 5)}\n{shapiro_res}\n\n")
         result.write(f"Breusch-Pagan p-value: {round(bp_test_p_value, 5)}\n{bp_response}\n\n")
         result.write(f"Pearson Chi-2 p-value: {round(p_val, 5)}\n{pc_response}\n\n")
         result.write(f"AIC Value: {str(round(gaussian_glm.aic, 5))}\n")

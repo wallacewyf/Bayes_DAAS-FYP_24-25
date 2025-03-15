@@ -52,10 +52,6 @@ regression.gaussian_glm(
 #     scores=False
 # )
 
-df = wrangle.scores(index='msci', measure='esg')
-df.to_csv(config.results_path + 'esg.csv')
-
-
 stop = datetime.datetime.now()
 
 print (f"Runtime: {stop-start}")
