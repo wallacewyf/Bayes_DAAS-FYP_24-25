@@ -34,9 +34,9 @@ def desc(index, measure, macro):
 
     """
     mapping = {
-        'finp': ['roe', 'roa', 'yoy', 'q', 'ta', 'mktcap'],
+        'finp': ['roe', 'roa', 'q', 'ta', 'mktcap'],
         'scores': ['esg', 'e', 's', 'g'],
-        'all': ['esg', 'e', 's', 'g', 'roe', 'roa', 'yoy', 'q', 'ta', 'mktcap']
+        'all': ['esg', 'e', 's', 'g', 'roe', 'roa', 'q', 'ta', 'mktcap']
     }
 
     measure = mapping.get(measure, [measure])
@@ -49,7 +49,7 @@ def desc(index, measure, macro):
             if each_measure in ['esg', 'e', 's', 'g']:
                 df = wrangle.scores(each_index, each_measure)
             
-            elif each_measure in ['roe', 'roa', 'yoy', 'q', 'ta', 'mktcap']:
+            elif each_measure in ['roe', 'roa', 'q', 'ta', 'mktcap']:
                 df = wrangle.returns(each_index, each_measure)
             
             else:
@@ -86,8 +86,8 @@ def agg_desc(type):
     index_arr = ['msci', 'nasdaq', 'snp', 'stoxx', 'ftse']
 
     if type == 'scores': loop_arr = ['esg', 'e', 's', 'g']
-    elif type == 'finp': loop_arr = ['roe', 'roa', 'yoy', 'mktcap', 'q']
-    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'yoy', 'mktcap', 'q']
+    elif type == 'finp': loop_arr = ['roe', 'roa', 'mktcap', 'q']
+    elif type == 'all': loop_arr = ['esg', 'e', 's', 'g','roe', 'roa', 'mktcap', 'q']
     else: 
         loop_arr = [type]
 

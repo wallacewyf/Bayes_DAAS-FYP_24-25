@@ -8,10 +8,11 @@ import seaborn as sns
 # statistical packages
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import PowerTransformer
 from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
 from statsmodels.graphics.gofplots import qqplot
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels import api as sm 
 from statsmodels.formula import api as smf
 from scipy import stats
@@ -68,7 +69,6 @@ def test_norm(measure, index):
     df = melt_df(wrangle.returns(index, measure), measure)
     df.dropna(inplace=True)
 
-    # taking subset of N = 4500 from data due to large sample size
     shapiro_stat, shapiro_p = stats.shapiro(df[measure.upper()])
 
     print("Shapiro-Wilk Test statistic:", round(shapiro_stat, 15))
@@ -418,15 +418,21 @@ def gamma_glm():
     vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
     print(vif_data)
 
-    scaler = StandardScaler()
-    data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
+    # scaler = StandardScaler()
+    # data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
+
+    data['crisis_year'] = (data['Year'] == 2008) | (data['Year'] == 2020)
+
+    print (data['crisis_year'][data['crisis_year'] == True])
 
     # regression eqn 
-    gamma_glm = smf.glm("ROE ~ ESG + Q", 
+    gamma_glm = smf.glm("ROE ~ ESG + Q + crisis_year", 
                         data=data,
                         family=sm.families.Gamma(link=sm.genmod.families.links.Log())).fit()
 
     print (gamma_glm.summary())
+    print (round(gamma_glm.aic),5)
+    print (round(gamma_glm.bic),5)
     print ()
 
     # inv_gauss_glm = smf.glm("ROE ~ ESG + Q", 
@@ -445,6 +451,8 @@ def gaussian_glm(index, measure, scores):
     s_df = melt_df(wrangle.scores(index, 's'), 's')
     g_df = melt_df(wrangle.scores(index, 'g'), 'g')
     q_df = melt_df(wrangle.returns(index, 'q'), 'q')
+
+    roa_df = melt_df(wrangle.returns(index, 'roa'), 'roa')
 
     if not scores: 
         scores = ['E','S','G']
@@ -482,7 +490,12 @@ def gaussian_glm(index, measure, scores):
                         right=q_df, 
                         on=['Identifier', 'Company Name', 'Year'], 
                         how='inner')
-
+        
+        data = pd.merge(left=data, 
+                        right=roa_df, 
+                        on=['Identifier', 'Company Name', 'Year'], 
+                        how='inner')
+        
     if type(scores) == list:
         log.info(f"Running GLM for {index.upper()} and {measure.upper()} for E,S,G individual pillars")
 
@@ -495,10 +508,10 @@ def gaussian_glm(index, measure, scores):
         scores = 'E,S,G'
         X = data[['E', 'S', 'G', 'Q']]
 
-        eqn = f"{measure.upper()} ~ E + S + G + Q"
+        eqn = f"{measure.upper()} ~ E + S + G + Q + crisis_year"
 
-        scaler = StandardScaler()
-        data[['E', 'S', 'G', 'Q']] = scaler.fit_transform(data[['E', 'S', 'G', 'Q']])
+        # scaler = StandardScaler()
+        # data[['E', 'S', 'G', 'Q']] = scaler.fit_transform(data[['E', 'S', 'G', 'Q']])
 
     else:
         log.info (f"Running GLM for {index.upper()} and {measure.upper()} for {scores} scores")
@@ -511,12 +524,12 @@ def gaussian_glm(index, measure, scores):
         # removing n-1 year ESG data
         data.dropna(inplace=True)
 
-        X = data[['ESG', 'Q']]
-        eqn = f"{measure.upper()} ~ ESG + Q"
+        X = data[['ESG', 'Q', 'ROA']]
+        eqn = f"{measure.upper()} ~ ESG + Q + ROA + crisis_year"
 
         # to do a before/after comparison - concl: not needed
-        scaler = StandardScaler()
-        data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
+        # scaler = StandardScaler()
+        # data[['ESG', 'Q']] = scaler.fit_transform(data[['ESG', 'Q']])
 
     log.info (f"old: min val: {round(data[measure.upper()].min(), 5)}, max val: {round(data[measure.upper()].max(), 5)}")
     log.info ('')
@@ -529,21 +542,93 @@ def gaussian_glm(index, measure, scores):
     # log (1+x) transformation
     data[measure.upper()] = np.sign(data[measure.upper()]) * np.log1p(np.abs(data[measure.upper()]))
 
-    log.info (f"new: min val: {round(data[measure.upper()].min(), 5)}, max val: {round(data[measure.upper()].max(), 5)}")
-    log.info ('')
-    log.info (f"skewness: {data[measure.upper()].skew()}, kurtosis: {data[measure.upper()].kurtosis()}")
-    log.info ('')
+    '''
+    Yeo-Johnson Transformation 
+        worse than log(1+p) transformation
+    '''
+    # pt = PowerTransformer('yeo-johnson')
+    # data[measure.upper()] = pt.fit_transform(data[measure.upper()].values.reshape(-1,1))
+
+    shapiro_stat, shapiro_p = stats.shapiro(data[measure.upper()])
+
+    print("Shapiro-Wilk Test statistic:", round(shapiro_stat, 15))
+    print("Shapiro-Wilk Test p-value:", round(shapiro_p, 15))
+    print ()
+
+    if shapiro_p < 0.05:
+        log.info(f"{measure.upper()} is not normally distributed")
+        log.info("")
     
+    else: 
+        log.info(f"{measure.upper()} is normally distributed")
+        log.info('')
+
+    '''
+    dummy variable for crisis year to model them separately
+    crisis year = 2008, 2020
+
+    2008: financial crisis
+    2020: COVID-19 pandemic
+
+    too many outliers in the 2 years
+    '''
+    
+    data['crisis_year'] = (data['Year'] == 2008) | (data['Year'] == 2020)
+
     # calculating variance inflation factor to test for multicollinearity
     vif_data = pd.DataFrame()
     vif_data["Variable"] = X.columns
     vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
-
+    
     # Gaussian regression eqn 
     gaussian_glm = smf.glm(eqn, 
                         data=data,
-                        family=sm.families.Gaussian()).fit()
+                        family=sm.families.Gaussian()).fit(
+                            # cov_type='HC3'
+                        )
+    
+    # check for heteroscedasticity
+    # diagnostic test - Breusch-Pagan test
+    '''
+    H0: Homoscedasticity present, p >= 0.05
+    H1: Heteroscedasticity present, p < 0.05
+    '''
+    bp_test = het_breuschpagan(gaussian_glm.resid_deviance, gaussian_glm.model.exog)
+    
+    bp_test_statistic, bp_test_p_value, _, _ = bp_test
 
+    if bp_test_p_value >= 0.05: bp_response = "Fail to reject H0; Homoscedasticity present"
+    else: bp_response = "Reject H0; Heteroscedasticity present"
+
+    # calculate pearson-chi2 p-value
+    pearson_chi2 = gaussian_glm.pearson_chi2
+    res = gaussian_glm.df_resid
+    p_val = 1 - stats.chi2.cdf(pearson_chi2, res)
+
+    sm.qqplot(gaussian_glm.resid_deviance,
+              line='45')
+    plt.title('QQ Plot of Gaussian GLM Residuals')
+    plt.show()
+
+    sns.histplot(gaussian_glm.resid_deviance, kde=True)
+    plt.title('Histogram of Residuals')
+    plt.show()
+
+    # verify if good fit
+    '''
+    Pearson Chi-2 Test
+    H0: Good model fit, p >= 0.05
+    H1: Bad model fit, p < 0.05
+    '''
+
+    if p_val >= 0.05: pc_response = 'Fail to reject H0; good fit'
+    else: pc_response = 'Reject H0; bad fit'
+
+    log.info (f"Pearson Chi-2 check: {pc_response}")
+    log.info ('Refer to regression.py for code')
+    log.info ('')
+
+    # export result to file
     output_path = f"{config.glm_path}/{index.upper()}/"
 
     os.makedirs(output_path,
@@ -555,7 +640,14 @@ def gaussian_glm(index, measure, scores):
     with open (output_path, 'w') as result:
         result.write(f'Variance Inflation Factor for {scores} / {measure.upper()} \n')
         result.write(f"{str(vif_data)} \n\n")
+        result.write(f"Regression Equation: {eqn} \n\n")
         result.write(str(gaussian_glm.summary()))
+        result.write('\n\n')
+        result.write(f"Breusch-Pagan p-value: {round(bp_test_p_value, 5)}\n{bp_response}\n\n")
+        result.write(f"Pearson Chi-2 p-value: {round(p_val, 5)}\n{pc_response}\n\n")
+        result.write(f"AIC Value: {str(round(gaussian_glm.aic, 5))}\n")
+        result.write(f"BIC Value: {str(round(gaussian_glm.bic_llf, 5))}")
+        
 
     log.info (f"{filename} saved to .../results/glm/{index.upper()} directory")
 

@@ -50,7 +50,7 @@ def returns(index, measure):
     
     # filter on specified industry
     log.info (f'Filtering returns_df according to specified industry...')
-    returns_df = returns_df.loc[returns_df.index.get_level_values('GICS Industry Name'.isin(industry_list))]
+    returns_df = returns_df.loc[returns_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
     
     # sort Company Name in ascending order
     returns_df.sort_values(by='Company Name',

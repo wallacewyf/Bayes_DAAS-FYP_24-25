@@ -30,6 +30,7 @@ start = datetime.datetime.now()
 # Descriptive Statistics
 # ---------------------------------------------------
 # descriptive.agg_desc(type='scores')
+# descriptive.agg_desc(type='finp')
 
 # descriptive.desc(
 #     index='msci', 
@@ -38,11 +39,21 @@ start = datetime.datetime.now()
 # )
 
 # # Gaussian GLM Regression
+regression.gaussian_glm(
+    index='msci', 
+    measure='roe', 
+    scores=True
+)
+
+
 # regression.gaussian_glm(
 #     index='msci', 
 #     measure='roe', 
-#     scores=True
+#     scores=False
 # )
+
+df = wrangle.scores(index='msci', measure='esg')
+df.to_csv(config.results_path + 'esg.csv')
 
 
 stop = datetime.datetime.now()
