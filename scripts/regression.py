@@ -495,7 +495,23 @@ def gaussian_glm(index, measure, scores):
                         right=roa_df, 
                         on=['Identifier', 'Company Name', 'Year'], 
                         how='inner')
-        
+    
+
+    '''
+    dummy variable for crisis year to model them separately
+    crisis year = 2008, 2020
+
+    2008: financial crisis
+    2020: COVID-19 pandemic
+
+    too many outliers in the 2 years
+    '''
+
+    data['crisis_year'] = (data['Year'] == 2008) | (data['Year'] == 2020)
+    data['post_kyoto'] = (data['Year'] >= 2005)
+    data['post_paris'] = (data['Year'] >= 2015) 
+
+
     if type(scores) == list:
         log.info(f"Running GLM for {index.upper()} and {measure.upper()} for E,S,G individual pillars")
 
@@ -508,7 +524,7 @@ def gaussian_glm(index, measure, scores):
         scores = 'E,S,G'
         X = data[['E', 'S', 'G', 'Q']]
 
-        eqn = f"{measure.upper()} ~ E + S + G + Q + crisis_year"
+        eqn = f"{measure.upper()} ~ E + S + G + Q + crisis_year + post_paris + post_kyoto"
 
         # scaler = StandardScaler()
         # data[['E', 'S', 'G', 'Q']] = scaler.fit_transform(data[['E', 'S', 'G', 'Q']])
@@ -524,8 +540,8 @@ def gaussian_glm(index, measure, scores):
         # removing n-1 year ESG data
         data.dropna(inplace=True)
 
-        X = data[['ESG', 'Q', 'ROA']]
-        eqn = f"{measure.upper()} ~ ESG + Q + ROA + crisis_year"
+        X = data[['ESG', 'Q']]
+        eqn = f"{measure.upper()} ~ ESG + Q + ROA + crisis_year + post_paris + post_kyoto"
 
         # to do a before/after comparison - concl: not needed
         # scaler = StandardScaler()
@@ -563,18 +579,6 @@ def gaussian_glm(index, measure, scores):
 
     if shapiro_p < 0.05: shapiro_res = "Fail to reject H0; not normally distributed"
     else: shapiro_res = "Reject H0; normally distributed"
-    
-    '''
-    dummy variable for crisis year to model them separately
-    crisis year = 2008, 2020
-
-    2008: financial crisis
-    2020: COVID-19 pandemic
-
-    too many outliers in the 2 years
-    '''
-    
-    data['crisis_year'] = (data['Year'] == 2008) | (data['Year'] == 2020)
 
     # calculating variance inflation factor to test for multicollinearity
     vif_data = pd.DataFrame()
@@ -608,11 +612,11 @@ def gaussian_glm(index, measure, scores):
 
     sm.qqplot(gaussian_glm.resid_deviance,
               line='45')
-    plt.title('QQ Plot of Gaussian GLM Residuals')
+    plt.title(f'QQ Plot of Gaussian GLM Residuals\n{eqn}')
     plt.show()
 
     sns.histplot(gaussian_glm.resid_deviance, kde=True)
-    plt.title('Histogram of Residuals')
+    plt.title(f'Histogram of Residuals\n{eqn}')
     plt.show()
 
     # verify if good fit
