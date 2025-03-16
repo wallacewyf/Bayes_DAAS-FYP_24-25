@@ -43,7 +43,7 @@ ftse_returns = data_path + 'Returns_FTSE350_20Y.xlsx'
 # Available at: https://www.msci.com/our-solutions/indexes/gics (Accessed: 13 March 2025)
 
 gics = data_path + 'GICS_table.xlsx'
-gics_industry_name = 'Information Technology'
+gics_industry_name = ['Information Technology', 'Financials']
 
 # logging basic config
 os.makedirs(log, exist_ok=True)

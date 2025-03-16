@@ -110,6 +110,12 @@ def agg_desc(type):
                     'STOXX 600',
                     'FTSE 350']
         
+        
+        ''' 
+        Merge and retain only companies that exists throughout
+        '''
+    
+
         log.info(f'Exporting {each_measure.upper()} dataframe into csv file in .../descriptive')
         filename = f"{each_measure.upper()} Aggregated Statistics.csv"
 

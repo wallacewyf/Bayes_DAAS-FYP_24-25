@@ -29,8 +29,8 @@ start = datetime.datetime.now()
 
 # Descriptive Statistics
 # ---------------------------------------------------
-# descriptive.agg_desc(type='scores')
-# descriptive.agg_desc(type='finp')
+descriptive.agg_desc(type='scores')
+descriptive.agg_desc(type='finp')
 
 # descriptive.desc(
 #     index='msci', 
@@ -38,12 +38,12 @@ start = datetime.datetime.now()
 #     macro=False
 # )
 
-# # Gaussian GLM Regression
-regression.gaussian_glm(
-    index='msci', 
-    measure='roe', 
-    scores=True
-)
+# Gaussian GLM Regression
+# regression.gaussian_glm(
+#     index='msci', 
+#     measure='roe', 
+#     scores=True
+# )
 
 
 # regression.gaussian_glm(
@@ -51,6 +51,7 @@ regression.gaussian_glm(
 #     measure='roe', 
 #     scores=False
 # )
+
 
 stop = datetime.datetime.now()
 

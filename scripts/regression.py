@@ -41,7 +41,6 @@ log = config.logging
 # only visualise them if additional word count quota
 # """
 
-
 # --------------------------------------------------------------------
 # Regression Analysis 
 
@@ -49,17 +48,21 @@ log = config.logging
 def melt_df(df, measure):
     log.info (f"Melting {measure.upper()} dataframe into long format...")
     df = df.reset_index()
-    
-    df.drop(columns=['GICS Industry Name', 'Exchange Name'], inplace=True)
+
+    df.drop(columns=['Exchange Name'], inplace=True)
     df.dropna(inplace=True)
     
-    df= df.melt(
-        id_vars=['Identifier', 'Company Name'],
+    df = df.melt(
+        id_vars=['Identifier', 'Company Name', 'GICS Industry Name'],
         var_name='Year',
         value_name=measure.upper()
     )
 
+    print (df)
+
     return df 
+
+melt_df(wrangle.returns('msci', 'roe'), 'roe')
 
 # Test for Normality
 # We've confirmed that the returns aren't normally distributed
@@ -459,22 +462,22 @@ def gaussian_glm(index, measure, scores):
 
         data = pd.merge(left=measure_df, 
                         right=e_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
 
         data = pd.merge(left=data, 
                         right=s_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
 
         data = pd.merge(left=data, 
                         right=g_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
 
         data = pd.merge(left=data, 
                         right=q_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
 
     else: 
@@ -483,20 +486,20 @@ def gaussian_glm(index, measure, scores):
         # merging to ensure PK on table (removing duplicates)
         data = pd.merge(left=measure_df, 
                         right=esg_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
 
         data = pd.merge(left=data, 
                         right=q_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
         
         data = pd.merge(left=data, 
                         right=roa_df, 
-                        on=['Identifier', 'Company Name', 'Year'], 
+                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
     
-
+ 
     '''
     dummy variable for crisis year to model them separately
     crisis year = 2008, 2020
@@ -506,11 +509,15 @@ def gaussian_glm(index, measure, scores):
 
     too many outliers in the 2 years
     '''
+    
+    data['industry'] = data['GICS Industry Name'].apply(lambda x: True if x in wrangle.industry_list else False)    
+    data['crisis'] = (data['Year'] == 2008) | (data['Year'] == 2020)
+    data['kyoto'] = (data['Year'] >= 2005)
+    data['paris'] = (data['Year'] >= 2015) 
 
-    data['crisis_year'] = (data['Year'] == 2008) | (data['Year'] == 2020)
-    data['post_kyoto'] = (data['Year'] >= 2005)
-    data['post_paris'] = (data['Year'] >= 2015) 
+    data.drop(columns='GICS Industry Name', inplace=True)
 
+    data.to_csv(config.results_path + 'test.csv')
 
     if type(scores) == list:
         log.info(f"Running GLM for {index.upper()} and {measure.upper()} for E,S,G individual pillars")
@@ -524,7 +531,7 @@ def gaussian_glm(index, measure, scores):
         scores = 'E,S,G'
         X = data[['E', 'S', 'G', 'Q']]
 
-        eqn = f"{measure.upper()} ~ E + S + G + Q + crisis_year + post_paris + post_kyoto"
+        eqn = f"{measure.upper()} ~ E + S + G + Q + crisis + kyoto + paris + industry"
 
         # scaler = StandardScaler()
         # data[['E', 'S', 'G', 'Q']] = scaler.fit_transform(data[['E', 'S', 'G', 'Q']])
@@ -541,7 +548,7 @@ def gaussian_glm(index, measure, scores):
         data.dropna(inplace=True)
 
         X = data[['ESG', 'Q']]
-        eqn = f"{measure.upper()} ~ ESG + Q + ROA + crisis_year + post_paris + post_kyoto"
+        eqn = f"{measure.upper()} ~ ESG + Q + ROA + crisis + kyoto + paris + industry"
 
         # to do a before/after comparison - concl: not needed
         # scaler = StandardScaler()
@@ -626,10 +633,10 @@ def gaussian_glm(index, measure, scores):
     H1: Bad model fit, p < 0.05
     '''
 
-    if p_val >= 0.05: pc_response = 'Fail to reject H0; good fit'
-    else: pc_response = 'Reject H0; bad fit'
+    if p_val >= 0.05: pc2_response = 'Fail to reject H0; good fit'
+    else: pc2_response = 'Reject H0; bad fit'
 
-    log.info (f"Pearson Chi-2 check: {pc_response}")
+    log.info (f"Pearson Chi-2 check: {pc2_response}")
     log.info ('Refer to regression.py for code')
     log.info ('')
 
@@ -650,7 +657,7 @@ def gaussian_glm(index, measure, scores):
         result.write('\n\n')
         result.write(f"Shapiro-Wilks p-value: {round(shapiro_p, 5)}\n{shapiro_res}\n\n")
         result.write(f"Breusch-Pagan p-value: {round(bp_test_p_value, 5)}\n{bp_response}\n\n")
-        result.write(f"Pearson Chi-2 p-value: {round(p_val, 5)}\n{pc_response}\n\n")
+        result.write(f"Pearson Chi-2 p-value: {round(p_val, 5)}\n{pc2_response}\n\n")
         result.write(f"AIC Value: {str(round(gaussian_glm.aic, 5))}\n")
         result.write(f"BIC Value: {str(round(gaussian_glm.bic_llf, 5))}")
         
