@@ -1,0 +1,37 @@
+Variance Inflation Factor for ESG / ROE 
+  Variable       VIF
+0      ESG  1.297373
+1        Q  1.297373 
+
+Regression Equation: ROE ~ ESG + Q 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                 2420
+Model:                            GLM   Df Residuals:                     2417
+Model Family:                Gaussian   Df Model:                            2
+Link Function:               Identity   Scale:                       0.0021789
+Method:                          IRLS   Log-Likelihood:                 3983.7
+Date:                Mon, 17 Mar 2025   Deviance:                       5.2664
+Time:                        17:25:07   Pearson chi2:                     5.27
+No. Iterations:                     3   Pseudo R-squ. (CS):            0.02152
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.0399      0.003    635.656      0.000       2.034       2.046
+ESG         8.793e-05   4.86e-05      1.810      0.070   -7.27e-06       0.000
+Q              0.0044      0.001      7.134      0.000       0.003       0.006
+==============================================================================
+
+Shapiro-Wilks p-value: 0.0
+Fail to reject H0; not normally distributed
+
+Breusch-Pagan p-value: 0.12932
+Fail to reject H0; Homoscedasticity present
+
+Pearson Chi-2 p-value: 1.0
+Fail to reject H0; good fit
+
+AIC Value: -7961.34709
+BIC Value: -7943.97252

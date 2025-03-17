@@ -12,10 +12,6 @@ import config, wrangle
 # initialize logger module 
 log = config.logging
 
-# initialize runtime module
-start = datetime.datetime.now()
-
-
 # ------------------------------------------------------------------------
 # Descriptive Statistics
 
@@ -128,15 +124,7 @@ def agg_desc(type):
         
         df.drop(df.index, inplace=True)
 
-
 # codespace starts here
 # ----------------------------------------------------------------------
 
-# desc(index='all', 
-#     measure='all',
-#     macro=False)
-
-# desc(index='all', 
-#     measure='all',
-#     macro=True)
-
+# agg_desc('scores')

@@ -53,6 +53,8 @@ log.info ('')
 log.info (f"Tech Cluster: {tech}")
 log.info ('')
 
+
+
 def returns(index, measure):
     # path = filepath from config
     # measure = measure of table requested
@@ -79,6 +81,17 @@ def returns(index, measure):
     log.info (f'Filtering returns_df according to specified industry...')
     returns_df = returns_df.loc[returns_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
     
+    '''
+    Since we need to handle missing data to ensure n observations
+    remain the same throughout while running descriptive statistics
+    for financial returns only since ESG data are consistent throughout
+    we should try the below:
+
+    TA and MKTCAP is excluded since Q includes both in the eqn    
+    '''
+
+    returns_df['Identifier'] = f"{index.upper()}/{measure.upper()}"
+
     # sort Company Name in ascending order
     returns_df.sort_values(by='Company Name',
                             axis=0,
@@ -150,7 +163,7 @@ def returns(index, measure):
         log.info ('Q Ratio calculation completed.')
 
         return q_ratio
-    
+
 def scores(index, measure):
     # path = filepath from config
     # measure = measure of table requested 
@@ -238,3 +251,67 @@ def output(index, measure):
     
     elif measure in ['esg', 'e', 's', 'g']:
         return scores(index, measure)
+    
+roe = pd.concat([returns('msci', 'roe'),
+                returns('nasdaq', 'roe'),
+                returns('ftse', 'roe'),
+                returns('stoxx', 'roe'),
+                returns('snp', 'roe')],
+                axis=0,
+                join='inner')
+
+roa = pd.concat([returns('msci', 'roa'), 
+                returns('nasdaq', 'roa'),
+                returns('ftse', 'roa'),
+                returns('stoxx', 'roa'),
+                returns('snp', 'roa')],
+                axis=0,
+                join='inner')
+
+q = pd.concat([returns('msci', 'q'), 
+                returns('nasdaq', 'q'),
+                returns('ftse', 'q'),
+                returns('stoxx', 'q'),
+                returns('snp', 'q')],
+                axis=0,
+                join='inner')
+
+df = pd.concat([roe, roa, q], 
+            axis=1)
+
+# sort Company Name in ascending order
+df.sort_values(by='Company Name',
+                        axis=0,
+                        ascending=True,
+                        inplace=True)
+
+df.dropna(inplace=True)
+
+df.drop_duplicates().to_csv(config.results_path + 'test.csv')
+
+roe = df.iloc[:, 0:20].drop_duplicates()
+roa = df.iloc[:, 20:40].drop_duplicates()
+q = df.iloc[:, 40:60].drop_duplicates()
+
+print (roe.head())
+
+roe = roe.reset_index()
+roe.drop(columns=['Exchange Name'], inplace=True)
+roe = roe.melt(
+    id_vars = ['Identifier', 'Company Name', 'GICS Industry Name'],
+    var_name='Year', 
+    value_name='ROE'
+    )
+
+# new structure
+
+# clean: 
+    # add new col with filename i.e. NASDAQ/MSCI in df 
+    # combine all of them into one single df
+    # ensure all rows are aligned and joined with
+    # the same companies
+
+# data: 
+    # e.g. NASDAQ, ROE passed into data function
+    # would return NASDAQ components ROE
+

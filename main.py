@@ -29,8 +29,8 @@ start = datetime.datetime.now()
 
 # Descriptive Statistics
 # ---------------------------------------------------
-descriptive.agg_desc(type='scores')
-descriptive.agg_desc(type='finp')
+# descriptive.agg_desc(type='scores')
+# descriptive.agg_desc(type='finp')
 
 # descriptive.desc(
 #     index='msci', 

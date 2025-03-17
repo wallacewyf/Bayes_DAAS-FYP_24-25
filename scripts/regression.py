@@ -455,8 +455,6 @@ def gaussian_glm(index, measure, scores):
     g_df = melt_df(wrangle.scores(index, 'g'), 'g')
     q_df = melt_df(wrangle.returns(index, 'q'), 'q')
 
-    roa_df = melt_df(wrangle.returns(index, 'roa'), 'roa')
-
     if not scores: 
         scores = ['E','S','G']
 
@@ -493,27 +491,22 @@ def gaussian_glm(index, measure, scores):
                         right=q_df, 
                         on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
                         how='inner')
-        
-        data = pd.merge(left=data, 
-                        right=roa_df, 
-                        on=['Identifier', 'Company Name', 'GICS Industry Name', 'Year'], 
-                        how='inner')
-    
- 
-    '''
-    dummy variable for crisis year to model them separately
-    crisis year = 2008, 2020
 
-    2008: financial crisis
-    2020: COVID-19 pandemic
-
-    too many outliers in the 2 years
-    '''
     
-    data['industry'] = data['GICS Industry Name'].apply(lambda x: True if x in wrangle.industry_list else False)    
-    data['crisis'] = (data['Year'] == 2008) | (data['Year'] == 2020)
-    data['kyoto'] = (data['Year'] >= 2005)
-    data['paris'] = (data['Year'] >= 2015) 
+    # '''
+    # dummy variable for crisis year to model them separately
+    # crisis year = 2008, 2020
+
+    # 2008: financial crisis
+    # 2020: COVID-19 pandemic
+
+    # too many outliers in the 2 years
+    # '''
+    
+    # data['industry'] = data['GICS Industry Name'].apply(lambda x: True if x in wrangle.industry_list else False)    
+    # data['crisis'] = (data['Year'] == 2008) | (data['Year'] == 2020)
+    # data['kyoto'] = (data['Year'] >= 2005)
+    # data['paris'] = (data['Year'] >= 2015) 
 
     data.drop(columns='GICS Industry Name', inplace=True)
 
@@ -531,7 +524,7 @@ def gaussian_glm(index, measure, scores):
         scores = 'E,S,G'
         X = data[['E', 'S', 'G', 'Q']]
 
-        eqn = f"{measure.upper()} ~ E + S + G + Q + crisis + kyoto + paris + industry"
+        eqn = f"{measure.upper()} ~ E + S + G + Q"
 
         # scaler = StandardScaler()
         # data[['E', 'S', 'G', 'Q']] = scaler.fit_transform(data[['E', 'S', 'G', 'Q']])
@@ -548,7 +541,7 @@ def gaussian_glm(index, measure, scores):
         data.dropna(inplace=True)
 
         X = data[['ESG', 'Q']]
-        eqn = f"{measure.upper()} ~ ESG + Q + ROA + crisis + kyoto + paris + industry"
+        eqn = f"{measure.upper()} ~ ESG + Q"
 
         # to do a before/after comparison - concl: not needed
         # scaler = StandardScaler()
