@@ -1,0 +1,26 @@
+Variance Inflation Factor table
+  Variable       VIF
+0      ESG  1.021986
+1  Q_Ratio  1.021986
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                 4189
+Model:                            GLM   Df Residuals:                     4186
+Model Family:                   Gamma   Df Model:                            2
+Link Function:           InversePower   Scale:                          5.1328
+Method:                          IRLS   Log-Likelihood:                    nan
+Date:                Tue, 18 Mar 2025   Deviance:                       14413.
+Time:                        23:10:30   Pearson chi2:                 2.15e+04
+No. Iterations:                    17   Pseudo R-squ. (CS):                nan
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      7.0483      0.721      9.777      0.000       5.635       8.461
+ESG            0.0050      0.013      0.373      0.709      -0.021       0.031
+Q_Ratio       -0.2166      0.008    -27.058      0.000      -0.232      -0.201
+==============================================================================

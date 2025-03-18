@@ -39,7 +39,8 @@ def notes():
     Checked 2008 data - different shape from existing shape
     Outliers are real - but linearity to be confirmed
 
-    Tried 
+    Tried with and without lag, results are sved in results dir
+    {industry}_lm folder
     Previous model used Gaussian    
     '''
 
