@@ -20,7 +20,7 @@ def desc(industry):
         '''
         Descriptive Statistics for Financial Companies 
         '''
-        data = wrangle.access_finance('all')
+        data = wrangle.access_data("finance")
         output = os.path.join(config.desc_path, 'Descriptive - Financials.csv')
         desc = data.describe()
 
@@ -34,7 +34,7 @@ def desc(industry):
         '''
         Descriptive Statistics for Technology Companies
         '''
-        data = wrangle.access_tech('all')
+        data = wrangle.access_data("tech")
         output = os.path.join(config.desc_path, 'Descriptive - Technology.csv')
         desc = data.describe()
 

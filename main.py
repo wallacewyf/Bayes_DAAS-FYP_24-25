@@ -29,15 +29,14 @@ start = datetime.datetime.now()
 
 # Descriptive Statistics
 # ===========================================================================
-# Descriptive Statistics for Technology Companies
-descriptive.desc(industry='Technology')
+# # Descriptive Statistics for Technology Companies
+# descriptive.desc(industry='Technology')
 
-# Descriptive Statistics for Financial Companies
-descriptive.desc(industry='Financials')
+# # Descriptive Statistics for Financial Companies
+# descriptive.desc(industry='Financials')
 
 # Descriptive Statistics for both Financial and Technology Companies
-descriptive.desc(industry='All')
-
+descriptive.desc(industry='Finance')
 
 # Gaussian GLM Regression
 # ===========================================================================

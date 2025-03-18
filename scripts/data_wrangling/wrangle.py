@@ -191,6 +191,17 @@ log.info (f"Data wrangling complete!")
 # Functions 
 # ===========================================================================
 
+# Access all data:
+def access_data(industry):
+    if industry.lower().startswith("fin"):
+        return finance
+    
+    elif industry.lower().startswith("tech"):
+        return tech
+    
+    elif industry.lower() == 'all':
+        return df
+    
 # Access technology data
 def access_tech(measure): 
     if measure == 'all':

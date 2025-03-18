@@ -1,0 +1,35 @@
+Variance Inflation Factor table
+  Variable  VIF Value
+0    const  11.017488
+1      ESG   1.001254
+2  Q_Ratio   1.001254
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:             ROE_Lagged   R-squared:                       0.013
+Model:                            OLS   Adj. R-squared:                  0.012
+Method:                 Least Squares   F-statistic:                     21.83
+Date:                Tue, 18 Mar 2025   Prob (F-statistic):           3.80e-10
+Time:                        22:40:58   Log-Likelihood:                -5557.5
+No. Observations:                3402   AIC:                         1.112e+04
+Df Residuals:                    3399   BIC:                         1.114e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -1.8379      0.071    -26.046      0.000      -1.976      -1.700
+ESG           -0.0027      0.001     -2.198      0.028      -0.005      -0.000
+Q_Ratio        0.0177      0.003      6.150      0.000       0.012       0.023
+==============================================================================
+Omnibus:                     1783.598   Durbin-Watson:                   1.995
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            19644.465
+Skew:                           2.253   Prob(JB):                         0.00
+Kurtosis:                      13.876   Cond. No.                         187.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.

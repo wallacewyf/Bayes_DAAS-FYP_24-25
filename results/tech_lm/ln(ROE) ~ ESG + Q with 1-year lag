@@ -1,0 +1,37 @@
+Variance Inflation Factor table
+  Variable  VIF Value
+0    const   9.916662
+1      ESG   1.000365
+2  Q_Ratio   1.000365
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:             ROE_Lagged   R-squared:                       0.003
+Model:                            OLS   Adj. R-squared:                  0.002
+Method:                 Least Squares   F-statistic:                     3.074
+Date:                Tue, 18 Mar 2025   Prob (F-statistic):             0.0465
+Time:                        22:48:20   Log-Likelihood:                -3216.0
+No. Observations:                2005   AIC:                             6438.
+Df Residuals:                    2002   BIC:                             6455.
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -1.4230      0.085    -16.803      0.000      -1.589      -1.257
+ESG           -0.0018      0.001     -1.204      0.229      -0.005       0.001
+Q_Ratio     4.703e-05   2.19e-05      2.144      0.032    4.02e-06       9e-05
+==============================================================================
+Omnibus:                      855.814   Durbin-Watson:                   1.969
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             5686.697
+Skew:                           1.881   Prob(JB):                         0.00
+Kurtosis:                      10.343   Cond. No.                     3.87e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 3.87e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.
