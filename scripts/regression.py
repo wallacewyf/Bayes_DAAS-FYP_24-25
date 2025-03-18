@@ -41,7 +41,7 @@ log = config.logging
 # only visualise them if additional word count quota
 # """
 
-# --------------------------------------------------------------------
+# ===========================================================================
 # Regression Analysis 
 
 # Converting DataFrames from wide format to long format (series) for regression analysis
@@ -61,8 +61,6 @@ def melt_df(df, measure):
     print (df)
 
     return df 
-
-melt_df(wrangle.returns('msci', 'roe'), 'roe')
 
 # Test for Normality
 # We've confirmed that the returns aren't normally distributed

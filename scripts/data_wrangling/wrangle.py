@@ -3,315 +3,220 @@ import config
 
 # import libraries
 import pandas as pd
-import numpy as np
-import os
 
 # initialize logger module 
 log = config.logging
 
-col_names = list(range(2023, 2003, -1))
+returns_col  = list(range(2004,2024)) * 6
+scores_col = list(range(2004, 2024)) * 4
+index_names = ['Company Name', 'GICS Sector Name']
 
-finance = []
-tech = []
+# According to GICS Classification - only Financial and Technology companies
+# Official classification names can be found here: 
+# MSCI, 2025. The Global Industry Classification Standard (GICS®) 
+# Available at: https://www.msci.com/our-solutions/indexes/gics (Accessed: 13 March 2025)
 
-# extracting industry list
-log.info (f"Extracting GICS Industry Names...")
-industry = pd.read_excel(config.gics, skiprows=3, usecols=[1,3,5,7])
-industry.ffill(inplace=True)
-industry = industry.set_axis(['Sector', 'Industry Group', 'Industry', 'Sub-Industry'],
-                            axis=1)
-industry.set_index(['Sector'], inplace=True)
+sector_scope = ['Financials', 'Information Technology']
 
-log.info (f"GICS Categories {config.gics_industry_name} recognized.")
-industry = industry.loc[config.gics_industry_name]
-industry_list = industry.iloc[:, 1].unique()
+# Financial Returns
+# ===========================================================================
+log.info (f"Reading Financial Returns data...")
+returns = pd.read_excel(config.returns,
+                        index_col = [1,2],
+                        skiprows=2)
 
-industry_list = np.array([item.replace('(New Name)', '')
-                            .replace('(Discontinued)', '')
-                            .replace('\n', ' ').strip() for item in industry_list])
+returns.index.names = index_names
 
-log.info (f"Categorizing into {config.gics_industry_name} clusters...")
-for sector in config.gics_industry_name:
-    if sector == 'Information Technology': 
-        tech.extend([item.replace('(New Name)', '')
-                              .replace('(Discontinued)', '')
-                              .replace('\n', ' ').strip() 
-                              for item in industry.loc[sector, 'Industry'].unique()])
-    
-    elif sector == 'Financials': 
-        finance.extend([item.replace('(New Name)', '')
-                              .replace('(Discontinued)', '')
-                              .replace('\n', ' ').strip() 
-                              for item in industry.loc[sector, 'Industry'].unique()])
+# drop Identifier (Company RIC Code)
+returns = returns.iloc[:, 1:]
 
-log.info (f"Industry scope: {industry_list}")
-log.info ('')
+# sort by ascending order on Company Name
+returns.sort_values(by=['Company Name'],
+                   axis=0, 
+                   ascending=True, 
+                   inplace=True)
 
-log.info (f"Finance Cluster: {finance}")
-log.info ('')
+# set column headers to be 2004, 2005, ..., 2023
+returns = returns.set_axis(returns_col, axis=1)
 
-log.info (f"Tech Cluster: {tech}")
-log.info ('')
+log.warning (f"Extracting only {sector_scope} industries for Financial Returns...")
+# Extract only Financials and Tech
+returns = returns.loc[returns.index.get_level_values('GICS Sector Name').isin(sector_scope)]
 
+log.warning(f"Melting dataframes into long format...")
+# Return on Equity - Actual
+roe = returns.iloc[:, :20].melt(var_name='Year', 
+                                value_name='ROE',
+                                ignore_index=False)
 
+# Return on Assets - Actual 
+roa = returns.iloc[:, 20:40].melt(var_name='Year', 
+                                value_name='ROA',
+                                ignore_index=False).drop(columns=['Year'])
 
-def returns(index, measure):
-    # path = filepath from config
-    # measure = measure of table requested
+# Net Income - Actual
+net_income = returns.iloc[:, 80:100].melt(var_name='Year', 
+                                value_name='Net_Income',
+                                ignore_index=False).drop(columns=['Year'])
 
-    index, measure = index.lower(), measure.lower()
+# Shareholders' Equity
+eqi = returns.iloc[:, 100:].melt(var_name='Year', 
+                                value_name='EQI',
+                                ignore_index=False).drop(columns=['Year'])
 
-    if index == 'nasdaq': data = config.nasdaq_returns
-    elif index == 'snp': data = config.snp_returns
-    elif index == 'stoxx': data = config.stoxx_returns
-    elif index == 'ftse': data = config.ftse_returns
-    elif index == 'msci': data = config.msci_returns
-    else: 
-        print ('Invalid index!')
-        return
+# Company Market Cap
+mktcap = returns.iloc[:, 40:60]
 
-    returns_df = pd.read_excel(data, index_col=[0,1,2,3], skiprows=2)
-    # set index names
-    returns_df.index.names = ['Identifier', 
-                              'Company Name', 
-                              'GICS Industry Name', 
-                              'Exchange Name']
-    
-    # filter on specified industry
-    log.info (f'Filtering returns_df according to specified industry...')
-    returns_df = returns_df.loc[returns_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
-    
-    '''
-    Since we need to handle missing data to ensure n observations
-    remain the same throughout while running descriptive statistics
-    for financial returns only since ESG data are consistent throughout
-    we should try the below:
+# Total Assets, Reported
+ta = returns.iloc[:, 60:80]
 
-    TA and MKTCAP is excluded since Q includes both in the eqn    
-    '''
+log.info (f"Computing Q Ratio Calculations...")
 
-    returns_df['Identifier'] = f"{index.upper()}/{measure.upper()}"
+q = mktcap / ta
+q = q.melt(var_name='Year', 
+            value_name='Q_Ratio',
+            ignore_index=False).drop(columns=['Year'])
 
-    # sort Company Name in ascending order
-    returns_df.sort_values(by='Company Name',
-                            axis=0,
-                            ascending=True,
-                            inplace=True)
-    
+mktcap = mktcap.melt(var_name='Year', 
+                    value_name='MKTCAP',
+                    ignore_index=False).drop(columns=['Year'])
 
+ta = ta.melt(var_name='Year', 
+            value_name='TA',
+            ignore_index=False).drop(columns=['Year'])
+
+log.info (f"Merging all melted dataframes into a single dataframe...")
+returns = pd.concat([roe, roa, mktcap, ta, q, net_income, eqi],
+                    axis=1)
+
+returns.set_index('Year', 
+                  append=True, 
+                  inplace=True)
+
+log.info (f"Dropping duplicate rows in returns dataframe...")
+returns.drop_duplicates(inplace=True)
+
+log.warning (f"Running filter 1: ROE is NA but Net_Income and EQI not NA values")
+# Condition 1: ROE is NA but Net_Income and EQI not NA
+cond1 = returns['ROE'].isna() & returns['Net_Income'].notna() & returns['EQI'].notna()
+
+log.info (f"Calculating replacement ROE value...")
+returns.loc[cond1, 'ROE'] = returns.loc[cond1, 'Net_Income'] / returns.loc[cond1, 'EQI']
+
+log.warning (f"Running filter 2: ROA is NA but Net_Income and TA not NA")
+# Condition 2: ROA is NA but Net_Income and TA not NA
+cond2 = returns['ROA'].isna() & returns['Net_Income'].notna() & returns['TA'].notna()
+
+log.info (f"Calculating replacement ROA value...")
+returns.loc[cond2, 'ROA'] = returns.loc[cond2, 'Net_Income'] / returns.loc[cond2, 'TA']
+
+# Now omit MKTCAP, TA, Net_Income and EQI since will not be used in regression model
+returns = returns.iloc[:, [0,1,4]]
+
+# ESG Scores 
+# ===========================================================================
+log.info (f"Reading ESG data...")
+scores = pd.read_excel(config.scores,
+                       index_col = [1,2],
+                       skiprows = 2)
+
+scores.index.names = index_names
+
+log.warning (f"Extracting only {sector_scope} industries for ESG Scores...")
+scores = scores.loc[scores.index.get_level_values('GICS Sector Name').isin(sector_scope)]
+
+# drop Identifier (Company RIC Code)
+scores = scores.iloc[:, 1:]
+
+# set column headers to be 2004, 2005, ..., 2023
+scores = scores.set_axis(scores_col, axis=1)
+
+# sorting in ascending order by Company Name
+scores.sort_values(by=['Company Name'],
+                   axis=0, 
+                   ascending=True, 
+                   inplace=True)
+
+log.warning (f"Dropping duplicated rows in ESG scores dataframe...")
+scores.drop_duplicates(inplace=True)
+
+# ESG Scores
+esg = scores.iloc[:, :20]
+
+# E, S, G Individual Pillars
+log.info (f"Melting ESG dataframe into long format...")
+e_df = scores.iloc[:, 20:40]
+s_df = scores.iloc[:, 40:60]
+g_df = scores.iloc[:, 60:]
+
+esg = esg.melt(var_name='Year', 
+                value_name='ESG',
+                ignore_index=False)
+
+e_df = e_df.melt(var_name='Year', 
+                value_name='E',
+                ignore_index=False).drop(columns=['Year'])
+
+s_df = s_df.melt(var_name='Year', 
+                value_name='S',
+                ignore_index=False).drop(columns=['Year'])
+
+g_df = g_df.melt(var_name='Year', 
+                value_name='G',
+                ignore_index=False).drop(columns=['Year'])
+
+log.info (f"Merging melted arrays into scores dataframe... ")
+scores = pd.concat([esg, e_df, s_df, g_df], 
+                   axis=1)
+
+scores.set_index('Year', append=True, inplace=True)
+
+log.warning (f"Running filter 3: ROE, ROA, ESG are not NAs")
+
+# Condition 3: ROE, ROA, ESG are not NAs
+returns, scores = returns.align(scores, join='inner', axis=0)
+cond3 = returns['ROE'].notna() & returns['ROA'].notna() & returns['Q_Ratio'].notna() & scores['ESG'].notna()
+scores = scores[cond3]
+returns = returns[cond3]
+
+# Combine both Returns and Scores into 1 single dataframe 
+df = pd.concat([scores, returns], axis=1)
+
+# Splitting into 2 dataframes - Finance and Tech
+finance = df[df.index.get_level_values(1) == 'Financials']
+tech = df[df.index.get_level_values(1) == 'Information Technology']
+
+log.info (f"Data wrangling complete!")
+
+# Functions 
+# ===========================================================================
+
+# Access technology data
+def access_tech(measure): 
     if measure == 'all':
-        log.info (f'Extracting all financial returns for {index.upper()}...')
-        return returns_df
+        return tech
     
-    elif measure == 'roe':
-        # Return on Equity - Actual
-        log.info (f'Extracting Return on Equity for {index.upper()}...')
+    else:
+        if measure.lower().startswith('q'): 
+            measure == 'Q_Ratio'
 
-        roe_df = returns_df.iloc[:, :20]
-        roe_df = roe_df.set_axis(col_names, axis=1)
-        roe_df = roe_df.iloc[:, ::-1]
-
-        return roe_df
-    
-    elif measure == 'roa':
-        # Return on Assets - Actual
-        log.info (f'Extracting Return on Assets for {index.upper()}...')
-
-        roa_df = returns_df.iloc[:, 20:40]
-        roa_df = roa_df.set_axis(col_names, axis=1)
-        roa_df = roa_df.iloc[:, ::-1]
-
-        return roa_df
-
-    elif measure == 'mktcap':
-        # Market Capitalisation
-        log.info(f'Extracting Market Capitalisation for {index.upper()}...')
-
-        mkt_cap = returns_df.iloc[:, 40:60]
-        mkt_cap = mkt_cap.set_axis(col_names, axis=1)
-        mkt_cap = mkt_cap.iloc[:, ::-1]
-
-        return mkt_cap
-
-    elif measure == 'ta':
-        # Total Assets - Reported
-        ta_df = returns_df.iloc[:, 60:80]
-        ta_df = ta_df.set_axis(col_names, axis=1)
-        ta_df = ta_df.iloc[:, ::-1]
-
-        return ta_df
-
-    elif measure == 'q':
-        # Q Ratio
-        # Total Assets - Reported
-
-        log.info (f'Extracting Q Ratio for {index.upper()}...')
-
-        ta_df = returns_df.iloc[:, 60:80]
-        ta_df = ta_df.set_axis(col_names, axis=1)
-
-        # Market Capitalisation
-        mkt_cap = returns_df.iloc[:, 40:60]
-        mkt_cap = mkt_cap.set_axis(col_names, axis=1)
+            return tech[measure]
         
-        log.info ('Aligning dataframes for Q Ratio calculation...')
+        else: return tech[measure.upper()]
 
-        q_ta, q_mktcap = ta_df.align(mkt_cap, join='inner')
-        q_ratio = q_mktcap / q_ta
-        q_ratio = q_ratio.iloc[:, ::-1]
+# Access financial data
+def access_finance(measure): 
+    if measure == 'all':
+        return finance 
+    
+    else:
+        if measure.lower().startswith('q'): 
+            measure == 'Q_Ratio'
 
-        log.info ('Q Ratio calculation completed.')
-
-        return q_ratio
-
-def scores(index, measure):
-    # path = filepath from config
-    # measure = measure of table requested 
-    index, measure = index.lower(), measure.lower()
-
-    if index == 'nasdaq': data = config.nasdaq_esg
-    elif index == 'snp': data = config.snp_esg
-    elif index == 'stoxx': data = config.stoxx_esg
-    elif index == 'ftse': data = config.ftse_esg
-    elif index == 'msci': data = config.msci_esg
-    else: 
-        print ('Invalid index!')
-        return
-
-    source_df = pd.read_excel(data, index_col=[0,1,2,3], skiprows=2)
-    source_df.index.names = ['Identifier', 
-                             'Company Name', 
-                             'GICS Industry Name', 
-                             'Exchange Name']
-
-    # filter on specified industry
-    log.info (f'Filtering source_df according to specified industry...')
-    source_df = source_df.loc[source_df.index.get_level_values('GICS Industry Name').isin(industry_list)]
-
-    column_names = col_names
-
-    if measure == 'esg':
-        log.info(f'Extracting ESG Scores for {index.upper()}...')
-
-        esg_scores = source_df.iloc[:, :20]
-        esg_scores = esg_scores.set_axis(column_names, axis=1)
-        esg_scores.sort_values(by=['Company Name', 2023],
-                            axis=0,
-                            ascending=[True, False],
-                            inplace=True)
+            return tech[measure]
         
-        esg_scores = esg_scores.iloc[:, ::-1]
-                
-        return esg_scores
-    
-    elif measure == 'e':
-        log.info(f'Extracting E scores for {index.upper()}...')
+        else: return tech[measure.upper()]
 
-        e_pillars = source_df.iloc[:, 20:40]
-        e_pillars = e_pillars.set_axis(column_names, axis=1)
-        e_pillars.sort_values(by=['Company Name', 2023],
-                            axis=0,
-                            ascending=[True, False],
-                            inplace=True)
-        
-        e_pillars = e_pillars.iloc[:, ::-1]
-        
-        return e_pillars
 
-    elif measure == 's':
-        log.info(f'Extracting S scores for {index.upper()}...')
-        s_pillars = source_df.iloc[:, 40:60] 
-        s_pillars = s_pillars.set_axis(column_names, axis=1)
-        s_pillars.sort_values(by=['Company Name', 2023],
-                            axis=0,
-                            ascending=[True, False],
-                            inplace=True)        
-        
-        s_pillars = s_pillars.iloc[:, ::-1]
-                            
-        return s_pillars
-    
-    elif measure == 'g':
-        log.info(f'Extracting G scores for {index.upper()}...')
-        g_pillars = source_df.iloc[:, 60:80]
-        g_pillars = g_pillars.set_axis(column_names, axis=1)
-        # g_pillars.dropna(inplace=True)
-        g_pillars.sort_values(by=['Company Name', 2023],
-                            axis=0,
-                            ascending=[True, False],
-                            inplace=True)
-    
-        g_pillars = g_pillars.iloc[:, ::-1]
-
-        return g_pillars
-    
-def output(index, measure):
-    if measure in ['roe', 'roa', 'q', 'yoy', 'mktcap', 'ta']:
-        return returns(index, measure)
-    
-    elif measure in ['esg', 'e', 's', 'g']:
-        return scores(index, measure)
-    
-roe = pd.concat([returns('msci', 'roe'),
-                returns('nasdaq', 'roe'),
-                returns('ftse', 'roe'),
-                returns('stoxx', 'roe'),
-                returns('snp', 'roe')],
-                axis=0,
-                join='inner')
-
-roa = pd.concat([returns('msci', 'roa'), 
-                returns('nasdaq', 'roa'),
-                returns('ftse', 'roa'),
-                returns('stoxx', 'roa'),
-                returns('snp', 'roa')],
-                axis=0,
-                join='inner')
-
-q = pd.concat([returns('msci', 'q'), 
-                returns('nasdaq', 'q'),
-                returns('ftse', 'q'),
-                returns('stoxx', 'q'),
-                returns('snp', 'q')],
-                axis=0,
-                join='inner')
-
-df = pd.concat([roe, roa, q], 
-            axis=1)
-
-# sort Company Name in ascending order
-df.sort_values(by='Company Name',
-                        axis=0,
-                        ascending=True,
-                        inplace=True)
-
-df.dropna(inplace=True)
-
-df.drop_duplicates().to_csv(config.results_path + 'test.csv')
-
-roe = df.iloc[:, 0:20].drop_duplicates()
-roa = df.iloc[:, 20:40].drop_duplicates()
-q = df.iloc[:, 40:60].drop_duplicates()
-
-print (roe.head())
-
-roe = roe.reset_index()
-roe.drop(columns=['Exchange Name'], inplace=True)
-roe = roe.melt(
-    id_vars = ['Identifier', 'Company Name', 'GICS Industry Name'],
-    var_name='Year', 
-    value_name='ROE'
-    )
-
-# new structure
-
-# clean: 
-    # add new col with filename i.e. NASDAQ/MSCI in df 
-    # combine all of them into one single df
-    # ensure all rows are aligned and joined with
-    # the same companies
-
-# data: 
-    # e.g. NASDAQ, ROE passed into data function
-    # would return NASDAQ components ROE
-
+# Debugger
+# ===========================================================================

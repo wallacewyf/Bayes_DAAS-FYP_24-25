@@ -20,7 +20,7 @@ import config, wrangle
 start = datetime.datetime.now()
 
 # Data Wrangling
-# ---------------------------------------------------
+# ===========================================================================
 # wrangle.returns(index = 'msci', 
 #                 measure = 'roe')
 
@@ -28,17 +28,19 @@ start = datetime.datetime.now()
 #                measure = 'esg')
 
 # Descriptive Statistics
-# ---------------------------------------------------
-# descriptive.agg_desc(type='scores')
-# descriptive.agg_desc(type='finp')
+# ===========================================================================
+# Descriptive Statistics for Technology Companies
+descriptive.desc(industry='Technology')
 
-# descriptive.desc(
-#     index='msci', 
-#     measure='roe', 
-#     macro=False
-# )
+# Descriptive Statistics for Financial Companies
+descriptive.desc(industry='Financials')
+
+# Descriptive Statistics for both Financial and Technology Companies
+descriptive.desc(industry='All')
+
 
 # Gaussian GLM Regression
+# ===========================================================================
 # regression.gaussian_glm(
 #     index='msci', 
 #     measure='roe', 
@@ -51,7 +53,6 @@ start = datetime.datetime.now()
 #     measure='roe', 
 #     scores=False
 # )
-
 
 stop = datetime.datetime.now()
 
