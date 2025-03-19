@@ -182,6 +182,9 @@ returns = returns[cond3]
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([scores, returns], axis=1)
 
+print (df)
+
+
 # Splitting into 2 dataframes - Finance and Tech
 finance = df[df.index.get_level_values(1) == 'Financials']
 tech = df[df.index.get_level_values(1) == 'Information Technology']
@@ -231,3 +234,35 @@ def access_finance(measure):
 
 # Debugger
 # ===========================================================================
+df.to_csv(config.results_path + 'debug.csv')
+
+
+def notes():
+
+    '''
+    To do the threshold cutoff after Kyoto/Paris to see if impact is more prominent
+    Since impact might change according to regulation enforcement time
+
+    Lag should not be included since time period has been shortened
+    i.e. analysis would be more on over a n-year period the impact is upwards/downwards
+
+    Finance - linear regression
+        - threshold regression to see if it performs better than overall regression
+
+    Tech - not linear regression / to work on GLM 
+        - if GLM doesn't work then try threshold regression 
+
+
+    Note: to check if linear regression works (i.e. linearity between explanatory and predictor variable)
+        - residuals of a linear regression should be normally distributed
+
+
+    Expected: 
+        finance - yes, impact on returns from ESG scores
+
+        tech - maybe not, since technology companies performance can be weird
+
+    Note: it's also possible that if linear regression work with ROE, it's possible that
+    it'll be GLM for ROA as well (applicable to both finance/tech)
+
+    '''

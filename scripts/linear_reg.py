@@ -44,8 +44,9 @@ def notes():
     Previous model used Gaussian    
     '''
 
-X = data_tech[['ESG', 'Q_Ratio']]
-Y = data_tech[['ROE']]
+X = data_finance[['ESG', 'Q_Ratio']]
+# X['ESG_Q_Ratio'] = X['ESG'] * X['Q_Ratio']
+Y = data_finance[['ROE']]
 
 # X = X[X.index.get_level_values('Year') == 2008]
 # Y = Y[Y.index.get_level_values('Year') == 2008]['ROE']
@@ -89,13 +90,15 @@ shapiro_stat, shapiro_p = stats.shapiro(Y)
 print("Shapiro-Wilk Test p-value:", round(shapiro_p, 15))
 
 residuals = reg.resid
+sns.histplot(residuals)
+plt.show()
 
 # Save Regression Results to results directory 
 
 data = str(reg.summary())
 eqn = f"ln(ROE) ~ ESG + Q"
 
-output_path = config.results_path + 'tech_lm/'
+output_path = config.results_path + 'fin_lm/'
 os.makedirs(output_path, exist_ok=True)
 output = os.path.join(output_path, eqn)
 
