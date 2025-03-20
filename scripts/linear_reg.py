@@ -30,6 +30,14 @@ log = config.logging
 data_finance = wrangle.access_data('fin')
 data_tech = wrangle.access_data('tech')
 
+data = data_finance
+
+if data.equals(data_finance):
+    output_path = config.results_path + 'fin_lm/ROA/'
+
+elif data.equals(data_tech):
+    output_path = config.results_path + 'tech_lm/ROA/'
+
 # Linear Regression trial 
 # Technology - model 
 # Regression EQN: ROE_finance ~ ESG_finance + Q_finance
@@ -44,32 +52,60 @@ def notes():
     Previous model used Gaussian    
     '''
 
-X = data_finance[['ESG', 'Q_Ratio']]
-# X['ESG_Q_Ratio'] = X['ESG'] * X['Q_Ratio']
-Y = data_finance[['ROE']]
+def finance_model():
+    '''
+    Trying threshold cutoff after Kyoto/Paris for Finance    
+    
+    Verified that ROE ~ ESG is not significant
+    Verified that ln(ROE) ~ ESG is significant but negatively correlated
+        - even with threshold at year n
 
-# X = X[X.index.get_level_values('Year') == 2008]
-# Y = Y[Y.index.get_level_values('Year') == 2008]['ROE']
+    Refer to Notes in wrangle.py
+    '''
 
+def tech_model():
+    '''
+    Verified that linear regression only works if threshold > 2010
+
+    '''
+# Codespace
+# =======================================================
+
+# yr_thresh = 2010
+eqn = f"ROA ~ ESG + Q"
+
+# data = data_finance[data_finance.index.get_level_values(2) > yr_thresh]
+print (data.head())
+
+# =======================================================
+
+# explanatory variable
+X = data[['ESG', "Q_Ratio"]]
+
+# # interaction variable
+# # X['ESG_Q_Ratio'] = X['ESG'] * X['Q_Ratio']
+
+# predictor variable
+Y = data[['ROA']]
+
+# Introduce n-year lag (not recommended if shortened time-series analysis)
 # # n-year Shift
 # n = 1
 
-# # Step 1: Lag ROE by 1 year
 # data_tech['ROE_Lagged'] = data_tech.groupby(level='Company Name')['ROE'].shift(n)
 
-# # Step 2: Drop rows where the lagged ROE is NaN
-# # This ensures the model only uses rows where lagged values exist
+# This ensures the model only uses rows where lagged values exist
 # data_tech = data_tech.dropna(subset=['ROE_Lagged'])
 
-# # Step 3: Define X (independent variables) and Y (dependent variable)
+# Step 3: Define X (independent variables) and Y (dependent variable)
 # X = data_tech[['ESG', 'Q_Ratio']]
 # Y = data_tech[['ROE_Lagged']]  # Use lagged ROE as the dependent variable
 
 # Log-transformation 
-Y = np.sign(Y) * np.log(np.abs(Y))
+# Y = np.sign(Y) * np.log(np.abs(Y))
 
 if 0 in X.values: print ("ESG / Q_Ratio contains zero values")
-if 0 in Y.values: print ("ROE contains zero values")
+if 0 in Y.values: print ("ROA contains zero values")
 
 X = sm.add_constant(X)
 vif = pd.DataFrame()
@@ -82,7 +118,7 @@ print ()
 
 reg = sm.OLS(Y,X).fit()
 print ()
-print ("ESG / ROE Linear Regression Model")
+print ("ESG / ROA Linear Regression Model")
 print (reg.summary())
 
 shapiro_stat, shapiro_p = stats.shapiro(Y)
@@ -94,15 +130,12 @@ sns.histplot(residuals)
 plt.show()
 
 # Save Regression Results to results directory 
-
 data = str(reg.summary())
-eqn = f"ln(ROE) ~ ESG + Q"
-
-output_path = config.results_path + 'fin_lm/'
 os.makedirs(output_path, exist_ok=True)
 output = os.path.join(output_path, eqn)
 
 with open(output, "w") as file: 
+    file.write (f"GICS Sector: {data.index.get_level_values(1).unique()}\n")
     file.write (f"Variance Inflation Factor table\n")
     file.write (str(vif))
     file.write ('\n\n')

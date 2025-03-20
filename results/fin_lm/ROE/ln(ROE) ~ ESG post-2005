@@ -1,0 +1,33 @@
+Variance Inflation Factor table
+  Variable  VIF Value
+0    const   9.526163
+1      ESG   1.000000
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    ROE   R-squared:                       0.002
+Model:                            OLS   Adj. R-squared:                  0.001
+Method:                 Least Squares   F-statistic:                     5.940
+Date:                Thu, 20 Mar 2025   Prob (F-statistic):             0.0148
+Time:                        13:51:45   Log-Likelihood:                -6379.6
+No. Observations:                3914   AIC:                         1.276e+04
+Df Residuals:                    3912   BIC:                         1.278e+04
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -1.8204      0.061    -29.873      0.000      -1.940      -1.701
+ESG           -0.0027      0.001     -2.437      0.015      -0.005      -0.001
+==============================================================================
+Omnibus:                     2084.677   Durbin-Watson:                   1.986
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            23507.620
+Skew:                           2.297   Prob(JB):                         0.00
+Kurtosis:                      14.092   Cond. No.                         169.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.

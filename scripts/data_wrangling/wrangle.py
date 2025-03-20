@@ -182,9 +182,6 @@ returns = returns[cond3]
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([scores, returns], axis=1)
 
-print (df)
-
-
 # Splitting into 2 dataframes - Finance and Tech
 finance = df[df.index.get_level_values(1) == 'Financials']
 tech = df[df.index.get_level_values(1) == 'Information Technology']
@@ -238,7 +235,6 @@ df.to_csv(config.results_path + 'debug.csv')
 
 
 def notes():
-
     '''
     To do the threshold cutoff after Kyoto/Paris to see if impact is more prominent
     Since impact might change according to regulation enforcement time
@@ -264,5 +260,10 @@ def notes():
 
     Note: it's also possible that if linear regression work with ROE, it's possible that
     it'll be GLM for ROA as well (applicable to both finance/tech)
+
+    ASOF 20-Mar:
+    Finance:
+        - ln(ROE): linear regression OK
+        - ROA: linear regression OK
 
     '''

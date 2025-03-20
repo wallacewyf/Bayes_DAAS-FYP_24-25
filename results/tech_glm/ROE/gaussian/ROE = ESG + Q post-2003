@@ -1,0 +1,30 @@
+GICS Sector: Information Technology
+
+Regression equation: ROE ~ ESG + Q_Ratio
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                 2149
+Model:                            GLM   Df Residuals:                     2146
+Model Family:                Gaussian   Df Model:                            2
+Link Function:               Identity   Scale:                          1.2711
+Method:                          IRLS   Log-Likelihood:                -3305.6
+Date:                Thu, 20 Mar 2025   Deviance:                       2727.8
+Time:                        21:11:12   Pearson chi2:                 2.73e+03
+No. Iterations:                     3   Pseudo R-squ. (CS):          0.0007453
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.1527      0.074      2.070      0.038       0.008       0.297
+ESG            0.0014      0.001      1.068      0.286      -0.001       0.004
+Q_Ratio     1.426e-05   2.05e-05      0.695      0.487    -2.6e-05    5.45e-05
+==============================================================================
+
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+Variance Inflation Factor table
+  Variable       VIF
+0      ESG  1.002288
+1  Q_Ratio  1.002288
