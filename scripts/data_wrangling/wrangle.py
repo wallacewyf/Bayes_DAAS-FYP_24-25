@@ -266,4 +266,8 @@ def notes():
         - ln(ROE): linear regression OK
         - ROA: linear regression OK
 
+    Technology:
+        - ROE: doesn't work linear reg/GLM
+        - ROA: haven't tried yet
+
     '''
