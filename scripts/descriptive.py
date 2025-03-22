@@ -20,7 +20,7 @@ def desc(industry):
         '''
         Descriptive Statistics for Financial Companies 
         '''
-        data = wrangle.access_data("finance")
+        data = wrangle.finance
         output = os.path.join(config.desc_path, 'Descriptive - Financials.csv')
         desc = data.describe()
 
@@ -34,7 +34,7 @@ def desc(industry):
         '''
         Descriptive Statistics for Technology Companies
         '''
-        data = wrangle.access_data("tech")
+        data = wrangle.tech
         output = os.path.join(config.desc_path, 'Descriptive - Technology.csv')
         desc = data.describe()
 
@@ -46,16 +46,16 @@ def desc(industry):
 
     elif industry.lower() == 'all':
         '''
-        Descriptive Statistics for both Technology and Financial Companies
+        Descriptive Statistics for all industries
         '''
         data = wrangle.df
 
-        output = os.path.join(config.desc_path, 'Descriptive - Financials + Technology.csv')
+        output = os.path.join(config.desc_path, 'Descriptive - All Industries.csv')
         desc = data.describe()
 
-        log.info (f"Writing Descriptive Summary for Financial and Technology Companies")
+        log.info (f"Writing Descriptive Summary for all industries")
         with open(output, 'w') as all: 
-            all.write(f"Descriptive Statistics for Financial and Technology Companies\n")
+            all.write(f"Descriptive Statistics for all industries\n")
             all.write(f"Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n")
             all.write(str(desc))
 

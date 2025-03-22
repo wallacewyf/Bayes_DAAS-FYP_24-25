@@ -1,0 +1,40 @@
+GICS Sector: Industrials
+Regression Equation: ROA ~ ESG + Q 
+
+Generated: 2025-03-22 19:48:15.613324 
+
+Variance Inflation Factor table
+  Variable  VIF Value
+0    const   8.360241
+1      ESG   1.000774
+2  Q_Ratio   1.000774
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    ROA   R-squared:                       0.079
+Model:                            OLS   Adj. R-squared:                  0.078
+Method:                 Least Squares   F-statistic:                     205.7
+Date:                Sat, 22 Mar 2025   Prob (F-statistic):           1.81e-86
+Time:                        19:48:15   Log-Likelihood:                 6605.2
+No. Observations:                4828   AIC:                        -1.320e+04
+Df Residuals:                    4825   BIC:                        -1.318e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.0772      0.003     30.090      0.000       0.072       0.082
+ESG           -0.0002   4.68e-05     -4.595      0.000      -0.000      -0.000
+Q_Ratio        0.0020      0.000     19.622      0.000       0.002       0.002
+==============================================================================
+Omnibus:                     5235.885   Durbin-Watson:                   1.924
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):          1552280.213
+Skew:                           4.955   Prob(JB):                         0.00
+Kurtosis:                      90.282   Cond. No.                         158.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.

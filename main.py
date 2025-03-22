@@ -8,7 +8,7 @@ import seaborn as sns
 data_path = os.path.join(os.path.dirname(__file__), "scripts")
 sys.path.append(data_path)
 
-import descriptive, regression
+import descriptive
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -36,7 +36,7 @@ start = datetime.datetime.now()
 # descriptive.desc(industry='Financials')
 
 # Descriptive Statistics for both Financial and Technology Companies
-descriptive.desc(industry='Finance')
+descriptive.desc(industry='all')
 
 # Gaussian GLM Regression
 # ===========================================================================

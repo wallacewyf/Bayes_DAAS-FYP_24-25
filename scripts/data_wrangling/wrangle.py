@@ -39,10 +39,6 @@ returns.sort_values(by=['Company Name'],
 # set column headers to be 2004, 2005, ..., 2023
 returns = returns.set_axis(returns_col, axis=1)
 
-log.warning (f"Extracting only {sector_scope} industries for Financial Returns...")
-# Extract only Financials and Tech
-returns = returns.loc[returns.index.get_level_values('GICS Sector Name').isin(sector_scope)]
-
 log.warning(f"Melting dataframes into long format...")
 # Return on Equity - Actual
 roe = returns.iloc[:, :20].melt(var_name='Year', 
@@ -122,9 +118,6 @@ scores = pd.read_excel(config.scores,
 
 scores.index.names = index_names
 
-log.warning (f"Extracting only {sector_scope} industries for ESG Scores...")
-scores = scores.loc[scores.index.get_level_values('GICS Sector Name').isin(sector_scope)]
-
 # drop Identifier (Company RIC Code)
 scores = scores.iloc[:, 1:]
 
@@ -182,52 +175,14 @@ returns = returns[cond3]
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([scores, returns], axis=1)
 
-# Splitting into 2 dataframes - Finance and Tech
+# Splitting into 2 dataframes by GICS Sector - Finance and Tech
 finance = df[df.index.get_level_values(1) == 'Financials']
 tech = df[df.index.get_level_values(1) == 'Information Technology']
+energy = df[df.index.get_level_values(1) == 'Energy']
+industrials = df[df.index.get_level_values(1) == 'Industrials']
+healthcare = df[df.index.get_level_values(1) == 'Health Care']
 
 log.info (f"Data wrangling complete!")
-
-# Functions 
-# ===========================================================================
-
-# Access all data:
-def access_data(industry):
-    if industry.lower().startswith("fin"):
-        return finance
-    
-    elif industry.lower().startswith("tech"):
-        return tech
-    
-    elif industry.lower() == 'all':
-        return df
-    
-# Access technology data
-def access_tech(measure): 
-    if measure == 'all':
-        return tech
-    
-    else:
-        if measure.lower().startswith('q'): 
-            measure == 'Q_Ratio'
-
-            return tech[measure]
-        
-        else: return tech[measure.upper()]
-
-# Access financial data
-def access_finance(measure): 
-    if measure == 'all':
-        return finance 
-    
-    else:
-        if measure.lower().startswith('q'): 
-            measure == 'Q_Ratio'
-
-            return tech[measure]
-        
-        else: return tech[measure.upper()]
-
 
 # Debugger
 # ===========================================================================
