@@ -225,4 +225,13 @@ def notes():
         - ROE: doesn't work linear reg/GLM
         - ROA: haven't tried yet
 
+    ASOF 23-Mar:
+    Finance:
+        - All OK - models to be verified by David
+
+    Note: given that word count might not be enough, maybe we should do a more macro test 
+            of all sectors and then select finance as the cutoff point
+            
+            (check w David to see what his thoughts are)
+
     '''
