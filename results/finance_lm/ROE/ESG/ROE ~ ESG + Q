@@ -1,0 +1,40 @@
+GICS Sector: Index(['Financials'], dtype='object', name='GICS Sector Name')
+Regression Equation: ROE ~ ESG + Q 
+
+Generated: 2025-03-24 14:24:51.162720 
+
+Variance Inflation Factor table
+  Variable  VIF Value
+0    const   9.793272
+1      ESG   1.000235
+2  Q_Ratio   1.000235
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    ROE   R-squared:                       0.011
+Model:                            OLS   Adj. R-squared:                  0.011
+Method:                 Least Squares   F-statistic:                     23.45
+Date:                Mon, 24 Mar 2025   Prob (F-statistic):           7.49e-11
+Time:                        14:24:51   Log-Likelihood:                -6511.1
+No. Observations:                4075   AIC:                         1.303e+04
+Df Residuals:                    4072   BIC:                         1.305e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         -1.8377      0.059    -31.335      0.000      -1.953      -1.723
+ESG           -0.0026      0.001     -2.461      0.014      -0.005      -0.001
+Q_Ratio        0.0176      0.003      6.352      0.000       0.012       0.023
+==============================================================================
+Omnibus:                     2230.551   Durbin-Watson:                   1.481
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            27840.356
+Skew:                           2.345   Prob(JB):                         0.00
+Kurtosis:                      14.915   Cond. No.                         171.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.

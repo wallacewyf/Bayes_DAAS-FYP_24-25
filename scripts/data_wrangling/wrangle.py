@@ -27,7 +27,7 @@ returns = pd.read_excel(config.returns,
 
 returns.index.names = index_names
 
-# drop Identifier (Company RIC Code)
+# drop Identifier (Company RIC Code).
 returns = returns.iloc[:, 1:]
 
 # sort by ascending order on Company Name
@@ -168,7 +168,17 @@ log.warning (f"Running filter 3: ROE, ROA, ESG are not NAs")
 
 # Condition 3: ROE, ROA, ESG are not NAs
 returns, scores = returns.align(scores, join='inner', axis=0)
-cond3 = returns['ROE'].notna() & returns['ROA'].notna() & returns['Q_Ratio'].notna() & scores['ESG'].notna()
+cond3 = (returns['ROE'].notna() 
+         & returns['ROA'].notna() 
+         & returns['Q_Ratio'].notna() 
+         & scores['ESG'].notna())
+
+# removed because we should do np.log1p instead of np.log for 0 values on financial returns
+
+        #  & (returns['ROE'] != 0)
+        #  & (returns ['ROA'] != 0)
+        #  & (scores ['E'] != 0))
+
 scores = scores[cond3]
 returns = returns[cond3]
 
@@ -186,7 +196,6 @@ log.info (f"Data wrangling complete!")
 
 # Debugger
 # ===========================================================================
-df.to_csv(config.results_path + 'debug.csv')
 
 
 def notes():
@@ -233,5 +242,23 @@ def notes():
             of all sectors and then select finance as the cutoff point
             
             (check w David to see what his thoughts are)
+
+    Discussion with David:
+        - the norm in financial data is to log (but probably needs academic reference)
+        - remove top 5/10% of outliers to remove noise from the model 
+            - but has to be specified in methodology since we're only assessing
+            - the impact of the framework on returns
+
+        Code:
+            - multiple functions to try different models 
+            - since reader might try different function 
+            - basically there should be a function for each type of model i.e. gamma/gaussian glm, linear reg, linear reg w log
+            - brief explanation on methodology section in paper
+            - refer to previous functions in regression_OLD.py
+
+        Paper: 
+            write about the trial and error process, but brief description on the error and a more detailed 
+            one for the best fit one (evaluate according to p-value)
+
 
     '''

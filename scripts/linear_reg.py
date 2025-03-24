@@ -32,13 +32,14 @@ tech = wrangle.tech
 energy = wrangle.energy
 industrials = wrangle.industrials
 health = wrangle.healthcare
+all_data = wrangle.df
 
 def notes():
     '''
     Checked 2008 data - different shape from existing shape
     Outliers are real - but linearity to be confirmed
 
-    Tried with and without lag, results are sved in results dir
+    Tried with and without lag, results are saved in results dir
     {industry}_lm folder
     Previous model used Gaussian    
     '''
@@ -60,14 +61,15 @@ def tech_model():
 
     '''
 
-measure = 'ROE'
-data = finance
+measure = 'ROA'
+data = all_data
 
 if data.equals(energy): datatype = 'energy'
 elif data.equals(industrials): datatype = 'industrials'
 elif data.equals(health): datatype = 'healthcare'
 elif data.equals(finance): datatype = 'finance'
 elif data.equals(tech): datatype = 'tech'
+else: datatype = 'all'
 
 output_path = config.results_path + f'{datatype}_lm/{measure}/ESG/'
 os.makedirs(output_path, exist_ok=True)
@@ -96,14 +98,14 @@ X = data[['ESG', "Q_Ratio"]]
 Y = data[[f'{measure}']]
 
 # Log-transformation 
-Y = np.sign(Y) * np.log(np.abs(Y))
+# Y = np.sign(Y) * np.log(np.abs(Y))
 
 # Check if predictor variable is normally distributed
 plt.hist(Y, bins=100)
-plt.xlim(-1,1)
+# plt.xlim(-1000,1000)
 plt.title(f"Histogram of {eqn}")
 plt.savefig(output_path + f"{eqn} Histogram")
-plt.show()
+# plt.show()
 plt.clf()
 
 # Introduce n-year lag (not recommended if shortened time-series analysis)
@@ -132,37 +134,66 @@ print (f"Variance Inflation Factor table\n")
 print (vif)
 print ()
 
-reg = sm.OLS(Y,X).fit()
+reg = sm.OLS(Y,X).fit(cov_type='HC0')
 print ()
 # print (f"E, S, G / {measure} Linear Regression Model")
 print (f"ESG / {measure} Linear Regression Model")
 print (reg.summary())
+
+print ()
 
 shapiro_stat, shapiro_p = stats.shapiro(Y)
 
 print("Shapiro-Wilk Test p-value:", round(shapiro_p, 15))
 
 residuals = reg.resid
+
+
+
+observed = np.abs(residuals)  # Absolute residuals
+expected = np.full_like(observed, np.mean(observed))  # Mean residuals as expected values
+
+# Chi-square test
+chi2_stat, p_value = stats.chisquare(f_obs=observed, f_exp=expected)
+
+print (f"Chi-square p-value: {p_value}")
+
+
+# check for heteroscedasticity
+# diagnostic test - Breusch-Pagan test
+# '''
+# H0: Homoscedasticity present, p >= 0.05
+# H1: Heteroscedasticity present, p < 0.05
+# '''
+bp_test = het_breuschpagan(residuals, reg.model.exog)
+
+bp_test_statistic, bp_test_p_value = bp_test[0], bp_test[1]
+
+if bp_test_p_value >= 0.05: bp_response = "Fail to reject H0; Homoscedasticity present"
+else: bp_response = "Reject H0; Heteroscedasticity present"
+
+print (f"Breusch-Pagan Test p-value: {bp_test_p_value}")
+
 sns.histplot(residuals)
-plt.xlim(-1,1)
+# plt.xlim(-1,1)
 plt.title(f"Residuals of ESG / {measure} Linear Regression")
 plt.savefig(output_path + f"{measure} Residuals Distribution")
 # plt.show()
 plt.clf()
 
 stats.probplot(residuals, dist="norm", plot=plt)
+# plt.ylim(-2,2)
 plt.title(f"QQ Plot of Residuals of ESG / {measure} Linear Regression")
 # plt.show()
 plt.savefig(output_path + f"QQ Plot {eqn}")
 plt.clf()
-
 
 # Save Regression Results to results directory 
 os.makedirs(output_path, exist_ok=True)
 output = os.path.join(output_path, eqn)
 
 with open(output, "w") as file: 
-    file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
+    file.write (f"GICS Sector: {data.index.get_level_values(1).unique()}\n")
     file.write (f"Regression Equation: {eqn} \n\n")
     file.write (f"Generated: {datetime.datetime.now()} \n\n")
     file.write (f"Variance Inflation Factor table\n")

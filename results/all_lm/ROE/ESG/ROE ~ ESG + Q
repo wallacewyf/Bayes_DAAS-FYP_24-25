@@ -1,0 +1,46 @@
+GICS Sector: Index(['Consumer Discretionary', 'Industrials', 'Financials',
+       'Communication Services', 'Consumer Staples', 'Utilities',
+       'Health Care', 'Information Technology', 'Energy', 'Real Estate',
+       'Materials'],
+      dtype='object', name='GICS Sector Name')
+Regression Equation: ROE ~ ESG + Q 
+
+Generated: 2025-03-24 14:27:27.862418 
+
+Variance Inflation Factor table
+  Variable  VIF Value
+0    const  10.714283
+1      ESG   1.000131
+2  Q_Ratio   1.000131
+
+Shapiro-Wilk Normality Test p-value: 0.0
+
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    ROE   R-squared:                       0.000
+Model:                            OLS   Adj. R-squared:                 -0.000
+Method:                 Least Squares   F-statistic:                    0.1633
+Date:                Mon, 24 Mar 2025   Prob (F-statistic):              0.849
+Time:                        14:27:27   Log-Likelihood:                -47833.
+No. Observations:               22657   AIC:                         9.567e+04
+Df Residuals:                   22654   BIC:                         9.570e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.1501      0.043      3.455      0.001       0.065       0.235
+ESG         2.617e-05      0.001      0.034      0.973      -0.001       0.002
+Q_Ratio     1.888e-05   3.31e-05      0.571      0.568    -4.6e-05    8.37e-05
+==============================================================================
+Omnibus:                    88460.727   Durbin-Watson:                   1.969
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):     132886658838.570
+Skew:                         -94.490   Prob(JB):                         0.00
+Kurtosis:                   11865.876   Cond. No.                     1.31e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.31e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.
