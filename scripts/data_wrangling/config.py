@@ -13,6 +13,7 @@ if sys.platform == 'win32':
     results_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/"
     desc_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/descriptive/"
     basic_lm = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/basic_lm/"
+    lagged_lm = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/lagged_lm/"
     glm_path = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/results/glm/"
     
     log = r"C:/Users/walla/Documents/Sandbox/code/fyp_24/logs/"
@@ -25,6 +26,7 @@ elif sys.platform == 'darwin':
     results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
     desc_path = '/Users/wallace/Documents/code/python/fyp_24/results/descriptive/'
     basic_lm = '/Users/wallace/Documents/code/python/fyp_24/results/basic_lm/"'
+    lagged_lm = '/Users/wallace/Documents/code/python/fyp_24/results/lagged_lm/"'
     glm_path = '/Users/wallace/Documents/code/python/fyp_24/results/glm/'
 
     log = '/Users/wallace/Documents/code/python/fyp_24/logs/'
@@ -38,7 +40,7 @@ returns = data_path + 'Financial Returns.xlsx'
 # ===========================================================================
 
 # Check if directory exists
-path_arr = [results_path, desc_path, basic_lm, glm_path, log]
+path_arr = [results_path, desc_path, basic_lm, lagged_lm, glm_path, log]
 
 for path in path_arr:
     os.makedirs(path, exist_ok=True)

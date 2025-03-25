@@ -243,6 +243,85 @@ def linear_reg(df, measure, type):
     # Creates model
     model(X, Y, output_path)
 
+def lagged_reg(df, measure, type, n):
+    '''
+    Lagged Linear Regression
+
+    Parameters:
+
+    df = industry data
+    measure = ROE / ROA
+
+    Type 1 = ESG / predictor variable
+    Type 2 = E,S,G / predictor variable
+
+    n = shift by n year(s)
+
+    '''
+    data = df 
+    measure = measure.upper()
+
+    # Introducing n-year lag
+    # SettingwithCopyWarning needs to be skipped so maybe just replace with 'measure'
+    # BUT n-year has to be placed somewhere on the file
+    
+    data[[f'{measure}_lag_{n}']] = data.groupby(level='Company Name')[[f'{measure}']].shift(n)
+    data = data.dropna(subset=[f'{measure}_lag_{n}'])
+
+    industry = data.index.get_level_values(1).unique()[0]
+    measure = measure.upper() + f'_lag_{n}'
+
+    # Set independent variables to be ESG or E,S,G according to type
+    if type == 1:
+        X = data[['ESG', 'Q_Ratio']]
+        eqn = f"{measure} ~ ESG + Q"
+        output_path = config.lagged_lm + f'{industry}/{measure}/ESG/'
+
+    elif type == 2:
+        X = data[['E', 'S', 'G', "Q_Ratio"]]
+        eqn = f"{measure} ~ E + S + G + Q"
+        output_path = config.lagged_lm + f'{industry}/{measure}/E_S_G/'
+
+    # Checks validity of output path
+    os.makedirs(output_path, exist_ok=True)
+
+    # Predictor variable
+    Y = data[[f'{measure}']]
+    
+    # Check for zero values in X, Y data
+    if 0 in X.values:
+        if type == 1:
+            log.warning (f"ESG / Q_Ratio contains zero values")
+        
+        else: log.warning ("E, S, G / Q_Ratio contains zero values")
+    
+    if 0 in Y.values: log.warning (f"{measure} contains zero values")
+
+    '''
+    Creates histogram of predictor variable and 
+    saves it into results/lagged_lm/{type} directory
+    '''
+    plt.hist(Y, bins = 100)
+    plt.title(f"Histogram of {eqn}")
+    plt.savefig(output_path + f"{eqn} Histogram")
+    plt.clf()
+
+    # Calculate VIF values
+    vif = vif_calc(X)
+
+    # Write VIF results to file
+    with open(output_path + f'{eqn}.txt', "w") as file: 
+        file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
+        file.write (f"Regression Equation: {eqn} \n\n")
+        file.write (f"Generated: {datetime.datetime.now()} \n\n")
+        
+        file.write (f"Variance Inflation Factor table\n")
+        file.write (str(vif))
+        file.write ('\n\n')
+
+    # Creates model
+    model(X, Y, output_path)
+
 
 def model(X, Y, path):
     '''
@@ -323,6 +402,8 @@ def model(X, Y, path):
     if bp_test_p_value >= 0.05: bp_response = "Fail to reject H0; Homoscedasticity present"
     else: bp_response = "Reject H0; Heteroscedasticity present"
 
+    log.info (f"Breusch-Pagan check: {bp_response}")
+
     with open(path + f'{eqn}.txt', 'a') as file:
         file.write (str(model.summary()))
         file.write ('\n\n')
@@ -348,3 +429,12 @@ def vif_calc(X):
 
 # Codespace 
 # =======================================================
+lagged_reg(df = wrangle.finance, 
+           measure = 'roe', 
+           type = 1, 
+           n = 1)
+
+lagged_reg(df = wrangle.finance, 
+           measure = 'roe', 
+           type = 2, 
+           n = 1)

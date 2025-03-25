@@ -50,7 +50,7 @@ start = datetime.datetime.now()
     # Real Estate, Communication Services, All
 
 # GICS Sector: Finance
-descriptive.desc('financials')
+# descriptive.desc('financials')
 
 # # Descriptive Statistics for each sector
 # industry_arr = ['Financials', 'Utilities', 'Health Care', 
@@ -63,25 +63,47 @@ descriptive.desc('financials')
 
 # Linear Regression
 # ===========================================================================
-
-reg.linear_reg(df = wrangle.finance,
-           measure = 'roe', 
-           type = 1)
-
-
-reg.linear_reg(df = wrangle.finance,
-           measure = 'ROA', 
-           type = 2)
-
-# Technology
-reg.linear_reg(df = wrangle.tech,
-           measure = 'Roe', 
-           type = 1)
+# # Finance
+# reg.linear_reg(df = wrangle.finance,
+#            measure = 'roe', 
+#            type = 1)
 
 
-reg.linear_reg(df = wrangle.tech,
-           measure = 'roA', 
-           type = 2)
+# reg.linear_reg(df = wrangle.finance,
+#            measure = 'ROA', 
+#            type = 2)
+
+# # Technology
+# reg.linear_reg(df = wrangle.tech,
+#            measure = 'Roe', 
+#            type = 1)
+
+
+# reg.linear_reg(df = wrangle.tech,
+#            measure = 'roA', 
+#            type = 2)
+
+# Lagged Linear Regression
+# ===========================================================================
+# # Finance
+# reg.lagged_reg(df = wrangle.finance,
+#            measure = 'roe', 
+#            type = 1)
+
+
+# reg.lagged_reg(df = wrangle.finance,
+#            measure = 'ROA', 
+#            type = 2)
+
+# # Technology
+# reg.lagged_reg(df = wrangle.tech,
+#            measure = 'Roe', 
+#            type = 1)
+
+
+# reg.lagged_reg(df = wrangle.tech,
+#            measure = 'roA', 
+#            type = 2)
 
 
 # Gaussian GLM Regression
