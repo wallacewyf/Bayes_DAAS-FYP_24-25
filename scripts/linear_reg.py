@@ -174,7 +174,6 @@ log = config.logging
 #     file.write ('\n\n\n')
 #     file.write (str(reg.summary()))
 
-
 def linear_reg(df, measure, type):
     '''
     Basic Linear Regression
@@ -301,6 +300,7 @@ def lagged_reg(df, measure, type, n):
     Creates histogram of predictor variable and 
     saves it into results/lagged_lm/{type} directory
     '''
+
     plt.hist(Y, bins = 100)
     plt.title(f"Histogram of {eqn}")
     plt.savefig(output_path + f"{eqn} Histogram")
@@ -322,6 +322,75 @@ def lagged_reg(df, measure, type, n):
     # Creates model
     model(X, Y, output_path)
 
+def log_linear(df, measure, type):
+    '''
+    Basic Linear Regression with Log-Transformation on Y
+
+    Parameters:
+
+    df = industry data
+    measure = ROE / ROA
+
+    Type 1 = ESG / predictor variable
+    Type 2 = E,S,G / predictor variable
+
+    '''
+    data = df 
+    industry = data.index.get_level_values(1).unique()[0]
+    measure = measure.upper()
+    measure = 'log_' + measure
+
+    # Set independent variables to be ESG or E,S,G according to type
+    if type == 1:
+        X = data[['ESG', 'Q_Ratio']]
+        eqn = f"{measure} ~ ESG + Q"
+        output_path = config.basic_lm + f'{industry}/{measure}/ESG/'
+
+    elif type == 2:
+        X = data[['E', 'S', 'G', "Q_Ratio"]]
+        eqn = f"{measure} ~ E + S + G + Q"
+        output_path = config.basic_lm + f'{industry}/{measure}/E_S_G/'
+
+    # Checks validity of output path
+    os.makedirs(output_path, exist_ok=True)
+
+    # Predictor variable
+    Y = data[[f'{measure}']]
+    Y = np.sign(Y) * np.log1p(np.abs(Y))
+
+    # Check for zero values in X, Y data
+    if 0 in X.values:
+        if type == 1:
+            log.warning (f"ESG / Q_Ratio contains zero values")
+        
+        else: log.warning ("E, S, G / Q_Ratio contains zero values")
+    
+    if 0 in Y.values: log.warning (f"{measure} contains zero values")
+
+    '''
+    Creates histogram of predictor variable and 
+    saves it into results/basic_lm/{type} directory
+    '''
+    plt.hist(Y, bins = 100)
+    plt.title(f"Histogram of {eqn}")
+    plt.savefig(output_path + f"{eqn} Histogram")
+    plt.clf()
+
+    # Calculate VIF values
+    vif = vif_calc(X)
+
+    # Write VIF results to file
+    with open(output_path + f'{eqn}.txt', "w") as file: 
+        file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
+        file.write (f"Regression Equation: {eqn} \n\n")
+        file.write (f"Generated: {datetime.datetime.now()} \n\n")
+        
+        file.write (f"Variance Inflation Factor table\n")
+        file.write (str(vif))
+        file.write ('\n\n')
+
+    # Creates model
+    model(X, Y, output_path)
 
 def model(X, Y, path):
     '''
@@ -436,5 +505,5 @@ lagged_reg(df = wrangle.finance,
 
 lagged_reg(df = wrangle.finance, 
            measure = 'roe', 
-           type = 2, 
+           type = 2,
            n = 1)

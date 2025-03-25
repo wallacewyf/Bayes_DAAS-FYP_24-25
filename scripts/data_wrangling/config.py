@@ -25,8 +25,8 @@ elif sys.platform == 'darwin':
     script_path = '/Users/wallace/Documents/code/python/fyp_24/scripts/'
     results_path = '/Users/wallace/Documents/code/python/fyp_24/results/'
     desc_path = '/Users/wallace/Documents/code/python/fyp_24/results/descriptive/'
-    basic_lm = '/Users/wallace/Documents/code/python/fyp_24/results/basic_lm/"'
-    lagged_lm = '/Users/wallace/Documents/code/python/fyp_24/results/lagged_lm/"'
+    basic_lm = '/Users/wallace/Documents/code/python/fyp_24/results/basic_lm/'
+    lagged_lm = '/Users/wallace/Documents/code/python/fyp_24/results/lagged_lm/'
     glm_path = '/Users/wallace/Documents/code/python/fyp_24/results/glm/'
 
     log = '/Users/wallace/Documents/code/python/fyp_24/logs/'
