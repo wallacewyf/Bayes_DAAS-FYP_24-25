@@ -1,0 +1,42 @@
+GICS Sector: Financials
+Regression Equation: log_ROE ~ ESG + Q 
+
+Generated: 2025-03-25 18:55:55.229072 
+
+Variance Inflation Factor table
+  Variable  VIF Value
+0      ESG   1.031564
+1  Q_Ratio   1.031564
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                log_ROE   R-squared:                       0.044
+Model:                            OLS   Adj. R-squared:                  0.044
+Method:                 Least Squares   F-statistic:                     81.24
+Date:                Tue, 25 Mar 2025   Prob (F-statistic):           3.26e-35
+Time:                        18:55:55   Log-Likelihood:                 5080.2
+No. Observations:                3505   AIC:                        -1.015e+04
+Df Residuals:                    3502   BIC:                        -1.014e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.1299      0.003     44.878      0.000       0.124       0.136
+ESG           -0.0002   5.32e-05     -3.247      0.001      -0.000   -6.84e-05
+Q_Ratio        0.0037      0.000     12.222      0.000       0.003       0.004
+==============================================================================
+Omnibus:                      523.017   Durbin-Watson:                   0.719
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1310.001
+Skew:                           0.832   Prob(JB):                    3.44e-285
+Kurtosis:                       5.490   Cond. No.                         164.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 4.955956558207247e-36
+Breusch-Pagan Test p-value: 1.8997545832933107e-133
+Chi-square p-value: 1.0

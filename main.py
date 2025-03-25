@@ -151,76 +151,76 @@ reg.log_linear(df = wrangle.tech,
            measure = 'roA', 
            type = 2)
 
-# # Linear Regression after threshold of 2008
-# # i.e. if threshold = 2008, data only takes data post-2008 (2009, 2010, ...)
-# # ===========================================================================
-# # Finance
-# reg.threshold_linear(
-#     df = wrangle.finance, 
-#     measure = 'roe',
-#     type = 1, 
-#     year = 2008
-# )
+# Linear Regression after threshold of 2008
+# i.e. if threshold = 2008, data only takes data post-2008 (2009, 2010, ...)
+# ===========================================================================
+# Finance
+reg.threshold_linear(
+    df = wrangle.finance, 
+    measure = 'roe',
+    type = 1, 
+    year = 2008
+)
 
 
-# reg.threshold_log_linear(
-#     df = wrangle.finance, 
-#     measure = 'roe',
-#     type = 1, 
-#     year = 2008
-# )
+reg.threshold_log_linear(
+    df = wrangle.finance, 
+    measure = 'roe',
+    type = 1, 
+    year = 2008
+)
 
 
-# reg.threshold_lag(
-#     df = wrangle.finance, 
-#     measure = 'roe',
-#     type = 1, 
-#     year = 2008,
-#     n = 2
-# )
+reg.threshold_lag(
+    df = wrangle.finance, 
+    measure = 'roe',
+    type = 1, 
+    year = 2008,
+    n = 2
+)
 
 
-# reg.threshold_log_lag(
-#     df = wrangle.finance, 
-#     measure = 'roe',
-#     type = 1, 
-#     year = 2008,
-#     n = 2
-# )
+reg.threshold_log_lag(
+    df = wrangle.finance, 
+    measure = 'roe',
+    type = 1, 
+    year = 2008,
+    n = 2
+)
 
-# # Technology
-# reg.threshold_linear(
-#     df = wrangle.tech, 
-#     measure = 'roa',
-#     type = 1, 
-#     year = 2008
-# )
-
-
-# reg.threshold_log_linear(
-#     df = wrangle.tech, 
-#     measure = 'roa',
-#     type = 1, 
-#     year = 2008
-# )
+# Technology
+reg.threshold_linear(
+    df = wrangle.tech, 
+    measure = 'roa',
+    type = 1, 
+    year = 2008
+)
 
 
-# reg.threshold_lag(
-#     df = wrangle.tech, 
-#     measure = 'roa',
-#     type = 1, 
-#     year = 2008,
-#     n = 2
-# )
+reg.threshold_log_linear(
+    df = wrangle.tech, 
+    measure = 'roa',
+    type = 1, 
+    year = 2008
+)
 
 
-# reg.threshold_log_lag(
-#     df = wrangle.tech, 
-#     measure = 'roa',
-#     type = 1, 
-#     year = 2008,
-#     n = 2
-# )
+reg.threshold_lag(
+    df = wrangle.tech, 
+    measure = 'roa',
+    type = 1, 
+    year = 2008,
+    n = 2
+)
+
+
+reg.threshold_log_lag(
+    df = wrangle.tech, 
+    measure = 'roa',
+    type = 1, 
+    year = 2008,
+    n = 2
+)
 
 
 # Gaussian GLM Regression

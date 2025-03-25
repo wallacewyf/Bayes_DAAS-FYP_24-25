@@ -233,7 +233,7 @@ def lagged_reg(df, measure, type, n):
         X = data[['ESG', 'Q_Ratio']]
         eqn = f"{measure} ~ ESG + Q"
 
-        if len(data.index.get_level_values(2).unique()) < 20:
+        if len(data.index.get_level_values(2).unique()) < (20 - n):
             output_path = config.threshold_lagged_lm + f'{industry}/{measure}/ESG/'
         
         else: output_path = config.lagged_lm + f'{industry}/{measure}/ESG/'
@@ -242,7 +242,7 @@ def lagged_reg(df, measure, type, n):
         X = data[['E', 'S', 'G', "Q_Ratio"]]
         eqn = f"{measure} ~ E + S + G + Q"
 
-        if len(data.index.get_level_values(2).unique()) < 20:
+        if len(data.index.get_level_values(2).unique()) < (20 - n):
             output_path = config.threshold_lagged_lm + f'{industry}/{measure}/E_S_G/'
         
         else: output_path = config.lagged_lm + f'{industry}/{measure}/E_S_G/'
@@ -405,7 +405,7 @@ def log_lag(df, measure, type, n):
         X = data[['ESG', 'Q_Ratio']]
         eqn = f"{measure} ~ ESG + Q"
 
-        if len(data.index.get_level_values(2).unique()) < 20:
+        if len(data.index.get_level_values(2).unique()) < (20 - n):
             output_path = config.threshold_log_lag + f'{industry}/{measure}/ESG/'
 
         else: output_path = config.log_lag + f'{industry}/{measure}/ESG/'
@@ -414,7 +414,7 @@ def log_lag(df, measure, type, n):
         X = data[['E', 'S', 'G', "Q_Ratio"]]
         eqn = f"{measure} ~ E + S + G + Q"
 
-        if len(data.index.get_level_values(2).unique()) < 20:
+        if len(data.index.get_level_values(2).unique()) < (20 - n):
             output_path = config.threshold_log_lag + f'{industry}/{measure}/E_S_G/'
 
         else: output_path = config.log_lag + f'{industry}/{measure}/E_S_G/'
