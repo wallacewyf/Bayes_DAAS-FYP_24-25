@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: ROE_lag_1 ~ ESG + Q 
 
-Generated: 2025-03-25 14:49:16.894941 
+Generated: 2025-03-25 16:58:36.007476 
 
 Variance Inflation Factor table
   Variable  VIF Value
@@ -14,7 +14,7 @@ Dep. Variable:              ROE_lag_1   R-squared:                       0.061
 Model:                            OLS   Adj. R-squared:                  0.060
 Method:                 Least Squares   F-statistic:                     105.1
 Date:                Tue, 25 Mar 2025   Prob (F-statistic):           5.98e-45
-Time:                        14:49:17   Log-Likelihood:                 4294.2
+Time:                        16:58:36   Log-Likelihood:                 4294.2
 No. Observations:                3245   AIC:                            -8582.
 Df Residuals:                    3242   BIC:                            -8564.
 Df Model:                           2                                         
@@ -37,6 +37,6 @@ Notes:
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
-Shapiro-Wilk Normality Test p-value: 8.406004130406888e-39
-Breusch-Pagan Test p-value: 3.0031652995446534e-90
+Shapiro-Wilk Normality Test p-value: 8.400496534499245e-39
+Breusch-Pagan Test p-value: 3.0031652995451687e-90
 Chi-square p-value: 1.0

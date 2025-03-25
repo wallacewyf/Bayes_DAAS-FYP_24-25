@@ -40,6 +40,7 @@ returns.sort_values(by=['Company Name'],
 returns = returns.set_axis(returns_col, axis=1)
 
 log.warning(f"Melting dataframes into long format...")
+
 # Return on Equity - Actual
 roe = returns.iloc[:, :20].melt(var_name='Year', 
                                 value_name='ROE',
@@ -178,8 +179,6 @@ returns = returns[cond3]
 
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([scores, returns], axis=1)
-
-df.to_csv(config.data_path + 'debug.csv')
 
 # Remove outliers from ROE / ROA since ESG is fixed
 # Top 5% outliers - subject to change

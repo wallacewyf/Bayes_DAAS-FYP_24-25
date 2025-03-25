@@ -20,8 +20,10 @@ Current thoughts (20250324):
 - Write the code and functions for the below different type of regression:
     Linear Regression    
         - Basic Linear Regression (DONE)
-        - Linear Regression with n-year shift (lag) (DONE but existing SettingwithCopyWarning)
-        - Linear Regression with log-transformation on predictor variable Y
+        - Linear Regression with n-year shift (lag) (DONE)
+        - Linear Regression with log-transformation on predictor variable Y (DONE)
+        - Linear Regression with n-year shift and log-transformation (DONE)
+        - Threshold Regression for the 3 categories above (DONE)
 
     Generalized Linear Models (GLM)
         - Gaussian

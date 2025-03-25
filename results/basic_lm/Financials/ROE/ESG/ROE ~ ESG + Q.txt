@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: ROE ~ ESG + Q 
 
-Generated: 2025-03-25 00:36:17.595906 
+Generated: 2025-03-25 17:07:42.641089 
 
 Variance Inflation Factor table
   Variable  VIF Value
@@ -14,7 +14,7 @@ Dep. Variable:                    ROE   R-squared:                       0.047
 Model:                            OLS   Adj. R-squared:                  0.047
 Method:                 Least Squares   F-statistic:                     86.97
 Date:                Tue, 25 Mar 2025   Prob (F-statistic):           1.37e-37
-Time:                        00:36:17   Log-Likelihood:                 4530.1
+Time:                        17:07:42   Log-Likelihood:                 4530.1
 No. Observations:                3505   AIC:                            -9054.
 Df Residuals:                    3502   BIC:                            -9036.
 Df Model:                           2                                         
