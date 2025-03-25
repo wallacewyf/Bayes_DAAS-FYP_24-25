@@ -6,15 +6,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # statistical packages
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import PowerTransformer
-from sklearn.metrics import mean_squared_error, r2_score                        # R-squared
-from statsmodels.graphics.gofplots import qqplot
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels import api as sm 
-from statsmodels.formula import api as smf
 from scipy import stats
 
 # set path to retrieve returns/scores files
@@ -22,7 +16,7 @@ data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
 sys.path.append(data_path)
 
 # other path
-import config, wrangle
+import config
 
 # initialize logger module 
 log = config.logging
@@ -151,7 +145,7 @@ def linear_reg(df, measure, type):
         X = data[['ESG', 'Q_Ratio']]
         eqn = f"{measure} ~ ESG + Q"
 
-        if len(data.index.get_level_values(2).unique()):
+        if len(data.index.get_level_values(2).unique()) < 20:
             output_path = config.threshold_basic_lm + f'{industry}/{measure}/ESG/'
         
         else: output_path = config.basic_lm + f'{industry}/{measure}/ESG/'
@@ -159,7 +153,11 @@ def linear_reg(df, measure, type):
     elif type == 2:
         X = data[['E', 'S', 'G', "Q_Ratio"]]
         eqn = f"{measure} ~ E + S + G + Q"
-        output_path = config.basic_lm + f'{industry}/{measure}/E_S_G/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_basic_lm + f'{industry}/{measure}/E_S_G/'
+        
+        else: output_path = config.basic_lm + f'{industry}/{measure}/E_S_G/'
 
     # Checks validity of output path
     os.makedirs(output_path, exist_ok=True)
@@ -234,12 +232,20 @@ def lagged_reg(df, measure, type, n):
     if type == 1:
         X = data[['ESG', 'Q_Ratio']]
         eqn = f"{measure} ~ ESG + Q"
-        output_path = config.lagged_lm + f'{industry}/{measure}/ESG/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_lagged_lm + f'{industry}/{measure}/ESG/'
+        
+        else: output_path = config.lagged_lm + f'{industry}/{measure}/ESG/'
 
     elif type == 2:
         X = data[['E', 'S', 'G', "Q_Ratio"]]
         eqn = f"{measure} ~ E + S + G + Q"
-        output_path = config.lagged_lm + f'{industry}/{measure}/E_S_G/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_lagged_lm + f'{industry}/{measure}/E_S_G/'
+        
+        else: output_path = config.lagged_lm + f'{industry}/{measure}/E_S_G/'
 
     # Checks validity of output path
     os.makedirs(output_path, exist_ok=True)
@@ -311,12 +317,20 @@ def log_linear(df, measure, type):
     if type == 1:
         X = data[['ESG', 'Q_Ratio']]
         eqn = f"{measure} ~ ESG + Q"
-        output_path = config.log_lm + f'{industry}/{measure}/ESG/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_log_lm + f'{industry}/{measure}/ESG/'
+
+        else: output_path = config.log_lm + f'{industry}/{measure}/ESG/'
 
     elif type == 2:
         X = data[['E', 'S', 'G', "Q_Ratio"]]
         eqn = f"{measure} ~ E + S + G + Q"
-        output_path = config.log_lm + f'{industry}/{measure}/E_S_G/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_log_lm + f'{industry}/{measure}/ESG/'
+
+        else: output_path = config.log_lm + f'{industry}/{measure}/E_S_G/'
 
     # Checks validity of output path
     os.makedirs(output_path, exist_ok=True)
@@ -390,12 +404,20 @@ def log_lag(df, measure, type, n):
     if type == 1:
         X = data[['ESG', 'Q_Ratio']]
         eqn = f"{measure} ~ ESG + Q"
-        output_path = config.log_lag + f'{industry}/{measure}/ESG/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_log_lag + f'{industry}/{measure}/ESG/'
+
+        else: output_path = config.log_lag + f'{industry}/{measure}/ESG/'
 
     elif type == 2:
         X = data[['E', 'S', 'G', "Q_Ratio"]]
         eqn = f"{measure} ~ E + S + G + Q"
-        output_path = config.log_lag + f'{industry}/{measure}/E_S_G/'
+
+        if len(data.index.get_level_values(2).unique()) < 20:
+            output_path = config.threshold_log_lag + f'{industry}/{measure}/E_S_G/'
+
+        else: output_path = config.log_lag + f'{industry}/{measure}/E_S_G/'
 
     # Checks validity of output path
     os.makedirs(output_path, exist_ok=True)
@@ -472,6 +494,5 @@ def threshold_log_lag(df, measure, type, year, n):
                type = type, 
                n = n)
     
-
 # Codespace 
 # =======================================================

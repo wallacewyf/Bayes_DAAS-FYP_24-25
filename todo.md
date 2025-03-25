@@ -18,7 +18,7 @@ Paper:
 
 Current thoughts (20250324):
 - Write the code and functions for the below different type of regression:
-    Linear Regression    
+    Linear Regression (DONE)
         - Basic Linear Regression (DONE)
         - Linear Regression with n-year shift (lag) (DONE)
         - Linear Regression with log-transformation on predictor variable Y (DONE)

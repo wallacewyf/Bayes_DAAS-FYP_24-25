@@ -683,5 +683,3 @@ def gaussian_glm(index, measure, scores):
     #     scores=False
     # )
 
-# TODO: Correlation, Relationship, Regression, Cluster Analysis 
-#       (cross-compare with methods on cited literatures on types of analysis used)
