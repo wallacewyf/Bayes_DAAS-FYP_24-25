@@ -164,7 +164,7 @@ scores = pd.concat([esg, e_df, s_df, g_df],
 
 scores.set_index('Year', append=True, inplace=True)
 
-log.warning (f"Running filter 3: ROE, ROA, ESG are not NAs")
+log.warning (f"Running filter 3: ROE, ROA, ESG are not NAs\n")
 
 # Condition 3: ROE, ROA, ESG are not NAs
 returns, scores = returns.align(scores, join='inner', axis=0)
@@ -173,26 +173,57 @@ cond3 = (returns['ROE'].notna()
          & returns['Q_Ratio'].notna() 
          & scores['ESG'].notna())
 
-# removed because we should do np.log1p instead of np.log for 0 values on financial returns
-
-        #  & (returns['ROE'] != 0)
-        #  & (returns ['ROA'] != 0)
-        #  & (scores ['E'] != 0))
-
 scores = scores[cond3]
 returns = returns[cond3]
 
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([scores, returns], axis=1)
 
-# Splitting into 2 dataframes by GICS Sector - Finance and Tech
-finance = df[df.index.get_level_values(1) == 'Financials']
-tech = df[df.index.get_level_values(1) == 'Information Technology']
-energy = df[df.index.get_level_values(1) == 'Energy']
-industrials = df[df.index.get_level_values(1) == 'Industrials']
-healthcare = df[df.index.get_level_values(1) == 'Health Care']
+df.to_csv(config.data_path + 'debug.csv')
 
-log.info (f"Data wrangling complete!")
+# Remove outliers from ROE / ROA since ESG is fixed
+# Top 5% outliers - subject to change
+
+top_10_ROE = df['ROE'].quantile(0.95)
+bot_10_ROE = df['ROE'].quantile(0.05)
+
+top_10_ROA = df['ROA'].quantile(0.95)
+bot_10_ROA = df['ROA'].quantile(0.05)
+
+df = df[
+    (df['ROA'] >= bot_10_ROA) & (df['ROA'] <= top_10_ROA) &
+    (df['ROE'] >= bot_10_ROE) & (df['ROE'] <= top_10_ROE)
+]
+
+df.to_csv(config.data_path + 'cleaned_data.csv')
+
+# available dataframes
+# GICS Sectors
+    # Financials
+    # Utilities
+    # Health Care
+    # Information Technology
+    # Materials
+    # Industrials
+    # Energy
+    # Consumer Staples
+    # Consumer Discretionary
+    # Real Estate
+    # Communication Services
+
+finance = df[df.index.get_level_values(1) == 'Financials']
+utils = df[df.index.get_level_values(1) == 'Utilities']
+health = df[df.index.get_level_values(1) == 'Health Care']
+tech = df[df.index.get_level_values(1) == 'Information Technology']
+materials = df[df.index.get_level_values(1) == 'Materials']
+industrials = df[df.index.get_level_values(1) == 'Industrials']
+energy = df[df.index.get_level_values(1) == 'Energy']
+consumer_staple = df[df.index.get_level_values(1) == 'Consumer Staples']
+consumer_disc = df[df.index.get_level_values(1) == 'Consumer Discretionary']
+reits = df[df.index.get_level_values(1) == 'Real Estate']
+comm = df[df.index.get_level_values(1) == 'Communication Services']
+
+log.info (f"Data wrangling complete!\n")
 
 # Debugger
 # ===========================================================================
@@ -237,11 +268,8 @@ def notes():
     ASOF 23-Mar:
     Finance:
         - All OK - models to be verified by David
-
-    Note: given that word count might not be enough, maybe we should do a more macro test 
-            of all sectors and then select finance as the cutoff point
-            
-            (check w David to see what his thoughts are)
+        
+        Concluded: not OK - QQ-plot is weird
 
     Discussion with David:
         - the norm in financial data is to log (but probably needs academic reference)

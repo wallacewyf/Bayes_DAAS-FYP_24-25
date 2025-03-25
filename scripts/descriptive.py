@@ -16,49 +16,54 @@ log = config.logging
 # Descriptive Statistics
 
 def desc(industry):
-    if industry.lower().startswith("fin"):
-        '''
-        Descriptive Statistics for Financial Companies 
-        '''
+    '''
+    Descriptive Statistics for Industry according to argument passed into function
+    '''
+    industry = industry.capitalize()
+    
+    if industry == 'Financials':
         data = wrangle.finance
-        output = os.path.join(config.desc_path, 'Descriptive - Financials.csv')
-        desc = data.describe()
 
-        log.info (f"Writing Descriptive Summary for Financial Companies")
-        with open(output, "w") as finance:
-            finance.write(f"Descriptive Statistics for Financial Companies\n")
-            finance.write(f"Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n")
-            finance.write(str(desc))
+    elif industry == 'Utilities':
+        data = wrangle.utils
 
-    elif industry.lower().startswith("tech"):
-        '''
-        Descriptive Statistics for Technology Companies
-        '''
+    elif industry == 'Health Care':
+        data = wrangle.health
+
+    elif industry == 'Information Technology':
         data = wrangle.tech
-        output = os.path.join(config.desc_path, 'Descriptive - Technology.csv')
-        desc = data.describe()
 
-        log.info (f"Writing Descriptive Summary for Technology Companies")
-        with open(output, "w") as tech:
-            tech.write(f"Descriptive Statistics for Technology Companies\n")
-            tech.write(f"Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n")
-            tech.write(str(desc))
+    elif industry == 'Materials':
+        data = wrangle.materials
 
-    elif industry.lower() == 'all':
-        '''
-        Descriptive Statistics for all industries
-        '''
+    elif industry == 'Industrials':
+        data = wrangle.industrials
+
+    elif industry == 'Energy':
+        data = wrangle.energy
+
+    elif industry == 'Consumer Staples':
+        data = wrangle.consumer_staple
+
+    elif industry == 'Consumer Discretionary':
+        data = wrangle.consumer_disc
+
+    elif industry == 'Real Estate':
+        data = wrangle.reits
+
+    elif industry == 'Communication Services':
+        data = wrangle.comm
+
+    elif industry == 'All':
+        industry = 'All Industries'
         data = wrangle.df
 
-        output = os.path.join(config.desc_path, 'Descriptive - All Industries.csv')
-        desc = data.describe()
+    log.info (f"Descriptive Statistics called for GICS Sector: {industry if industry != 'All' else 'All Sectors'} \n")    
+    output = os.path.join(config.desc_path, f'{industry}.csv')
+    desc = data.describe()
 
-        log.info (f"Writing Descriptive Summary for all industries")
-        with open(output, 'w') as all: 
-            all.write(f"Descriptive Statistics for all industries\n")
-            all.write(f"Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n")
-            all.write(str(desc))
-
-
-    return desc
+    with open(output, "w") as file:
+        file.write(f"Descriptive Statistics for {industry} Companies\n")
+        file.write(f"Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n")
+        file.write(str(desc))
 

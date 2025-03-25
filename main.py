@@ -9,6 +9,7 @@ data_path = os.path.join(os.path.dirname(__file__), "scripts")
 sys.path.append(data_path)
 
 import descriptive
+import linear_reg as reg
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -21,22 +22,67 @@ start = datetime.datetime.now()
 
 # Data Wrangling
 # ===========================================================================
-# wrangle.returns(index = 'msci', 
-#                 measure = 'roe')
+# Available dataframes:
+# Financials = wrangle.finance 
+# Utilities = wrangle.utils 
+# Health Care = wrangle.health
+# Information Technology = wrangle.tech
+# Materials = wrangle.materials 
+# Industrials = wrangle.industrials 
+# Energy = wrangle.energy 
+# Consumer Staples = wrangle.consumer_staple
+# Consumer Discretionary = wrangle.consumer_disc
+# Real Estate = wrangle.reits
+# Communication Services = wrangle.comm
 
-# wrangle.scores(index = 'msci', 
-#                measure = 'esg')
+# Finance Sector
+# print (wrangle.finance)
+
+# Technology Sector
+# print (wrangle.tech)
 
 # Descriptive Statistics
 # ===========================================================================
-# # Descriptive Statistics for Technology Companies
-# descriptive.desc(industry='Technology')
+# Available Sectors: 
+    # Financials, Utilities, Health Care, 
+    # Information Technology, Materials, Industrials, 
+    # Energy, Consumer Staples, Consumer Discretionary, 
+    # Real Estate, Communication Services, All
 
-# # Descriptive Statistics for Financial Companies
-# descriptive.desc(industry='Financials')
+# GICS Sector: Finance
+descriptive.desc('financials')
 
-# Descriptive Statistics for both Financial and Technology Companies
-descriptive.desc(industry='all')
+# # Descriptive Statistics for each sector
+# industry_arr = ['Financials', 'Utilities', 'Health Care', 
+#                 'Information Technology', 'Materials', 'Industrials', 
+#                 'Energy', 'Consumer Staples', 'Consumer Discretionary', 
+#                 'Real Estate', 'Communication Services']
+
+# for industry in industry_arr:
+#     descriptive.desc(industry)
+
+# Linear Regression
+# ===========================================================================
+
+reg.linear_reg(df = wrangle.finance,
+           measure = 'roe', 
+           type = 1)
+
+
+reg.linear_reg(df = wrangle.finance,
+           measure = 'ROA', 
+           type = 2)
+
+# Technology
+reg.linear_reg(df = wrangle.tech,
+           measure = 'Roe', 
+           type = 1)
+
+
+reg.linear_reg(df = wrangle.tech,
+           measure = 'roA', 
+           type = 2)
+
 
 # Gaussian GLM Regression
 # ===========================================================================
