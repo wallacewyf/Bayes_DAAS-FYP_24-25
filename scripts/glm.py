@@ -549,12 +549,11 @@ def threshold_gaussian(df,
 
     Calls corresponding Gaussian GLM functions based on arguments entered
     '''
-    
+
     # Initialize dataset
     data, eqn, vif, output_path = init_data(df = df, 
                                             measure = measure.lower(), 
                                             esg = esg.lower(), 
-                                            log_transform=True,
                                             year_threshold=year_threshold,
                                             log_transform=log_transform,
                                             n_shift=n_shift)
@@ -565,21 +564,37 @@ def threshold_gaussian(df,
              esg = esg, 
              vif = vif, 
              path = output_path)    
-    
+
+# Notes:
+# =======================================================
+# Combine basic_ lagged_ log_ log_lag
+# It's doable since there are default arguments
+# But would have to merged gaussian_init with basic gaussian
+
+
 # Codespace 
 # =======================================================
-basic_gaussian(df = wrangle.finance)
+threshold_gaussian(df = wrangle.finance, 
+                   measure = 'roe', 
+                   esg = 'combined', 
+                   year_threshold = 2020)
 
-lagged_gaussian(df = wrangle.finance)
+# Log-transformation
+threshold_gaussian(df = wrangle.finance, 
+                   measure = 'roe', 
+                   esg = 'combined', 
+                   year_threshold = 2020,
+                   log_transform=True)
 
-log_gaussian(
-    df = wrangle.finance, 
-    measure = 'roe', 
-    esg = 'combined'
-)
+threshold_gaussian(df = wrangle.finance, 
+                   measure = 'roe', 
+                   esg = 'combined', 
+                   year_threshold = 2020,
+                   n_shift=1)
 
-log_lag_gaussian(
-    df = wrangle.finance, 
-    measure = 'roe', 
-    esg = 'combined'
-)
+threshold_gaussian(df = wrangle.finance, 
+                   measure = 'roe', 
+                   esg = 'combined', 
+                   year_threshold = 2020,
+                   log_transform=True,
+                   n_shift=1)
