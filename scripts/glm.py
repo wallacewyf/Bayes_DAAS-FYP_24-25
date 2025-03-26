@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # statistical packages
+from sklearn.preprocessing import StandardScaler        # Inverse Gaussian
 from statsmodels.graphics.gofplots import qqplot
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.stats.diagnostic import het_breuschpagan
@@ -34,7 +35,7 @@ def init_data(
             year_threshold=None,
             log_transform=None,
             n_shift=None,
-            transform=None
+            glm_type='Gaussian'
             ):
 
     '''
@@ -75,10 +76,6 @@ def init_data(
         elif n_shift == 0:
             n_shift = None
 
-    # Inverse Gaussian (strictly positive)
-    if transform.lower() == 'positive':
-        print ("transforming Y to +ve")
-        
     # Introducing threshold on Year
     if year_threshold is not None: 
         # year_threshold Validation
@@ -94,8 +91,13 @@ def init_data(
 
         # Introducing log1p(Y) and n-year lag
         if log_transform and n_shift is not None:
-            data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
+            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
             data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[measure])
             
@@ -106,8 +108,10 @@ def init_data(
 
         # Introducing log1p (Y)
         elif log_transform: 
-            data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
+            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
             
             data = data.rename(columns={measure: f'log_{measure}'})
             measure = f'log_{measure}'
@@ -116,7 +120,9 @@ def init_data(
 
         # Introducing n-year lag
         elif n_shift is not None:
-            data = data.sort_index()
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
             data.loc[:, f'{measure}_lag_{n_shift}'] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[f'{measure}_lag_{n_shift}'])
 
@@ -129,8 +135,10 @@ def init_data(
     else:
         # Introducing log1p(Y) and n-year lag
         if log_transform and n_shift is not None:
-            data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
+            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
             data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[measure])
 
@@ -141,8 +149,10 @@ def init_data(
 
         # Introducing log1p (Y)
         elif log_transform: 
-            data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
+            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
 
             data = data.rename(columns={measure: f'log_{measure}'})
             measure = f'log_{measure}'
@@ -151,7 +161,9 @@ def init_data(
 
         # Introducing n-year lag
         elif n_shift is not None:
-            data = data.sort_index()
+            data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
+                                   ascending=[True, True, True])
+            
             data.loc[:, f'{measure}_lag_{n_shift}'] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[f'{measure}_lag_{n_shift}'])
 
@@ -167,7 +179,18 @@ def init_data(
         print (f'WARNING: Check log_file - {config.filename}')
         return
 
-    # Append onto output_path with industry and measure folder
+    # Append onto output_path with GLM type and industry and measure folder
+    if glm_type.lower() == 'inversegaussian' or glm_type.lower() == 'inverse gaussian':
+        output_path = os.path.join(output_path, "Inverse Gaussian/")
+
+    elif glm_type.lower() == 'gamma':
+        output_path = os.path.join(output_path, "Gamma/")
+
+    elif glm_type.lower() == 'tweedie':
+        output_path = os.path.join(output_path, "Tweedie/")
+
+    else: output_path = os.path.join(output_path, "Gaussian/")
+    
     output_path = os.path.join(output_path, f'{industry}/{measure}/')
 
     # ESG Parameter Transformation + VIF computation
@@ -226,11 +249,13 @@ def gaussian_glm(df,
                                                       esg = esg.lower(), 
                                                       year_threshold=year_threshold, 
                                                       log_transform=log_transform, 
-                                                      n_shift=n_shift)
+                                                      n_shift=n_shift,
+                                                      glm_type='Gaussian')
 
     # Extract measure
     measure = eqn.split("~")[0].strip()
 
+    # Link functions 
     if link is None:
         glm = smf.glm(eqn, 
                     data=data, 
@@ -246,16 +271,19 @@ def gaussian_glm(df,
                       data = data, 
                       family = sm.families.Gaussian(link=sm.genmod.families.links.Identity())).fit()
 
+    # Statistical Tests
     shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
                                           model_type = 'glm', 
                                           model = glm)
     
+    # Diagnostic Plots
     dplot.export_graphs(model=glm, 
                         model_type='glm', 
                         esg=esg, 
                         measure=measure, 
                         path=output_path)
     
+    # Export results to directory
     dplot.export_results(summary=glm.summary(), 
                          vif=vif, 
                          industry=industry, 
@@ -271,7 +299,7 @@ def inv_gaussian(df,
                  year_threshold = None, 
                  log_transform = None, 
                  n_shift = None,
-                 link = None):
+                 link = 'Log'):
         
     '''
     Inverse Gaussian GLMs
@@ -286,7 +314,7 @@ def inv_gaussian(df,
           
           Note: if n_shift is longer than max(n), max is used.
                 elif n_shift == 0, n_shift = None
-        - link = None (defaults as Identity) / Log / Inverse
+        - link = Log (default) / None / Inverse
     ----------------------------------------------------------
     Performs Inverse Gaussian GLM based on arguments entered
 
@@ -301,36 +329,250 @@ def inv_gaussian(df,
                                                       esg = esg.lower(), 
                                                       year_threshold=year_threshold, 
                                                       log_transform=log_transform, 
-                                                      n_shift=n_shift)
+                                                      n_shift=n_shift,
+                                                      glm_type='Inverse Gaussian')
 
     # Extract measure
     measure = eqn.split("~")[0].strip()
 
-    if link is None:
-        glm = smf.glm(eqn, 
-                    data=data, 
-                    family=sm.families.InverseGaussian()).fit()
+    # Positive transformation for Inverse Gaussian only
+    data = data.sort_index(ascending=True)
     
-    elif link.lower() == 'inverse':
-        glm = smf.glm(eqn, 
-                    data=data, 
-                    family=sm.families.InverseGaussian(link=sm.genmod.families.links.InversePower())).fit()
-        
-    elif link.lower() == 'log':
-        glm = smf.glm(eqn, 
-                      data = data, 
-                      family = sm.families.InverseGaussian(link=sm.genmod.families.links.Identity())).fit()
+    data.loc[:, measure] = data[measure] - data[measure].min() + (1e-4)
+    inverse_value = (data[measure].min() + (1e-4))
 
+    # Link functions
+    try:
+        if link is None:
+            log.warning (f"Inverse Gaussian with no link function does not work!")
+
+            glm = smf.glm(eqn, 
+                        data=data, 
+                        family=sm.families.InverseGaussian()).fit()
+            
+            return
+        
+        elif link.lower() == 'inverse':
+            log.warning (f"Inverse Gaussian with Inverse Power link function does not work!")
+
+            glm = smf.glm(eqn, 
+                        data=data, 
+                        family=sm.families.InverseGaussian(link=sm.genmod.families.links.InversePower())).fit()
+            
+            return
+        
+        elif link.lower() == 'log':
+            glm = smf.glm(eqn, 
+                        data = data, 
+                        family = sm.families.InverseGaussian(link=sm.genmod.families.links.Log())).fit()
+        
+            transformation_note = f"Log-link function called -> Interpret coefficient as exp(coef)! \n"
+            transformation_note += f"Strictly positive transformation with {inverse_value} \n\n"
+
+        # Statistical Tests
+        shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
+                                            model_type = 'glm', 
+                                            model = glm)
+        
+        # Diagnostic Plots
+        dplot.export_graphs(model=glm, 
+                            model_type='glm', 
+                            esg=esg, 
+                            measure=measure, 
+                            path=output_path)
+        
+        # Export results to directory
+        dplot.export_results(summary=glm.summary(), 
+                            vif=vif, 
+                            industry=industry, 
+                            eqn=eqn, 
+                            shapiro_p_value=shapiro, 
+                            bp_p_value=bp, 
+                            chi2_p_value=chi2,
+                            transformation_note=transformation_note,
+                            path=output_path)
+
+    except ValueError as error_msg:
+        log.warning (f"ValueError: {error_msg}")
+
+        print(f"ValueError encountered: {error_msg}")
+
+def gamma_glm(df, 
+                measure = 'roe', 
+                esg = 'combined', 
+                year_threshold = None, 
+                log_transform = None, 
+                n_shift = None,
+                link = 'Log'):
+        
+    '''
+    Gamma GLMs
+    ----------------------------------------------------------
+    Parameters:
+        - df = wrangle.finance / wrangle.tech
+        - measure = ROE (default) / ROA
+        - esg = combined (default) / individual
+        - year_threshold = None (default) / 2004 / 2020
+        - log_transform = None (default) / True / False
+        - n_shift = None (default) / 1 / 2 / 3 
+          
+          Note: if n_shift is longer than max(n), max is used.
+                elif n_shift == 0, n_shift = None
+        - link = Log (default) / None 
+    ----------------------------------------------------------
+    Performs Gamma GLM based on arguments entered
+
+    Note: strictly positive transformation added here to fulfill
+          Gamma GLM pre-condition. Since Gamma GLMs has the same 
+          conditions as Inverse Gaussian, we mirror the inv_gaussian() 
+          function.
+
+    '''
+
+
+    # Initialize dataset
+    data, industry, eqn, vif, output_path = init_data(df = df, 
+                                                      measure = measure.lower(), 
+                                                      esg = esg.lower(), 
+                                                      year_threshold=year_threshold, 
+                                                      log_transform=log_transform, 
+                                                      n_shift=n_shift,
+                                                      glm_type='Gamma')
+
+    # Extract measure
+    measure = eqn.split("~")[0].strip()
+
+    # # Positive transformation for Inverse Gaussian only
+    # data = data.sort_index(ascending=True)
+    
+    # data.loc[:, measure] = data[measure] - data[measure].min() + (1e-4)
+    # inverse_value = (data[measure].min() + (1e-4))
+
+    inverse_value = 0
+
+    # Link functions
+    try:
+        if link is None:
+            log.warning (f"Gamma with no link function does not work!")
+
+            glm = smf.glm(eqn, 
+                        data=data, 
+                        family=sm.families.Gamma()).fit()
+            
+            return
+        
+        elif link.lower() == 'log':
+            glm = smf.glm(eqn, 
+                        data = data, 
+                        family = sm.families.Gamma(link=sm.genmod.families.links.Log())).fit()
+        
+            transformation_note = f"Log-link function called -> Interpret coefficient as exp(coef)! \n"
+            transformation_note += f"Strictly positive transformation with {inverse_value} \n\n"
+
+        # Statistical Tests
+        shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
+                                            model_type = 'glm', 
+                                            model = glm)
+        
+        # Diagnostic Plots
+        dplot.export_graphs(model=glm, 
+                            model_type='glm', 
+                            esg=esg, 
+                            measure=measure, 
+                            path=output_path)
+        
+        # Export results to directory
+        dplot.export_results(summary=glm.summary(), 
+                            vif=vif, 
+                            industry=industry, 
+                            eqn=eqn, 
+                            shapiro_p_value=shapiro, 
+                            bp_p_value=bp, 
+                            chi2_p_value=chi2,
+                            transformation_note=transformation_note,
+                            path=output_path)
+
+    except ValueError as error_msg:
+        log.warning (f"ValueError: {error_msg}")
+
+        print(f"ValueError encountered: {error_msg}")
+
+def tweedie_glm(df, 
+                 measure = 'roe', 
+                 esg = 'combined', 
+                 year_threshold = None, 
+                 log_transform = None, 
+                 n_shift = None,
+                 link = None,
+                 var_power = None):
+    
+    '''
+    Tweedie GLMs
+    ----------------------------------------------------------
+    Parameters:
+        - df = wrangle.finance / wrangle.tech
+        - measure = ROE (default) / ROA
+        - esg = combined (default) / individual
+        - year_threshold = None (default) / 2004 / 2020
+        - log_transform = None (default) / True / False
+        - n_shift = None (default) / 1 / 2 / 3 
+          
+          Note: if n_shift is longer than max(n), max is used.
+                elif n_shift == 0, n_shift = None
+        - link = None (defaults as Log) / Identity
+        - var_power = None / 1 (Poisson) / 1.5 (Tweedie) / 2 (Gamma)
+    ----------------------------------------------------------
+    Performs Tweedie GLM based on arguments entered
+    '''
+
+    # Initialize dataset
+    data, industry, eqn, vif, output_path = init_data(df = df, 
+                                                      measure = measure.lower(), 
+                                                      esg = esg.lower(), 
+                                                      year_threshold=year_threshold, 
+                                                      log_transform=log_transform, 
+                                                      n_shift=n_shift,
+                                                      glm_type = 'Tweedie')
+
+    # Extract measure
+    measure = eqn.split("~")[0].strip()
+
+    # Link functions 
+    if var_power is None:
+        if link is None:
+            glm = smf.glm(eqn, 
+                        data=data, 
+                        family=sm.families.Tweedie()).fit()
+        
+        elif link.lower() == 'identity':
+            glm = smf.glm(eqn, 
+                        data = data, 
+                        family = sm.families.Tweedie(link=sm.genmod.families.links.Identity())).fit()
+
+    else:
+        if link is None:
+            glm = smf.glm(eqn, 
+                        data=data, 
+                        family=sm.families.Tweedie(var_power=var_power)).fit()
+        
+        elif link.lower() == 'identity':
+            glm = smf.glm(eqn, 
+                        data = data, 
+                        family = sm.families.Tweedie(link=sm.genmod.families.links.Identity(),
+                                                     var_power=var_power)).fit()
+    # Statistical Tests
     shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
                                           model_type = 'glm', 
                                           model = glm)
     
+    # Diagnostic Plots
     dplot.export_graphs(model=glm, 
                         model_type='glm', 
                         esg=esg, 
                         measure=measure, 
                         path=output_path)
     
+    # Export results to directory
     dplot.export_results(summary=glm.summary(), 
                          vif=vif, 
                          industry=industry, 
@@ -339,12 +581,6 @@ def inv_gaussian(df,
                          bp_p_value=bp, 
                          chi2_p_value=chi2, 
                          path=output_path)
-
-# Notes (20250325):
-# To add InverseGaussian and Gamma and Tweedie
-
+    
 # Codespace 
 # =======================================================
-inv_gaussian(df = wrangle.finance, 
-             measure = 'roe', 
-             esg = 'combined')

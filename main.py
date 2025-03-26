@@ -77,8 +77,8 @@ start = datetime.datetime.now()
 #            cov_type='hc2')
 
 
-# # Gaussian GLM Regression
-# # ===========================================================================
+# Gaussian GLM Regression
+# ===========================================================================
 # glm.gaussian_glm(df = wrangle.finance,
 #                  measure = 'roe', 
 #                  esg = 'combined')
@@ -97,6 +97,46 @@ start = datetime.datetime.now()
 #                  year_threshold = 2008, 
 #                  log_transform=True,
 #                  link='inverse')
+
+# # Inverse Gaussian GLM Regression
+# # ===========================================================================
+# Note: the parameters requires further adjustments as extreme outliers in financial returns 
+#       may cause imbalanced weights, which then causes infeasible estimations.
+
+# glm.inv_gaussian(df = wrangle.finance,
+#                  measure = 'roe', 
+#                  esg = 'combined',
+#                  year_threshold = None, 
+#                  log_transform = None, 
+#                  n_shift = None, 
+#                  link = 'Log')
+
+# # Gamma GLM Regression
+# # ===========================================================================
+# Note: the parameters requires further adjustments as extreme outliers in financial returns 
+#       may cause imbalanced weights, which then causes infeasible estimations.
+
+# glm.gamma_glm(df = wrangle.finance, 
+#               measure = 'roe', 
+#               esg = 'combined',
+#               year_threshold = None, 
+#               log_transform = None, 
+#               n_shift = None, 
+#               link = 'Log')
+
+# # Tweedie GLM Regression
+# # ===========================================================================
+# Note: the parameters requires further adjustments as extreme outliers in financial returns 
+#       may cause imbalanced weights, which then causes infeasible estimations.
+
+# glm.tweedie_glm(df = wrangle.finance,
+#                  measure = 'roe', 
+#                  esg = 'combined',
+#                  year_threshold = None,
+#                  log_transform = None, 
+#                  n_shift = None, 
+#                  link = None, 
+#                  var_power = None)
 
 stop = datetime.datetime.now()
 

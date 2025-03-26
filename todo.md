@@ -25,12 +25,16 @@ Current thoughts (20250324):
         - Linear Regression with n-year shift and log-transformation (DONE)
         - Threshold Regression for the 3 categories above (DONE)
 
-    Generalized Linear Models (GLM)
+    Generalized Linear Models (GLM) (DONE)
         - Gaussian (DONE)
-        - Inverse Gaussian
-        - Gamma / Tweedie (but Gamma is a bit finicky)
+        - Inverse Gaussian (DONE)
+        - Gamma (DONE) 
+        - Tweedie (DONE) 
 
         - GLMs for each of the 5 categories above
+
+        Note: Inverse Gaussian / Gamma / Tweedie requires user to adjust parameters since financial returns holds extreme outliers
+              which makes the weights for GLMs to estimate not possible / feasible
 
 - Descriptive Statistics (DONE)
     - make it so it parses any industry and drops it into the results/descriptive/ dir
