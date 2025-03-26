@@ -1,0 +1,43 @@
+GICS Sector: Financials
+Regression Equation: log_ROA_lag_2 ~ ESG + Q_Ratio 
+
+Generated: 2025-03-26 03:09:41.721645 
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:          log_ROA_lag_2   R-squared:                       0.168
+Model:                            OLS   Adj. R-squared:                  0.168
+Method:                 Least Squares   F-statistic:                     302.7
+Date:                Wed, 26 Mar 2025   Prob (F-statistic):          1.85e-120
+Time:                        03:09:41   Log-Likelihood:                 6586.6
+No. Observations:                2994   AIC:                        -1.317e+04
+Df Residuals:                    2991   BIC:                        -1.315e+04
+Df Model:                           2                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          0.0348      0.002     21.862      0.000       0.032       0.038
+ESG           -0.0003   2.82e-05     -9.989      0.000      -0.000      -0.000
+Q_Ratio        0.0043      0.000     21.990      0.000       0.004       0.005
+==============================================================================
+Omnibus:                     1629.919   Durbin-Watson:                   0.650
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            27389.739
+Skew:                           2.206   Prob(JB):                         0.00
+Kurtosis:                      17.145   Cond. No.                         182.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0      ESG   1.041654
+1  Q_Ratio   1.041654
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 7.619439845493812e-63
+Breusch-Pagan Test p-value: 3.202893487523678e-238
+Chi-square p-value: 1.0

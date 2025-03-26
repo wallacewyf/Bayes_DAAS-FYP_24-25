@@ -1,0 +1,35 @@
+GICS Sector: Financials
+Regression Equation: log_ROA_lag_2 ~ ESG + Q_Ratio 
+
+Generated: 2025-03-26 03:24:05.164679 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:          log_ROA_lag_2   No. Observations:                 2356
+Model:                            GLM   Df Residuals:                     2353
+Model Family:                Gaussian   Df Model:                            2
+Link Function:               Identity   Scale:                      0.00071146
+Method:                          IRLS   Log-Likelihood:                 5196.8
+Date:                Wed, 26 Mar 2025   Deviance:                       1.6741
+Time:                        03:24:05   Pearson chi2:                     1.67
+No. Iterations:                     3   Pseudo R-squ. (CS):             0.1907
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      0.0334      0.002     17.364      0.000       0.030       0.037
+ESG           -0.0003   3.32e-05     -7.783      0.000      -0.000      -0.000
+Q_Ratio        0.0040      0.000     20.372      0.000       0.004       0.004
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0      ESG   1.043727
+1  Q_Ratio   1.043727
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 2.0181899127838142e-58
+Breusch-Pagan Test p-value: 2.2977237805003863e-173
+Chi-square p-value: 1.0

@@ -1,0 +1,35 @@
+GICS Sector: Financials
+Regression Equation: ROE ~ ESG + Q_Ratio 
+
+Generated: 2025-03-26 03:35:04.701030 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                 3505
+Model:                            GLM   Df Residuals:                     3502
+Model Family:                   Gamma   Df Model:                            2
+Link Function:           InversePower   Scale:                         0.25084
+Method:                          IRLS   Log-Likelihood:                 4522.9
+Date:                Wed, 26 Mar 2025   Deviance:                       1050.4
+Time:                        03:35:04   Pearson chi2:                     878.
+No. Iterations:                    10   Pseudo R-squ. (CS):            -0.2137
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      7.1151      0.188     37.850      0.000       6.747       7.484
+ESG            0.0111      0.004      3.153      0.002       0.004       0.018
+Q_Ratio       -0.1782      0.003    -59.685      0.000      -0.184      -0.172
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0      ESG   1.031564
+1  Q_Ratio   1.031564
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 1.333430305888188e-40
+Breusch-Pagan Test p-value: 0.0
+Chi-square p-value: 1.0

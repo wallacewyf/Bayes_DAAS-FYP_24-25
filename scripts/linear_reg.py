@@ -6,492 +6,260 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # statistical packages
+from statsmodels.graphics.gofplots import qqplot
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels import api as sm 
+from statsmodels.formula import api as smf
 from scipy import stats
+
+# import diagnostic plots and statistical tests
+import statistical_tests as stest
+import diagnostic_plots as dplot
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
 sys.path.append(data_path)
 
 # other path
-import config
+import config, wrangle
 
 # initialize logger module 
 log = config.logging
 
-def model(X, Y, path):
+def init_data(
+            df=wrangle.df, 
+            measure='roe',
+            esg='combined', 
+            year_threshold=None,
+            log_transform=None,
+            n_shift=None
+            ):
+
     '''
-    Linear Regression Model 
+    Data Initialization
+    ----------------------------------------------------------
+    Parameters:
+        - df = wrangle.df (default) / wrangle.finance
+        - measure = roe (default) / roa
+        - esg = combined (default) / individual
+        - year_threshold = None (default) / 2004 / 2005 / etc.
+
+          Note: if year_threshold > max(year), max(year) is used.
+
+        - log_transform = None (default) / True / False
+        - n_shift = None (default) / 1 / 2 / 3 
+          
+          Note: if n_shift is longer than max(n), max is used.
+                elif n_shift == 0, n_shift = None
+    ----------------------------------------------------------
+    Initialize data and create histogram of predictor variable (measure)
+    and calculate Variance Inflation Factor (VIF)
+
+    Returns wrangled_data, industry, regression_equation, vif, output_path
+    '''
+
+    data = df
+    measure = measure.upper()
+    industry = data.index.get_level_values(1).unique()[0] if len(data.index.get_level_values(1).unique()) == 1 else 'All Industries'
+
+    # n_shift Validation
+    # Verify if n_shift within range
+    max_shift = len(data.index.get_level_values(2).unique())
+
+    if n_shift is not None:
+        if n_shift >= max_shift: 
+            n_shift = max_shift - 1
+
+        elif n_shift == 0:
+            n_shift = None
+
+    # Introducing threshold on Year
+    if year_threshold is not None: 
+        # year_threshold Validation
+        # Verify if Year within range
+        year_range = data.index.get_level_values(2).unique()
+
+        if year_threshold >= year_range.max(): 
+            year_threshold = year_range.max()
+            data = data[data.index.get_level_values(2) >= year_threshold]
     
-    X: independent variables
-    Y: dependent / predictor variable
+        else:
+            data = data[data.index.get_level_values(2) > year_threshold]
+
+        # Introducing log1p(Y) and n-year lag
+        if log_transform and n_shift is not None:
+            data = data.sort_index()
+            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
+            data = data.dropna(subset=[measure])
+            
+            data = data.rename(columns={measure: f'log_{measure}_lag_{n_shift}'})
+            measure = f'log_{measure}_lag_{n_shift}'
+
+            output_path = config.threshold_log_lag
+
+        # Introducing log1p (Y)
+        elif log_transform: 
+            data = data.sort_index()
+            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            
+            data = data.rename(columns={measure: f'log_{measure}'})
+            measure = f'log_{measure}'
+
+            output_path = config.threshold_log_lm
+
+        # Introducing n-year lag
+        elif n_shift is not None:
+            data = data.sort_index()
+            data.loc[:, f'{measure}_lag_{n_shift}'] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
+            data = data.dropna(subset=[f'{measure}_lag_{n_shift}'])
+
+            measure = measure.upper() + f'_lag_{n_shift}'
+
+            output_path = config.threshold_lagged_lm
+
+        else: output_path = config.threshold_basic_lm
+
+    else:
+        # Introducing log1p(Y) and n-year lag
+        if log_transform and n_shift is not None:
+            data = data.sort_index()
+            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
+            data = data.dropna(subset=[measure])
+
+            data = data.rename(columns={measure: f'log_{measure}_lag_{n_shift}'})
+            measure = f'log_{measure}_lag_{n_shift}'
+
+            output_path = config.log_lag
+
+        # Introducing log1p (Y)
+        elif log_transform: 
+            data = data.sort_index()
+            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+
+            data = data.rename(columns={measure: f'log_{measure}'})
+            measure = f'log_{measure}'
+
+            output_path = config.log_lm
+
+        # Introducing n-year lag
+        elif n_shift is not None:
+            data = data.sort_index()
+            data.loc[:, f'{measure}_lag_{n_shift}'] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
+            data = data.dropna(subset=[f'{measure}_lag_{n_shift}'])
+
+            measure = measure.upper() + f'_lag_{n_shift}'
+
+            output_path = config.lagged_lm
+
+        else: output_path = config.basic_lm
+
+    # if Empty dataframe -> exit function
+    if data.empty: 
+        log.warning (f"Empty Dataframe!")
+        print (f'WARNING: Check log_file - {config.filename}')
+        return
+
+    # Append onto output_path with industry and measure folder
+    output_path = os.path.join(output_path, f'{industry}/{measure}/')
+
+    # ESG Parameter Transformation + VIF computation
+    # Assign independent variables for regression
+    esg = esg.lower()
+
+    if esg == 'combined':
+        eqn = f"{measure} ~ ESG + Q_Ratio"
+        output_path += 'ESG/'
+
+        X = data[['ESG','Q_Ratio']]
+        vif = stest.vif_calc(data[['ESG','Q_Ratio']])
+
+    elif esg == 'individual':
+        eqn = f"{measure} ~ E + S + G + Q_Ratio"
+        output_path += 'E_S_G/'
+
+        X = data[['E', 'S', 'G', 'Q_Ratio']]
+        vif = stest.vif_calc(data[['E', 'S', 'G', 'Q_Ratio']])
+
+    # Predictor Variable - linear regression
+    Y = data[[measure]]
+
+    # Verifies if output_path is valid
+    os.makedirs(output_path, exist_ok=True)
+
+    # Creates Histogram of Predictor Variables to check distribution 
+    plt.hist(data[measure], bins = 100)
+    plt.title(f"Histogram of {eqn}")
+    plt.savefig(output_path + f"{measure} Histogram")
+    plt.clf()
+
+    return data, industry, eqn, vif, output_path, X, Y
+
+def linear_reg(df,
+               measure = 'roe', 
+               esg = 'combined',
+               year_threshold=None, 
+               log_transform=None, 
+               n_shift=None,
+               cov_type=None):
+
     '''
+    Linear Regression (Ordinary Least Squares)
+    ----------------------------------------------------------
+    Parameters:
+        - df = wrangle.finance / wrangle.tech
+        - measure = ROE (default) / ROA
+        - esg = combined (default) / individual
+        - year_threshold = None (default) / 2004 / 2020
+        - log_transform = None (default) / True / False
+        - n_shift = None (default) / 1 / 2 / 3 
+          
+          Note: if n_shift is longer than max(n), max is used.
+                elif n_shift == 0, n_shift = None
+    ----------------------------------------------------------
+    Performs linear regression (OLS) based on arguments entered
+    '''
+
+    # Initialize dataset
+    _, industry, eqn, vif, output_path, X, Y = init_data(df = df, 
+                                                  measure = measure.lower(), 
+                                                  esg = esg.lower(), 
+                                                  year_threshold = year_threshold,
+                                                  log_transform = log_transform,
+                                                  n_shift = n_shift)
+    
+    # Extract measure
+    measure = eqn.split("~")[0].strip()    
 
     # Creates baseline
     X = sm.add_constant(X)
-    model = sm.OLS(Y,X).fit()
 
-    measure = Y.columns.values[0]
-
-    if len(X.columns.values) > 3:
-        score = 'E, S, G'
-        eqn = f"{measure} ~ E + S + G + Q"
-
+    if cov_type is None:
+        lm = sm.OLS(Y, X).fit()
+    
     else: 
-        score = 'ESG'
-        eqn = f"{measure} ~ ESG + Q"
+        lm = sm.OLS(Y, X).fit(cov_type=cov_type.upper())
 
-    residuals = model.resid
-
-    # Diagnostic Plots
-    # Residuals Histograms
-    sns.histplot(model.resid)
-    plt.title(f"Residuals of {score} / {measure} Linear Regression")
-    plt.savefig(path + f"{score}_{measure} Residuals Histogram")
-    plt.clf()
-
-    # QQ-Plot
-    stats.probplot(model.resid, dist='norm', plot=plt)
-    plt.title(f"QQ Plot of Residuals of {score} / {measure} Linear Regression")
-    plt.savefig(path + f"{score}_{measure} QQ Plot")
-    plt.clf()
-
-    # Statistical Tests
-    '''
-    Shapiro-Wilks Test (Normality)
-    --------------------------------------------
-    H0: Normally distributed, p >= 0.05
-    H1: Not normally distributed, p < 0.05
-    '''
-    shapiro_stat, shapiro_p = stats.shapiro(Y)
-
-    if shapiro_p < 0.05: shapiro_response = "Fail to reject H0; not normally distributed"
-    else: shapiro_response = "Reject H0; normally distributed"
-    log.info (f"Shapiro-Wilks check: {shapiro_response}")
-
-    '''
-    Pearson Chi-2 Test (Goodness-of-Fit)
-    --------------------------------------------
-    H0: Good model fit, p >= 0.05
-    H1: Bad model fit, p < 0.05
-    '''
-    observed = np.abs(residuals)
-    expected = np.full_like(observed, np.mean(observed))  
-    chi2_stat, chi2_p_value = stats.chisquare(f_obs=observed, f_exp=expected)
-
-    if chi2_p_value >= 0.05: pc2_response = 'Fail to reject H0; good fit'
-    else: pc2_response = 'Reject H0; bad fit'
-
-    log.info (f"Pearson Chi-2 check: {pc2_response}")
-
-    '''
-    Breusch-Pagan test (Heteroscedasticity)
-    --------------------------------------------
-    H0: Homoscedasticity present, p >= 0.05
-    H1: Heteroscedasticity present, p < 0.05
-    '''
-    bp_test = het_breuschpagan(residuals, model.model.exog)
-
-    bp_test_statistic, bp_test_p_value = bp_test[0], bp_test[1]
-
-    if bp_test_p_value >= 0.05: bp_response = "Fail to reject H0; Homoscedasticity present"
-    else: bp_response = "Reject H0; Heteroscedasticity present"
-
-    log.info (f"Breusch-Pagan check: {bp_response}")
-
-    with open(path + f'{eqn}.txt', 'a') as file:
-        file.write (str(model.summary()))
-        file.write ('\n\n')
-        file.write (f"Diagnostic Statistical Tests:\n")
-        file.write ('----------------------------------------------------------------------------\n')
-        file.write (f"Shapiro-Wilk Normality Test p-value: {shapiro_p}\n")
-        file.write (f"Breusch-Pagan Test p-value: {bp_test_p_value}\n")
-        file.write (f"Chi-square p-value: {chi2_p_value}\n")
+    shapiro, bp, chi2 = stest.diagnostics(predictor_variable = Y,
+                                        model_type = 'lm',
+                                        model = lm)
     
-    log.info (f'Results exported to {path}\n')
-
-def vif_calc(X):
-    '''
-    Variance Inflation Factor
-
-    Checks for multicollinearity among independent variables in the regression equation
-    '''
-
-    vif = pd.DataFrame()
-    vif['Variable'] = X.columns
-    vif['VIF Value'] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
-
-    return vif
-
-def linear_reg(df, measure, type):
-    '''
-    Basic Linear Regression
-
-    Parameters:
-
-    df = industry data
-    measure = ROE / ROA
-
-    Type 1 = ESG / predictor variable
-    Type 2 = E,S,G / predictor variable
-
-    '''
-    data = df 
-    industry = data.index.get_level_values(1).unique()[0]
-    measure = measure.upper()
-
-    # Set independent variables to be ESG or E,S,G according to type
-    if type == 1:
-        X = data[['ESG', 'Q_Ratio']]
-        eqn = f"{measure} ~ ESG + Q"
-
-        if len(data.index.get_level_values(2).unique()) < 20:
-            output_path = config.threshold_basic_lm + f'{industry}/{measure}/ESG/'
-        
-        else: output_path = config.basic_lm + f'{industry}/{measure}/ESG/'
-
-    elif type == 2:
-        X = data[['E', 'S', 'G', "Q_Ratio"]]
-        eqn = f"{measure} ~ E + S + G + Q"
-
-        if len(data.index.get_level_values(2).unique()) < 20:
-            output_path = config.threshold_basic_lm + f'{industry}/{measure}/E_S_G/'
-        
-        else: output_path = config.basic_lm + f'{industry}/{measure}/E_S_G/'
-
-    # Checks validity of output path
-    os.makedirs(output_path, exist_ok=True)
-
-    # Predictor variable
-    Y = data[[f'{measure}']]
-
-    # Check for zero values in X, Y data
-    if 0 in X.values:
-        if type == 1:
-            log.warning (f"ESG / Q_Ratio contains zero values")
-        
-        else: log.warning ("E, S, G / Q_Ratio contains zero values")
+    dplot.export_graphs(model=lm, 
+                        model_type='lm', 
+                        esg=esg, 
+                        measure=measure, 
+                        path=output_path)
     
-    if 0 in Y.values: log.warning (f"{measure} contains zero values")
+    dplot.export_results(summary=lm.summary(), 
+                         vif=vif, 
+                         industry=industry, 
+                         eqn=eqn, 
+                         shapiro_p_value=shapiro, 
+                         bp_p_value=bp, 
+                         chi2_p_value=chi2, 
+                         path=output_path)
 
-    '''
-    Creates histogram of predictor variable and 
-    saves it into results/basic_lm/{type} directory
-    '''
-    plt.hist(Y, bins = 100)
-    plt.title(f"Histogram of {eqn}")
-    plt.savefig(output_path + f"{eqn} Histogram")
-    plt.clf()
-
-    # Calculate VIF values
-    vif = vif_calc(X)
-    
-    # Write VIF results to file
-    with open(output_path + f'{eqn}.txt', "w") as file: 
-        file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
-        file.write (f"Regression Equation: {eqn} \n\n")
-        file.write (f"Generated: {datetime.datetime.now()} \n\n")
-        
-        file.write (f"Variance Inflation Factor table\n")
-        file.write (str(vif))
-        file.write ('\n\n')
-
-    # Creates model
-    model(X, Y, output_path)
-
-def lagged_reg(df, measure, type, n):
-    '''
-    Lagged Linear Regression
-
-    Parameters:
-
-    df = industry data
-    measure = ROE / ROA
-
-    Type 1 = ESG / predictor variable
-    Type 2 = E,S,G / predictor variable
-
-    n = shift by n year(s)
-
-    '''
-    data = df 
-    measure = measure.upper()
-
-    # Introducing n-year lag    
-    data = data.sort_index()
-    data.loc[:, f'{measure}_lag_{n}'] = data.groupby(level='Company Name')[[f'{measure}']].shift(n)
-    data = data.dropna(subset=[f'{measure}_lag_{n}'])
-
-    industry = data.index.get_level_values(1).unique()[0]
-    measure = measure.upper() + f'_lag_{n}'
-
-    # Set independent variables to be ESG or E,S,G according to type
-    if type == 1:
-        X = data[['ESG', 'Q_Ratio']]
-        eqn = f"{measure} ~ ESG + Q"
-
-        if len(data.index.get_level_values(2).unique()) < (20 - n):
-            output_path = config.threshold_lagged_lm + f'{industry}/{measure}/ESG/'
-        
-        else: output_path = config.lagged_lm + f'{industry}/{measure}/ESG/'
-
-    elif type == 2:
-        X = data[['E', 'S', 'G', "Q_Ratio"]]
-        eqn = f"{measure} ~ E + S + G + Q"
-
-        if len(data.index.get_level_values(2).unique()) < (20 - n):
-            output_path = config.threshold_lagged_lm + f'{industry}/{measure}/E_S_G/'
-        
-        else: output_path = config.lagged_lm + f'{industry}/{measure}/E_S_G/'
-
-    # Checks validity of output path
-    os.makedirs(output_path, exist_ok=True)
-
-    # Predictor variable
-    Y = data[[f'{measure}']]
-    
-    # Check for zero values in X, Y data
-    if 0 in X.values:
-        if type == 1:
-            log.warning (f"ESG / Q_Ratio contains zero values")
-        
-        else: log.warning ("E, S, G / Q_Ratio contains zero values")
-    
-    if 0 in Y.values: log.warning (f"{measure} contains zero values")
-
-    '''
-    Creates histogram of predictor variable and 
-    saves it into results/lagged_lm/{type} directory
-    '''
-
-    plt.hist(Y, bins = 100)
-    plt.title(f"Histogram of {eqn}")
-    plt.savefig(output_path + f"{eqn} Histogram")
-    plt.clf()
-
-    # Calculate VIF values
-    vif = vif_calc(X)
-
-    # Write VIF results to file
-    with open(output_path + f'{eqn}.txt', "w") as file: 
-        file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
-        file.write (f"Regression Equation: {eqn} \n\n")
-        file.write (f"Generated: {datetime.datetime.now()} \n\n")
-        
-        file.write (f"Variance Inflation Factor table\n")
-        file.write (str(vif))
-        file.write ('\n\n')
-
-    # Creates model
-    model(X, Y, output_path)
-
-def log_linear(df, measure, type):
-    '''
-    Basic Linear Regression with Log-Transformation on Y
-
-    Parameters:
-
-    df = industry data
-    measure = ROE / ROA
-
-    Type 1 = ESG / predictor variable
-    Type 2 = E,S,G / predictor variable
-
-    '''
-    data = df 
-    industry = data.index.get_level_values(1).unique()[0]
-    measure = measure.upper()
-
-    # Predictor variable
-    data = data.sort_index()
-    data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
-    data = data.rename(columns={measure: f'log_{measure}'})
-
-    measure = 'log_' + measure
-    Y = data[[f'{measure}']]    
-
-    # Set independent variables to be ESG or E,S,G according to type
-    if type == 1:
-        X = data[['ESG', 'Q_Ratio']]
-        eqn = f"{measure} ~ ESG + Q"
-
-        if len(data.index.get_level_values(2).unique()) < 20:
-            output_path = config.threshold_log_lm + f'{industry}/{measure}/ESG/'
-
-        else: output_path = config.log_lm + f'{industry}/{measure}/ESG/'
-
-    elif type == 2:
-        X = data[['E', 'S', 'G', "Q_Ratio"]]
-        eqn = f"{measure} ~ E + S + G + Q"
-
-        if len(data.index.get_level_values(2).unique()) < 20:
-            output_path = config.threshold_log_lm + f'{industry}/{measure}/ESG/'
-
-        else: output_path = config.log_lm + f'{industry}/{measure}/E_S_G/'
-
-    # Checks validity of output path
-    os.makedirs(output_path, exist_ok=True)
-
-    # Check for zero values in X, Y data
-    if 0 in X.values:
-        if type == 1:
-            log.warning (f"ESG / Q_Ratio contains zero values")
-        
-        else: log.warning ("E, S, G / Q_Ratio contains zero values")
-    
-    if 0 in Y.values: log.warning (f"{measure} contains zero values")
-
-    '''
-    Creates histogram of predictor variable and 
-    saves it into results/log_lm/{type} directory
-    '''
-    plt.hist(Y, bins = 100)
-    plt.title(f"Histogram of {eqn}")
-    plt.savefig(output_path + f"{eqn} Histogram")
-    plt.clf()
-
-    # Calculate VIF values
-    vif = vif_calc(X)
-
-    # Write VIF results to file
-    with open(output_path + f'{eqn}.txt', "w") as file: 
-        file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
-        file.write (f"Regression Equation: {eqn} \n\n")
-        file.write (f"Generated: {datetime.datetime.now()} \n\n")
-        
-        file.write (f"Variance Inflation Factor table\n")
-        file.write (str(vif))
-        file.write ('\n\n')
-
-    # Creates model
-    model(X, Y, output_path)
-
-def log_lag(df, measure, type, n):
-    '''
-    Log-Transformation + Lagged Linear Regression
-
-    Parameters:
-
-    df = industry data
-    measure = ROE / ROA
-
-    Type 1 = ESG / predictor variable
-    Type 2 = E,S,G / predictor variable
-
-    n = shift by n year(s)
-
-    '''
-    data = df 
-    industry = data.index.get_level_values(1).unique()[0]
-    measure = measure.upper()
-
-    # Introducing n-year lag
-    # SettingwithCopyWarning needs to be skipped so maybe just replace with 'measure'
-    # BUT n-year has to be placed somewhere on the file
-
-    data = data.sort_index()
-    data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
-    data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n)
-    data = data.dropna(subset=[measure])
-
-    data = data.rename(columns={measure: f'log_{measure}_lag_{n}'})
-    measure = f'log_{measure}_lag_{n}'
-
-    # Set independent variables to be ESG or E,S,G according to type
-    if type == 1:
-        X = data[['ESG', 'Q_Ratio']]
-        eqn = f"{measure} ~ ESG + Q"
-
-        if len(data.index.get_level_values(2).unique()) < (20 - n):
-            output_path = config.threshold_log_lag + f'{industry}/{measure}/ESG/'
-
-        else: output_path = config.log_lag + f'{industry}/{measure}/ESG/'
-
-    elif type == 2:
-        X = data[['E', 'S', 'G', "Q_Ratio"]]
-        eqn = f"{measure} ~ E + S + G + Q"
-
-        if len(data.index.get_level_values(2).unique()) < (20 - n):
-            output_path = config.threshold_log_lag + f'{industry}/{measure}/E_S_G/'
-
-        else: output_path = config.log_lag + f'{industry}/{measure}/E_S_G/'
-
-    # Checks validity of output path
-    os.makedirs(output_path, exist_ok=True)
-
-    # Predictor variable
-    Y = data[[f'{measure}']]
-    
-    # Check for zero values in X, Y data
-    if 0 in X.values:
-        if type == 1:
-            log.warning (f"ESG / Q_Ratio contains zero values")
-        
-        else: log.warning ("E, S, G / Q_Ratio contains zero values")
-    
-    if 0 in Y.values: log.warning (f"{measure} contains zero values")
-
-    '''
-    Creates histogram of predictor variable and 
-    saves it into results/log_lag/{type} directory
-    '''
-
-    plt.hist(Y, bins = 100)
-    plt.title(f"Histogram of {eqn}")
-    plt.savefig(output_path + f"{eqn} Histogram")
-    plt.clf()
-
-    # Calculate VIF values
-    vif = vif_calc(X)
-
-    # Write VIF results to file
-    with open(output_path + f'{eqn}.txt', "w") as file: 
-        file.write (f"GICS Sector: {data.index.get_level_values(1).unique()[0]}\n")
-        file.write (f"Regression Equation: {eqn} \n\n")
-        file.write (f"Generated: {datetime.datetime.now()} \n\n")
-        
-        file.write (f"Variance Inflation Factor table\n")
-        file.write (str(vif))
-        file.write ('\n\n')
-
-    # Creates model
-    model(X, Y, output_path)
-
-def threshold_linear(df, measure, type, year):
-    data = df 
-    data = data[data.index.get_level_values(2) > year]
-
-    linear_reg(df = data, 
-               measure = measure, 
-               type = type)
-    
-def threshold_log_linear(df, measure, type, year):
-    data = df 
-    data = data[data.index.get_level_values(2) > year]
-
-    log_linear(df = data, 
-               measure = measure, 
-               type = type)
-    
-def threshold_lag(df, measure, type, year, n):
-    data = df 
-    data = data[data.index.get_level_values(2) > year]
-
-    lagged_reg(df = data, 
-               measure = measure, 
-               type = type, 
-               n = n)
-    
-def threshold_log_lag(df, measure, type, year, n):
-    data = df 
-    data = data[data.index.get_level_values(2) > year]
-
-    log_lag(df = data, 
-               measure = measure, 
-               type = type, 
-               n = n)
-    
 # Codespace 
 # =======================================================
