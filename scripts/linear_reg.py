@@ -115,6 +115,8 @@ def model(X, Y, path):
 def vif_calc(X):
     '''
     Variance Inflation Factor
+
+    Checks for multicollinearity among independent variables in the regression equation
     '''
 
     vif = pd.DataFrame()
@@ -217,10 +219,7 @@ def lagged_reg(df, measure, type, n):
     data = df 
     measure = measure.upper()
 
-    # Introducing n-year lag
-    # SettingwithCopyWarning needs to be skipped so maybe just replace with 'measure'
-    # BUT n-year has to be placed somewhere on the file
-    
+    # Introducing n-year lag    
     data = data.sort_index()
     data.loc[:, f'{measure}_lag_{n}'] = data.groupby(level='Company Name')[[f'{measure}']].shift(n)
     data = data.dropna(subset=[f'{measure}_lag_{n}'])

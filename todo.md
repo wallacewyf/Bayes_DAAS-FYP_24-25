@@ -26,9 +26,12 @@ Current thoughts (20250324):
         - Threshold Regression for the 3 categories above (DONE)
 
     Generalized Linear Models (GLM)
-        - Gaussian
+        - Gaussian (DONE)
         - Inverse Gaussian
         - Gamma / Tweedie (but Gamma is a bit finicky)
+
+        - GLMs for each of the 5 categories above
+        - Log-link functions?
 
 - Descriptive Statistics (DONE)
     - make it so it parses any industry and drops it into the results/descriptive/ dir
