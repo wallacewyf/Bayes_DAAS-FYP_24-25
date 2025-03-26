@@ -51,7 +51,7 @@ start = datetime.datetime.now()
     # Real Estate, Communication Services, All
 
 # GICS Sector: Finance
-# descriptive.desc('financials')
+descriptive.desc('financials')
 
 # # Descriptive Statistics for each sector
 # industry_arr = ['Financials', 'Utilities', 'Health Care', 
@@ -64,9 +64,9 @@ start = datetime.datetime.now()
 
 # # Linear Regression
 # # ===========================================================================
-# reg.linear_reg(df = wrangle.finance, 
-#            measure = 'roa', 
-#            esg = 'combined')
+reg.linear_reg(df = wrangle.finance, 
+           measure = 'roa', 
+           esg = 'combined')
 
 
 # reg.linear_reg(df = wrangle.finance, 
@@ -79,9 +79,9 @@ start = datetime.datetime.now()
 
 # Gaussian GLM Regression
 # ===========================================================================
-# glm.gaussian_glm(df = wrangle.finance,
-#                  measure = 'roe', 
-#                  esg = 'combined')
+glm.gaussian_glm(df = wrangle.finance,
+                 measure = 'roe', 
+                 esg = 'combined')
 
 # glm.gaussian_glm(df = wrangle.finance, 
 #                  measure = 'roa', 

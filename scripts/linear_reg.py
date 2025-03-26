@@ -53,8 +53,11 @@ def init_data(
           Note: if n_shift is longer than max(n), max is used.
                 elif n_shift == 0, n_shift = None
     ----------------------------------------------------------
-    Initialize data and create histogram of predictor variable (measure)
-    and calculate Variance Inflation Factor (VIF)
+    Initialize data and create the below diagnostics plots:
+    - Histogram of predictor variable (measure)
+    - Boxplot of Predictor Variables
+
+    and computes Variance Inflation Factor (VIF)
 
     Returns wrangled_data, industry, regression_equation, vif, output_path
     '''
@@ -193,6 +196,13 @@ def init_data(
     plt.hist(data[measure], bins = 100)
     plt.title(f"Histogram of {eqn}")
     plt.savefig(output_path + f"{measure} Histogram")
+    plt.clf()
+
+    # Creates boxplot of Predictor Variables to show outliers
+    sns.boxplot(data[measure])
+    plt.title(f"Boxplot of {measure}")
+    plt.ylabel(f"{measure} (%)")
+    plt.savefig(output_path + f"{measure} Boxplot")
     plt.clf()
 
     return data, industry, eqn, vif, output_path, X, Y

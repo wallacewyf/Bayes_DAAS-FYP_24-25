@@ -40,7 +40,6 @@ def export_graphs(model,
         - path = config.results_path (default) 
     ----------------------------------------------------------
     Creates the below diagnostic plots and saves it in the specified path of the model
-        - Histogram of Predictor Variables
         - Histogram of Model's Residuals
         - QQ-Plot of Model's Residuals
     '''

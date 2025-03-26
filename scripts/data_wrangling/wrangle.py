@@ -194,6 +194,10 @@ df = df[
     (df['ROE'] >= bot_10_ROE) & (df['ROE'] <= top_10_ROE)
 ]
 
+# Convert ROE / ROA from 0 - 1 to 0 - 100%
+df['ROE'] *= 100
+df['ROA'] *= 100
+
 df.to_csv(config.data_path + 'cleaned_data.csv')
 
 # available dataframes
