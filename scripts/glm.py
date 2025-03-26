@@ -371,17 +371,39 @@ def breusch_pagan(model,
 
     return bp_p_value, bp_response
 
-def gaussian_init(data=wrangle.finance, 
-             eqn=None, 
-             esg='combined',
-             vif=None, 
-             path=config.results_path):
+def gaussian_glm(df, 
+                 measure = 'roe', 
+                 esg = 'combined', 
+                 year_threshold = None, 
+                 log_transform = None, 
+                 n_shift = None):
     
     '''
-    Initialize Gaussian GLM
+    Gaussian GLMs
+    ----------------------------------------------------------
+    Parameters:
+        - df = wrangle.finance / wrangle.tech
+        - measure = ROE (default) / ROA
+        - esg = combined (default) / individual
+        - year_threshold = None (default) / 2004 / 2020
+        - log_transform = None (default) / True / False
+        - n_shift = None (default) / 1 / 2 / 3 
+          
+          Note: if n_shift is longer than max(n), max is used.
+                elif n_shift == 0, n_shift = None
+    ----------------------------------------------------------
+    Performs Gaussian GLM functions based on arguments entered
     '''
 
-    # Extract industry
+    # Initialize dataset
+    data, eqn, vif, output_path = init_data(df = df, 
+                                            measure = measure.lower(), 
+                                            esg = esg.lower(), 
+                                            year_threshold=year_threshold,
+                                            log_transform=log_transform,
+                                            n_shift=n_shift)
+
+        # Extract industry
     industry = data.index.get_level_values(1).unique()[0] if len(data.index.get_level_values(1).unique()) == 1 else None
     measure = eqn.split("~")[0].strip()
 
@@ -397,7 +419,7 @@ def gaussian_init(data=wrangle.finance,
                   model_type='glm', 
                   esg=esg, 
                   measure=measure,
-                  path=path)
+                  path=output_path)
     
     export_results(summary=glm.summary(), 
                    vif=vif, 
@@ -406,164 +428,8 @@ def gaussian_init(data=wrangle.finance,
                    shapiro_p_value=shapiro,
                    bp_p_value=bp,
                    chi2_p_value=chi2,
-                   path=path)
+                   path=output_path)
 
-def basic_gaussian(df, 
-                   measure = 'roe', 
-                   esg = 'combined'):
-    
-    '''
-    Basic Gaussian Generalized Linear Model (GLM)
-    ----------------------------------------------------------
-    Parameters:
-        - df = wrangle.finance / wrangle.tech
-        - measure = ROE (default) / ROA
-        - esg = combined (default) / individual
-    ----------------------------------------------------------
-    '''
-    
-    data, eqn, vif, output_path = init_data(df = df, 
-                                            measure = measure.lower(), 
-                                            esg = esg.lower())
-    
-    gaussian_init(data = data, 
-             eqn = eqn, 
-             esg = esg, 
-             vif = vif, 
-             path = output_path)
-    
-def lagged_gaussian(df, 
-                    measure = 'roe', 
-                    esg = 'combined', 
-                    n_shift = 1):
-    
-    '''
-    Lagged Gaussian Generalized Linear Model (GLM)
-    ----------------------------------------------------------
-    Parameters:
-        - df = wrangle.finance / wrangle.tech
-        - measure = ROE (default) / ROA
-        - esg = combined (default) / individual
-        - n_shift = 1 (default) / 2 / 3
-    ----------------------------------------------------------
-    Gaussian GLM with a n-year lag
-
-    '''
-    
-    # Initialize dataset
-    data, eqn, vif, output_path = init_data(df = df, 
-                                            measure = measure.lower(), 
-                                            esg = esg.lower(), 
-                                            n_shift = n_shift)
-
-    # Run Regression
-    gaussian_init(data = data, 
-             eqn = eqn, 
-             esg = esg, 
-             vif = vif, 
-             path = output_path)
-
-def log_gaussian(df, 
-                 measure = 'roe', 
-                 esg = 'combined'):
-    
-    '''
-    Gaussian GLM with Log-Transformation
-    ----------------------------------------------------------
-    Parameters:
-        - df = wrangle.finance / wrangle.tech
-        - measure = ROE (default) / ROA
-        - esg = combined (default) / individual
-    ----------------------------------------------------------
-    Gaussian GLM with a log-transformation on predictor variable
-
-    '''
-    
-    # Initialize dataset
-    data, eqn, vif, output_path = init_data(df = df, 
-                                            measure = measure.lower(), 
-                                            esg = esg.lower(), 
-                                            log_transform=True)
-
-    # Run Regression
-    gaussian_init(data = data, 
-             eqn = eqn, 
-             esg = esg, 
-             vif = vif, 
-             path = output_path)    
-    
-def log_lag_gaussian(df, 
-                 measure = 'roe', 
-                 esg = 'combined',
-                 n_shift = 1):
-    
-    '''
-    Lagged Gaussian GLM with Log-Transformation
-    ----------------------------------------------------------
-    Parameters:
-        - df = wrangle.finance / wrangle.tech
-        - measure = ROE (default) / ROA
-        - esg = combined (default) / individual
-        - n_shift = 1 (default) / 2 / 3
-    ----------------------------------------------------------
-    Gaussian GLM with a log-transformation on predictor variable and a n-year lag
-
-    '''
-    
-    # Initialize dataset
-    data, eqn, vif, output_path = init_data(df = df, 
-                                            measure = measure.lower(), 
-                                            esg = esg.lower(), 
-                                            log_transform=True,
-                                            n_shift=n_shift)
-
-    # Run Regression
-    gaussian_init(data = data, 
-             eqn = eqn, 
-             esg = esg, 
-             vif = vif, 
-             path = output_path)    
-
-def threshold_gaussian(df, 
-                       measure = 'roe', 
-                       esg = 'combined', 
-                       year_threshold = None,
-                       log_transform=None,
-                       n_shift=None):
-    
-    '''
-    Gaussian GLM post-year threshold
-    ----------------------------------------------------------
-    Parameters:
-        - df = wrangle.finance / wrangle.tech
-        - measure = ROE (default) / ROA
-        - esg = combined (default) / individual
-        - year_threshold = None (default) / 2004 / 2020
-        - log_transform = None (default) / True / False
-        - n_shift = None (default) / 1 / 2 / 3 
-          
-          Note: if n_shift is longer than max(n), max is used.
-                elif n_shift == 0, n_shift = None
-    ----------------------------------------------------------
-    Gaussian GLM on data after pre-specified year
-
-    Calls corresponding Gaussian GLM functions based on arguments entered
-    '''
-
-    # Initialize dataset
-    data, eqn, vif, output_path = init_data(df = df, 
-                                            measure = measure.lower(), 
-                                            esg = esg.lower(), 
-                                            year_threshold=year_threshold,
-                                            log_transform=log_transform,
-                                            n_shift=n_shift)
-
-    # Run Regression
-    gaussian_init(data = data, 
-             eqn = eqn, 
-             esg = esg, 
-             vif = vif, 
-             path = output_path)    
 
 # Notes:
 # =======================================================
@@ -574,27 +440,3 @@ def threshold_gaussian(df,
 
 # Codespace 
 # =======================================================
-threshold_gaussian(df = wrangle.finance, 
-                   measure = 'roe', 
-                   esg = 'combined', 
-                   year_threshold = 2020)
-
-# Log-transformation
-threshold_gaussian(df = wrangle.finance, 
-                   measure = 'roe', 
-                   esg = 'combined', 
-                   year_threshold = 2020,
-                   log_transform=True)
-
-threshold_gaussian(df = wrangle.finance, 
-                   measure = 'roe', 
-                   esg = 'combined', 
-                   year_threshold = 2020,
-                   n_shift=1)
-
-threshold_gaussian(df = wrangle.finance, 
-                   measure = 'roe', 
-                   esg = 'combined', 
-                   year_threshold = 2020,
-                   log_transform=True,
-                   n_shift=1)

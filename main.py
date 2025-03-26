@@ -10,6 +10,7 @@ sys.path.append(data_path)
 
 import descriptive
 import linear_reg as reg
+import glm
 
 # set path to retrieve returns/scores files
 data_path = os.path.join(os.path.dirname(__file__), "data_wrangling")
@@ -223,20 +224,19 @@ start = datetime.datetime.now()
 # )
 
 
-# Gaussian GLM Regression
-# ===========================================================================
-# regression.gaussian_glm(
-#     index='msci', 
-#     measure='roe', 
-#     scores=True
-# )
+# # Gaussian GLM Regression
+# # ===========================================================================
+# glm.gaussian_glm(df = wrangle.finance,
+#                  measure = 'roe', 
+#                  esg = 'combined')
 
+# glm.gaussian_glm(df = wrangle.finance, 
+#                  measure = 'roa', 
+#                  esg = 'combined', 
+#                  year_threshold = 2008, 
+#                  n_shift=2, 
+#                  log_transform=True)
 
-# regression.gaussian_glm(
-#     index='msci', 
-#     measure='roe', 
-#     scores=False
-# )
 
 stop = datetime.datetime.now()
 
