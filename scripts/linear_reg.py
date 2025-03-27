@@ -252,9 +252,9 @@ def linear_reg(df,
     else: 
         lm = sm.OLS(Y, X).fit(cov_type=cov_type.upper())
 
-    shapiro, bp, chi2 = stest.diagnostics(predictor_variable = Y,
-                                        model_type = 'lm',
-                                        model = lm)
+    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = Y,
+                                                    model_type = 'lm',
+                                                    model = lm)
     
     dplot.export_graphs(model=lm, 
                         model_type='lm', 
@@ -269,6 +269,8 @@ def linear_reg(df,
                          shapiro_p_value=shapiro, 
                          bp_p_value=bp, 
                          chi2_p_value=chi2, 
+                         aic=aic, 
+                         bic=bic,
                          path=output_path)
 
 # Codespace 

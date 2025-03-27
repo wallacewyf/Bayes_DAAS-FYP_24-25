@@ -57,12 +57,31 @@ def diagnostics(predictor_variable=None,
     shapiro_p_value, shapiro_response = shapiro_wilks(predictor_variable)
     bp_p_value, bp_response = breusch_pagan(model, model_type)
     chi2_p_value, chi2_p_response = chi_square(model, model_type)
+    aic, bic = aic_bic(model, model_type)
 
     log.info (f"Normality: {shapiro_response}")
     log.info (f"Heteroscedasticity: {bp_response}")
     log.info (f"Goodness-of-Fit: {chi2_p_response}")
 
-    return shapiro_p_value, bp_p_value, chi2_p_value
+    # Dev_Test purposes:
+    print (f"model_type={model_type}; loglikelihood={model.llf}; aic={aic}; bic={bic}")
+
+    return shapiro_p_value, bp_p_value, chi2_p_value, aic, bic
+
+def aic_bic(model, 
+            model_type = 'lm'):
+    
+    model_type = model_type.lower()
+
+    aic = model.aic
+
+    if model_type == 'glm': 
+        bic = model.bic_llf
+
+    elif model_type == 'lm': 
+        bic = model.bic
+    
+    return aic, bic
 
 def shapiro_wilks(predictor_variable):
     '''

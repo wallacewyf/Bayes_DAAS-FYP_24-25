@@ -42,16 +42,19 @@ start = datetime.datetime.now()
 # Technology Sector
 # print (wrangle.tech)
 
-# Descriptive Statistics
-# ===========================================================================
-# Available Sectors: 
-    # Financials, Utilities, Health Care, 
-    # Information Technology, Materials, Industrials, 
-    # Energy, Consumer Staples, Consumer Discretionary, 
-    # Real Estate, Communication Services, All
+# # Descriptive Statistics
+# # ===========================================================================
+# # Available Sectors: 
+# #     Financials, Utilities, Health Care, 
+# #     Information Technology, Materials, Industrials, 
+# #     Energy, Consumer Staples, Consumer Discretionary, 
+# #     Real Estate, Communication Services, All
 
-# GICS Sector: Finance
-descriptive.desc('financials')
+# # GICS Sector: Finance
+# descriptive.desc('financials')
+
+# # GICS Sector: Information Technology
+# descriptive.desc('Information Technology')
 
 # # Descriptive Statistics for each sector
 # industry_arr = ['Financials', 'Utilities', 'Health Care', 
@@ -64,10 +67,14 @@ descriptive.desc('financials')
 
 # # Linear Regression
 # # ===========================================================================
-reg.linear_reg(df = wrangle.finance, 
-           measure = 'roa', 
-           esg = 'combined')
+# reg.linear_reg(df = wrangle.finance, 
+#            measure = 'roa', 
+#            esg = 'individual')
 
+# reg.linear_reg(df = wrangle.finance, 
+#            measure = 'roa', 
+#            esg = 'individual',
+#            log_transform=True)
 
 # reg.linear_reg(df = wrangle.finance, 
 #            measure = 'roa', 
@@ -77,11 +84,12 @@ reg.linear_reg(df = wrangle.finance,
 #            cov_type='hc2')
 
 
-# Gaussian GLM Regression
-# ===========================================================================
-glm.gaussian_glm(df = wrangle.finance,
-                 measure = 'roe', 
-                 esg = 'combined')
+# # Gaussian GLM Regression
+# # ===========================================================================
+# glm.gaussian_glm(df = wrangle.finance,
+#                  measure = 'roa', 
+#                  esg = 'individual',
+#                  log_transform=True)
 
 # glm.gaussian_glm(df = wrangle.finance, 
 #                  measure = 'roa', 
@@ -104,11 +112,11 @@ glm.gaussian_glm(df = wrangle.finance,
 #       may cause imbalanced weights, which then causes infeasible estimations.
 
 # glm.inv_gaussian(df = wrangle.finance,
-#                  measure = 'roe', 
+#                  measure = 'roa', 
 #                  esg = 'combined',
 #                  year_threshold = None, 
-#                  log_transform = None, 
-#                  n_shift = None, 
+#                  log_transform = True, 
+#                  n_shift = None), 
 #                  link = 'Log')
 
 # # Gamma GLM Regression
@@ -117,12 +125,13 @@ glm.gaussian_glm(df = wrangle.finance,
 #       may cause imbalanced weights, which then causes infeasible estimations.
 
 # glm.gamma_glm(df = wrangle.finance, 
-#               measure = 'roe', 
-#               esg = 'combined',
+#               measure = 'roa', 
+#               esg = 'individual',
 #               year_threshold = None, 
-#               log_transform = None, 
+#               log_transform = True, 
 #               n_shift = None, 
 #               link = 'Log')
+
 
 # # Tweedie GLM Regression
 # # ===========================================================================
@@ -130,13 +139,180 @@ glm.gaussian_glm(df = wrangle.finance,
 #       may cause imbalanced weights, which then causes infeasible estimations.
 
 # glm.tweedie_glm(df = wrangle.finance,
-#                  measure = 'roe', 
+#                  measure = 'roa', 
 #                  esg = 'combined',
 #                  year_threshold = None,
-#                  log_transform = None, 
+#                  log_transform = True, 
 #                  n_shift = None, 
 #                  link = None, 
 #                  var_power = None)
+
+# # Codespace
+# # =======================================================================================
+# # Financial Sector
+# # Return on Assets (ROA)
+# # ROA / ESG
+# glm.gamma_glm(df = wrangle.finance, 
+#               measure = 'roa',
+#               esg = 'combined',
+#               log_transform = True, 
+#               link = 'Log')
+
+# # # ROA / E,S,G
+# glm.gamma_glm(df = wrangle.finance, 
+#               measure = 'roa',
+#               esg = 'individual',
+#               log_transform = True, 
+#               link = 'Log')
+
+# # # ROE / ESG
+# reg.linear_reg(df = wrangle.finance, 
+#                measure = 'roe',
+#                esg = 'combined',
+#                log_transform = True)
+
+# # # ROE / E,S,G
+# glm.gaussian_glm(df = wrangle.finance, 
+#                  measure = 'roe',
+#                  esg = 'individual',
+#                  log_transform = True, 
+#                  link = None)               # None defaults as Identity for statsmodels.glm
+
+
+
+# Tests used to check which is best
+# # # ROA / ESG
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'combined', 
+#                measure = 'roa')
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'combined', 
+#                measure = 'roa',
+#                n_shift = 2)
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'combined', 
+#                measure = 'roa', 
+#                year_threshold = 2008)
+
+# glm.gaussian_glm(df = wrangle.finance, 
+#                  esg = 'combined', 
+#                  measure = 'roa', 
+#                  link='Log')
+
+# glm.gamma_glm(df = wrangle.finance, 
+#                  esg = 'combined', 
+#                  measure = 'roa')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'combined', 
+#                 measure = 'roa')
+
+# # # ROE / ESG
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'combined', 
+#                measure = 'roe')
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'combined', 
+#                measure = 'roe',
+#                n_shift = 2)
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'combined', 
+#                measure = 'roe', 
+#                year_threshold = 2008)
+
+# glm.gaussian_glm(df = wrangle.finance, 
+#                  esg = 'combined', 
+#                  measure = 'roe', 
+#                  link='Log')
+
+# glm.gamma_glm(df = wrangle.finance, 
+#                  esg = 'combined', 
+#                  measure = 'roe')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'combined', 
+#                 measure = 'roe')
+
+# # # ROA / E_S_G
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'individual', 
+#                measure = 'roa')
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'individual', 
+#                measure = 'roa',
+#                n_shift = 2)
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'individual', 
+#                measure = 'roa', 
+#                year_threshold = 2008)
+
+# glm.gaussian_glm(df = wrangle.finance, 
+#                  esg = 'individual', 
+#                  measure = 'roa', 
+#                  link='Log')
+
+# glm.gamma_glm(df = wrangle.finance, 
+#                  esg = 'individual', 
+#                  measure = 'roa')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'individual', 
+#                 measure = 'roa')
+
+
+# # # ROE / E_S_G
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'individual', 
+#                measure = 'roe')
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'individual', 
+#                measure = 'roe',
+#                n_shift = 2)
+
+# reg.linear_reg(df = wrangle.finance, 
+#                esg = 'individual', 
+#                measure = 'roe', 
+#                year_threshold = 2008)
+
+# glm.gaussian_glm(df = wrangle.finance, 
+#                  esg = 'individual', 
+#                  measure = 'roe', 
+#                  link='Log')
+
+# glm.gamma_glm(df = wrangle.finance, 
+#                  esg = 'individual', 
+#                  measure = 'roe')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'individual', 
+#                 measure = 'roe')
+
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'combined', 
+#                 measure = 'roa')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'combined', 
+#                 measure = 'roe')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'individual', 
+#                 measure = 'roa')
+
+# glm.tweedie_glm(df = wrangle.finance, 
+#                 esg = 'individual', 
+#                 measure = 'roe')
+
+
+
 
 stop = datetime.datetime.now()
 

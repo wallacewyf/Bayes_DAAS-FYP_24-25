@@ -19,7 +19,7 @@ def desc(industry):
     '''
     Descriptive Statistics for Industry according to argument passed into function
     '''
-    industry = industry.capitalize()
+    industry = industry.title()
     
     if industry == 'Financials':
         data = wrangle.finance

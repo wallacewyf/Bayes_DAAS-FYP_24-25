@@ -194,7 +194,7 @@ df = df[
     (df['ROE'] >= bot_10_ROE) & (df['ROE'] <= top_10_ROE)
 ]
 
-# Convert ROE / ROA from 0 - 1 to 0 - 100%
+# Convert ROE / ROA from 0 - 1 to 0 - 100% scale
 df['ROE'] *= 100
 df['ROA'] *= 100
 

@@ -213,8 +213,10 @@ def init_data(
     os.makedirs(output_path, exist_ok=True)
 
     # Creates Histogram of Predictor Variables to check distribution 
-    plt.hist(data[measure], bins = 100)
+    sns.histplot(data[measure], kde=True, bins = 100)
     plt.title(f"Histogram of {eqn}")
+    plt.xlabel(f"{measure} (%)")
+    plt.ylabel("Frequency")
     plt.savefig(output_path + f"{measure} Histogram")
     plt.clf()
 
@@ -279,14 +281,13 @@ def gaussian_glm(df,
     elif link.lower() == 'log':
         glm = smf.glm(eqn, 
                       data = data, 
-                      family = sm.families.Gaussian(link=sm.genmod.families.links.Identity())).fit()
+                      family = sm.families.Gaussian(link=sm.genmod.families.links.Log())).fit()
 
     # Statistical Tests
-    shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
-                                          model_type = 'glm', 
-                                          model = glm)
-    
-    # Diagnostic Plots
+    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+                                                    model_type = 'glm', 
+                                                    model = glm)
+        # Diagnostic Plots
     dplot.export_graphs(model=glm, 
                         model_type='glm', 
                         esg=esg, 
@@ -300,7 +301,9 @@ def gaussian_glm(df,
                          eqn=eqn, 
                          shapiro_p_value=shapiro, 
                          bp_p_value=bp, 
-                         chi2_p_value=chi2, 
+                         chi2_p_value=chi2,
+                         aic=aic,
+                         bic=bic, 
                          path=output_path)
 
 def inv_gaussian(df, 
@@ -380,9 +383,9 @@ def inv_gaussian(df,
             transformation_note += f"Strictly positive transformation with {inverse_value} \n\n"
 
         # Statistical Tests
-        shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
-                                            model_type = 'glm', 
-                                            model = glm)
+        shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+                                                        model_type = 'glm', 
+                                                        model = glm)
         
         # Diagnostic Plots
         dplot.export_graphs(model=glm, 
@@ -399,6 +402,8 @@ def inv_gaussian(df,
                             shapiro_p_value=shapiro, 
                             bp_p_value=bp, 
                             chi2_p_value=chi2,
+                            aic=aic,
+                            bic=bic,
                             transformation_note=transformation_note,
                             path=output_path)
 
@@ -452,14 +457,6 @@ def gamma_glm(df,
     # Extract measure
     measure = eqn.split("~")[0].strip()
 
-    # # Positive transformation for Inverse Gaussian only
-    # data = data.sort_index(ascending=True)
-    
-    # data.loc[:, measure] = data[measure] - data[measure].min() + (1e-4)
-    # inverse_value = (data[measure].min() + (1e-4))
-
-    inverse_value = 0
-
     # Link functions
     try:
         if link is None:
@@ -475,14 +472,13 @@ def gamma_glm(df,
             glm = smf.glm(eqn, 
                         data = data, 
                         family = sm.families.Gamma(link=sm.genmod.families.links.Log())).fit()
-        
+            
             transformation_note = f"Log-link function called -> Interpret coefficient as exp(coef)! \n"
-            transformation_note += f"Strictly positive transformation with {inverse_value} \n\n"
 
         # Statistical Tests
-        shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
-                                            model_type = 'glm', 
-                                            model = glm)
+        shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+                                                        model_type = 'glm', 
+                                                        model = glm)
         
         # Diagnostic Plots
         dplot.export_graphs(model=glm, 
@@ -499,7 +495,8 @@ def gamma_glm(df,
                             shapiro_p_value=shapiro, 
                             bp_p_value=bp, 
                             chi2_p_value=chi2,
-                            transformation_note=transformation_note,
+                            aic=aic,
+                            bic=bic,
                             path=output_path)
 
     except ValueError as error_msg:
@@ -571,9 +568,9 @@ def tweedie_glm(df,
                         family = sm.families.Tweedie(link=sm.genmod.families.links.Identity(),
                                                      var_power=var_power)).fit()
     # Statistical Tests
-    shapiro, bp, chi2 = stest.diagnostics(predictor_variable = data[[measure]], 
-                                          model_type = 'glm', 
-                                          model = glm)
+    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+                                                    model_type = 'glm', 
+                                                    model = glm)
     
     # Diagnostic Plots
     dplot.export_graphs(model=glm, 
@@ -590,6 +587,8 @@ def tweedie_glm(df,
                          shapiro_p_value=shapiro, 
                          bp_p_value=bp, 
                          chi2_p_value=chi2, 
+                         aic=aic,
+                         bic=bic,
                          path=output_path)
     
 # Codespace 

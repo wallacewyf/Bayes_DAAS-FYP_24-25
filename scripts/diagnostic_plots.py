@@ -55,13 +55,14 @@ def export_graphs(model,
 
     # Residuals Histograms
     sns.histplot(residuals, kde=True, bins=30)
-    plt.title(f"Residuals of {score} / {measure} Linear Regression")
+    plt.title(f"Residuals of {score} / {measure}")
+    plt.ylabel("Frequency")
     plt.savefig(path + f"Residuals Histogram")
     plt.clf()
 
     # QQ-Plot
     stats.probplot(residuals, dist='norm', plot=plt)
-    plt.title(f"QQ Plot of Residuals of {score} / {measure} Linear Regression")
+    plt.title(f"QQ Plot of Residuals of {score} / {measure}")
     plt.savefig(path + f"QQ Plot")
     plt.clf()
                 
@@ -72,6 +73,8 @@ def export_results(summary,
                    shapiro_p_value=None, 
                    bp_p_value=None, 
                    chi2_p_value=None,
+                   aic=None, 
+                   bic=None,
                    transformation_note=None,
                    path=config.results_path):
     
@@ -90,8 +93,11 @@ def export_results(summary,
         file.write ('----------------------------------------------------------------------------\n')
         file.write (f"Shapiro-Wilk Normality Test p-value: {shapiro_p_value}\n")
         file.write (f"Breusch-Pagan Test p-value: {bp_p_value}\n")
-        file.write (f"Chi-square p-value: {chi2_p_value}\n\n")
+        file.write (f"Chi-square p-value: {chi2_p_value}\n")
+        file.write (f"AIC: {aic}\n")
+        file.write (f"BIC: {bic}\n\n")
 
+    # Not sure if this is required
     if transformation_note is not None:
         with open(path + f'{eqn}.txt', 'a') as file:
             file.write (f"Notes:\n")

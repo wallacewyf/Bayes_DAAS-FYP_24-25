@@ -1,0 +1,50 @@
+GICS Sector: Financials
+Regression Equation: ROE ~ E + S + G + Q_Ratio 
+
+Generated: 2025-03-27 03:41:43.758514 
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    ROE   R-squared:                       0.071
+Model:                            OLS   Adj. R-squared:                  0.070
+Method:                 Least Squares   F-statistic:                     54.70
+Date:                Thu, 27 Mar 2025   Prob (F-statistic):           1.69e-44
+Time:                        03:41:43   Log-Likelihood:                -9397.6
+No. Observations:                2862   AIC:                         1.881e+04
+Df Residuals:                    2857   BIC:                         1.883e+04
+Df Model:                           4                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         13.3554      0.417     32.055      0.000      12.538      14.172
+E             -0.0392      0.007     -5.894      0.000      -0.052      -0.026
+S              0.0165      0.009      1.876      0.061      -0.001       0.034
+G              0.0102      0.006      1.610      0.108      -0.002       0.023
+Q_Ratio        0.4283      0.035     12.258      0.000       0.360       0.497
+==============================================================================
+Omnibus:                      652.365   Durbin-Watson:                   1.992
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             2431.392
+Skew:                           1.089   Prob(JB):                         0.00
+Kurtosis:                       6.955   Cond. No.                         381.
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E  14.085694
+1        S  17.541025
+2        G   8.941042
+3  Q_Ratio   1.051968
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 1.3645895146148716e-40
+Breusch-Pagan Test p-value: 1.7351590206127908e-115
+Chi-square p-value: 0.0
+AIC: 18805.117966489775
+BIC: 18834.914346290356
+

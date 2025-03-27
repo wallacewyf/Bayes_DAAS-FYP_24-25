@@ -1,25 +1,25 @@
 GICS Sector: Financials
 Regression Equation: ROE ~ ESG + Q_Ratio 
 
-Generated: 2025-03-26 03:09:40.710042 
+Generated: 2025-03-27 03:41:37.990093 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                    ROE   R-squared:                       0.047
 Model:                            OLS   Adj. R-squared:                  0.047
 Method:                 Least Squares   F-statistic:                     86.97
-Date:                Wed, 26 Mar 2025   Prob (F-statistic):           1.37e-37
-Time:                        03:09:40   Log-Likelihood:                 4530.1
-No. Observations:                3505   AIC:                            -9054.
-Df Residuals:                    3502   BIC:                            -9036.
+Date:                Thu, 27 Mar 2025   Prob (F-statistic):           1.37e-37
+Time:                        03:41:37   Log-Likelihood:                -11611.
+No. Observations:                3505   AIC:                         2.323e+04
+Df Residuals:                    3502   BIC:                         2.325e+04
 Df Model:                           2                                         
 Covariance Type:            nonrobust                                         
 ==============================================================================
                  coef    std err          t      P>|t|      [0.025      0.975]
 ------------------------------------------------------------------------------
-const          0.1412      0.003     41.702      0.000       0.135       0.148
-ESG           -0.0002   6.22e-05     -3.381      0.001      -0.000   -8.83e-05
-Q_Ratio        0.0045      0.000     12.639      0.000       0.004       0.005
+const         14.1197      0.339     41.702      0.000      13.456      14.784
+ESG           -0.0210      0.006     -3.381      0.001      -0.033      -0.009
+Q_Ratio        0.4483      0.035     12.639      0.000       0.379       0.518
 ==============================================================================
 Omnibus:                      720.641   Durbin-Watson:                   1.897
 Prob(Omnibus):                  0.000   Jarque-Bera (JB):             2293.561
@@ -39,5 +39,8 @@ Variance Inflation Factor Table
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
 Shapiro-Wilk Normality Test p-value: 1.333430305888188e-40
-Breusch-Pagan Test p-value: 4.630472688377657e-128
-Chi-square p-value: 1.0
+Breusch-Pagan Test p-value: 4.630472688383204e-128
+Chi-square p-value: 0.0
+AIC: 23228.125393098147
+BIC: 23246.611230496554
+
