@@ -165,6 +165,7 @@ start = datetime.datetime.now()
 #               log_transform = True, 
 #               link = 'Log')
 
+# # Return on Equity (ROE)
 # # # ROE / ESG
 # reg.linear_reg(df = wrangle.finance, 
 #                measure = 'roe',
@@ -179,8 +180,36 @@ start = datetime.datetime.now()
 #                  link = None)               # None defaults as Identity for statsmodels.glm
 
 
+# # Technology Sector
+# # ROA / ESG
+reg.linear_reg(df = wrangle.tech, 
+               esg = 'combined', 
+               measure = 'roa',
+               log_transform=True)
+
+# # # ROA / E,S,G
+reg.linear_reg(df = wrangle.tech, 
+               esg = 'individual', 
+               measure = 'roa',
+               log_transform=True)
+
+# # # ROE / ESG
+reg.linear_reg(df = wrangle.tech, 
+               esg = 'combined', 
+               measure = 'roe',
+               log_transform=True)
+
+# # # ROE / E,S,G
+reg.linear_reg(df = wrangle.tech, 
+               esg = 'individual', 
+               measure = 'roe',
+               log_transform=True)
+
+
 
 # Tests used to check which is best
+# # =======================================================================================
+# # GICS Financials
 # # # ROA / ESG
 # reg.linear_reg(df = wrangle.finance, 
 #                esg = 'combined', 
@@ -312,6 +341,31 @@ start = datetime.datetime.now()
 #                 measure = 'roe')
 
 
+
+# # GICS: Information Technology
+# # =======================================================================================
+
+print ('=======================================================================================')
+glm.gaussian_glm(df = wrangle.tech, 
+                 esg = 'combined', 
+                 measure = 'roa', 
+                 log_transform=True)
+
+glm.gaussian_glm(df = wrangle.tech, 
+                 esg = 'combined', 
+                 measure = 'roe', 
+                 log_transform=True)
+
+
+glm.gaussian_glm(df = wrangle.tech, 
+                 esg = 'individual', 
+                 measure = 'roa', 
+                 log_transform=True)
+
+glm.gaussian_glm(df = wrangle.tech, 
+                 esg = 'individual', 
+                 measure = 'roe', 
+                 log_transform=True)
 
 
 stop = datetime.datetime.now()

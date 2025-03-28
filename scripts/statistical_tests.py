@@ -63,9 +63,6 @@ def diagnostics(predictor_variable=None,
     log.info (f"Heteroscedasticity: {bp_response}")
     log.info (f"Goodness-of-Fit: {chi2_p_response}")
 
-    # Dev_Test purposes:
-    print (f"model_type={model_type}; loglikelihood={model.llf}; aic={aic}; bic={bic}")
-
     return shapiro_p_value, bp_p_value, chi2_p_value, aic, bic
 
 def aic_bic(model, 

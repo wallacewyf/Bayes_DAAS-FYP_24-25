@@ -193,8 +193,8 @@ def init_data(
     os.makedirs(output_path, exist_ok=True)
 
     # Creates Histogram of Predictor Variables to check distribution 
-    plt.hist(data[measure], bins = 100)
-    plt.title(f"Histogram of {eqn}")
+    sns.histplot(data[measure], bins = 100, kde=True)
+    plt.title(f"Histogram of {measure}")
     plt.savefig(output_path + f"{measure} Histogram")
     plt.clf()
 

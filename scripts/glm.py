@@ -214,7 +214,7 @@ def init_data(
 
     # Creates Histogram of Predictor Variables to check distribution 
     sns.histplot(data[measure], kde=True, bins = 100)
-    plt.title(f"Histogram of {eqn}")
+    plt.title(f"Histogram of {measure}")
     plt.xlabel(f"{measure} (%)")
     plt.ylabel("Frequency")
     plt.savefig(output_path + f"{measure} Histogram")
