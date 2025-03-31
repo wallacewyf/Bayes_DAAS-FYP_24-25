@@ -1,0 +1,52 @@
+GICS Sector: Information Technology
+Regression Equation: ROE ~ E + S + G + Q_Ratio 
+
+Generated: 2025-03-31 15:57:27.839983 
+
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                    ROE   R-squared:                       0.031
+Model:                            OLS   Adj. R-squared:                  0.028
+Method:                 Least Squares   F-statistic:                     10.91
+Date:                Mon, 31 Mar 2025   Prob (F-statistic):           1.05e-08
+Time:                        15:57:27   Log-Likelihood:                -4917.7
+No. Observations:                1355   AIC:                             9845.
+Df Residuals:                    1350   BIC:                             9871.
+Df Model:                           4                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const         16.2789      0.890     18.288      0.000      14.533      18.025
+E             -0.0769      0.013     -5.922      0.000      -0.102      -0.051
+S              0.0787      0.017      4.654      0.000       0.046       0.112
+G              0.0139      0.013      1.050      0.294      -0.012       0.040
+Q_Ratio        0.0010      0.000      2.497      0.013       0.000       0.002
+==============================================================================
+Omnibus:                      103.200   Durbin-Watson:                   0.656
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):              125.548
+Skew:                           0.723   Prob(JB):                     5.46e-28
+Kurtosis:                       3.363   Cond. No.                     2.25e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 2.25e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E   9.036814
+1        S  13.947649
+2        G   8.014039
+3  Q_Ratio   1.007267
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 1.2393190514183884e-17
+Breusch-Pagan Test p-value: 0.15230664109663322
+Chi-square p-value: 0.0
+AIC: 9845.432928635917
+BIC: 9871.490712302486
+

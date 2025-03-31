@@ -74,6 +74,7 @@ esg_types = ['combined', 'individual']
 for data in data_dfs:
     for measure in measure_types:
         for esg in esg_types:
+            print (f"Diagnostic Tests for {measure.upper()} and {esg.title()} ESG scores")
             print ('Basic Linear Regression')
             print(reg.linear_reg(df = data,
                                 measure = measure,
@@ -102,6 +103,7 @@ for data in data_dfs:
                                 measure = measure, 
                                 esg = esg))
             
+            print ('===========================================================================')
             print ()
 
 
