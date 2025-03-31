@@ -64,6 +64,6 @@ def desc(industry):
 
     with open(output, "w") as file:
         file.write(f"Descriptive Statistics for {industry} Companies\n")
-        file.write(f"Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n")
+        file.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
         file.write(str(desc))
 

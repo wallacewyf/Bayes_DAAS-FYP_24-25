@@ -1,0 +1,5 @@
+[2025-03-31 15:54:11] [INFO] = New session initialized.
+[2025-03-31 15:54:11] [INFO] = Log saved in directory with filename 20250331_log.txt
+[2025-03-31 15:54:11] [INFO] = Logging module successfully initialized.
+[2025-03-31 15:54:11] [INFO] = 
+[2025-03-31 15:54:11] [INFO] = Reading Financial Returns data...

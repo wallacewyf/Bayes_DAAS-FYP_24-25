@@ -252,16 +252,19 @@ def linear_reg(df,
     else: 
         lm = sm.OLS(Y, X).fit(cov_type=cov_type.upper())
 
+    # Statistical Test values
     shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = Y,
                                                     model_type = 'lm',
                                                     model = lm)
     
+    # Diagnostic Plots
     dplot.export_graphs(model=lm, 
                         model_type='lm', 
                         esg=esg, 
                         measure=measure, 
                         path=output_path)
     
+    # Export results into .txt 
     dplot.export_results(summary=lm.summary(), 
                          vif=vif, 
                          industry=industry, 
@@ -272,6 +275,8 @@ def linear_reg(df,
                          aic=aic, 
                          bic=bic,
                          path=output_path)
+    
+    return lm.llf, aic, bic
 
 # Codespace 
 # =======================================================

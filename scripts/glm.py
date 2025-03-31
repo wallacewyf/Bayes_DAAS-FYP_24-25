@@ -287,7 +287,7 @@ def gaussian_glm(df,
     shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
                                                     model_type = 'glm', 
                                                     model = glm)
-        # Diagnostic Plots
+    # Diagnostic Plots
     dplot.export_graphs(model=glm, 
                         model_type='glm', 
                         esg=esg, 
@@ -305,6 +305,8 @@ def gaussian_glm(df,
                          aic=aic,
                          bic=bic, 
                          path=output_path)
+    
+    return glm.llf, aic, bic
 
 def inv_gaussian(df, 
                  measure = 'roe', 
@@ -406,6 +408,8 @@ def inv_gaussian(df,
                             bic=bic,
                             transformation_note=transformation_note,
                             path=output_path)
+        
+        return glm.llf, aic, bic
 
     except ValueError as error_msg:
         log.warning (f"ValueError: {error_msg}")
@@ -498,6 +502,8 @@ def gamma_glm(df,
                             aic=aic,
                             bic=bic,
                             path=output_path)
+        
+        return glm.llf, aic, bic
 
     except ValueError as error_msg:
         log.warning (f"ValueError: {error_msg}")
@@ -590,6 +596,8 @@ def tweedie_glm(df,
                          aic=aic,
                          bic=bic,
                          path=output_path)
+    
+    return glm.llf, aic, bic
     
 # Codespace 
 # =======================================================
