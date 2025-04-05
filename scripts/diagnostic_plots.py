@@ -55,14 +55,13 @@ def export_graphs(model,
 
     # Residuals Histograms
     sns.histplot(residuals, kde=True, bins=30)
-    plt.title(f"Residuals of {score} / {measure}")
     plt.ylabel("Frequency")
     plt.savefig(path + f"Residuals Histogram")
     plt.clf()
 
     # QQ-Plot
     stats.probplot(residuals, dist='norm', plot=plt)
-    plt.title(f"QQ Plot of Residuals of {score} / {measure}")
+    plt.title('')
     plt.savefig(path + f"QQ Plot")
     plt.clf()
                 
@@ -85,10 +84,15 @@ def export_results(summary,
 
         file.write (str(summary))
         file.write ('\n\n')
-        file.write (f"Variance Inflation Factor Table\n")
-        file.write ('----------------------------------------------------------------------------\n')
-        file.write (str(vif))
-        file.write ('\n\n')
+
+    if vif is not None:
+        with open(path + f'{eqn}.txt', 'a') as file: 
+            file.write (f"Variance Inflation Factor Table\n")
+            file.write ('----------------------------------------------------------------------------\n')
+            file.write (str(vif))
+            file.write ('\n\n')
+        
+    with open(path + f'{eqn}.txt', 'a') as file: 
         file.write (f"Diagnostic Statistical Tests:\n")
         file.write ('----------------------------------------------------------------------------\n')
         file.write (f"Shapiro-Wilk Normality Test p-value: {shapiro_p_value}\n")

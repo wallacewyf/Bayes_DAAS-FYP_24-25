@@ -214,7 +214,6 @@ def init_data(
 
     # Creates Histogram of Predictor Variables to check distribution 
     sns.histplot(data[measure], kde=True, bins = 100)
-    plt.title(f"Histogram of {measure}")
     plt.xlabel(f"{measure} (%)")
     plt.ylabel("Frequency")
     plt.savefig(output_path + f"{measure} Histogram")
@@ -222,7 +221,6 @@ def init_data(
 
     # Creates boxplot of Predictor Variables to show outliers
     sns.boxplot(data[measure])
-    plt.title(f"Boxplot of {measure}")
     plt.ylabel(f"{measure} (%)")
     plt.savefig(output_path + f"{measure} Boxplot")
     plt.clf()
@@ -306,7 +304,7 @@ def gaussian_glm(df,
                          bic=bic, 
                          path=output_path)
     
-    return glm.llf, aic, bic
+    return round(glm.llf, 5), round(aic, 5), round(bic, 5)
 
 def inv_gaussian(df, 
                  measure = 'roe', 
@@ -409,7 +407,7 @@ def inv_gaussian(df,
                             transformation_note=transformation_note,
                             path=output_path)
         
-        return glm.llf, aic, bic
+        return round(glm.llf, 5), round(aic, 5), round(bic, 5)
 
     except ValueError as error_msg:
         log.warning (f"ValueError: {error_msg}")
@@ -503,7 +501,7 @@ def gamma_glm(df,
                             bic=bic,
                             path=output_path)
         
-        return glm.llf, aic, bic
+        return round(glm.llf, 5), round(aic, 5), round(bic, 5)
 
     except ValueError as error_msg:
         log.warning (f"ValueError: {error_msg}")
@@ -597,7 +595,7 @@ def tweedie_glm(df,
                          bic=bic,
                          path=output_path)
     
-    return glm.llf, aic, bic
+    return round(glm.llf, 5), round(aic, 5), round(bic, 5)
     
 # Codespace 
 # =======================================================

@@ -66,46 +66,6 @@ glm.gaussian_glm(df = wrangle.finance,
                  log_transform = True, 
                  link = None)               # None defaults as Identity for statsmodels.glm
 
-# Diagnostic Tests
-data_dfs = [wrangle.finance, wrangle.tech]
-measure_types = ['roa', 'roe']
-esg_types = ['combined', 'individual']
-
-for data in data_dfs:
-    for measure in measure_types:
-        for esg in esg_types:
-            print (f"Diagnostic Tests for {measure.upper()} and {esg.title()} ESG scores")
-            print ('Basic Linear Regression')
-            print(reg.linear_reg(df = data,
-                                measure = measure,
-                                esg = esg))
-            
-            print ("2-Year Lagged Linear Regression")
-            print(reg.linear_reg(df = data,
-                                measure = measure, 
-                                esg = esg, 
-                                n_shift = 2))
-
-            print ("Post-2008 Linear Regression")
-            print(reg.linear_reg(df = data,
-                                measure = measure, 
-                                esg = esg, 
-                                year_threshold = 2008))
-
-            print ("Gaussian GLM w/ Log-link Function")
-            print(glm.gaussian_glm(df = data, 
-                                    measure = measure, 
-                                    esg = esg, 
-                                    link = 'log'))
-
-            print ("Tweedie GLM")
-            print(glm.tweedie_glm(df = data, 
-                                measure = measure, 
-                                esg = esg))
-            
-            print ('===========================================================================')
-            print ()
-
 
 # Technology Sector
 # ===========================================================================
@@ -140,7 +100,8 @@ reg.linear_reg(df = wrangle.tech,
                log_transform = True)
 
 
-# Diagnostic Tests
+# # Diagnostic Tests
+# # ===========================================================================
 data_dfs = [wrangle.finance, wrangle.tech]
 measure_types = ['roa', 'roe']
 esg_types = ['combined', 'individual']
@@ -175,7 +136,7 @@ for data in data_dfs:
             print(glm.tweedie_glm(df = data, 
                                     measure = measure, 
                                     esg = esg))
-            
+             
             print ()
 
 

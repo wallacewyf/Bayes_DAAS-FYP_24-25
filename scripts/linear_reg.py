@@ -172,19 +172,34 @@ def init_data(
     # Assign independent variables for regression
     esg = esg.lower()
 
-    if esg == 'combined':
-        eqn = f"{measure} ~ ESG + Q_Ratio"
-        output_path += 'ESG/'
+    if not df.equals(wrangle.all):
+        if esg == 'combined':
+            eqn = f"{measure} ~ ESG + Q_Ratio"
+            output_path += 'ESG/'
 
-        X = data[['ESG','Q_Ratio']]
-        vif = stest.vif_calc(data[['ESG','Q_Ratio']])
+            X = data[['ESG','Q_Ratio']]
+            vif = stest.vif_calc(data[['ESG','Q_Ratio']])
 
-    elif esg == 'individual':
-        eqn = f"{measure} ~ E + S + G + Q_Ratio"
-        output_path += 'E_S_G/'
+        elif esg == 'individual':
+            eqn = f"{measure} ~ E + S + G + Q_Ratio"
+            output_path += 'E_S_G/'
 
-        X = data[['E', 'S', 'G', 'Q_Ratio']]
-        vif = stest.vif_calc(data[['E', 'S', 'G', 'Q_Ratio']])
+            X = data[['E', 'S', 'G', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['E', 'S', 'G', 'Q_Ratio']])
+
+    else:
+        vif = None
+        if esg == 'combined':
+            eqn = f"{measure} ~ ESG"
+            output_path += 'ESG/'
+
+            X = data[['ESG']]
+
+        elif esg == 'individual':
+            eqn = f"{measure} ~ E + S + G"
+            output_path += 'E_S_G/'
+
+            X = data[['E', 'S', 'G']]
 
     # Predictor Variable - linear regression
     Y = data[[measure]]
@@ -194,13 +209,11 @@ def init_data(
 
     # Creates Histogram of Predictor Variables to check distribution 
     sns.histplot(data[measure], bins = 100, kde=True)
-    plt.title(f"Histogram of {measure}")
     plt.savefig(output_path + f"{measure} Histogram")
     plt.clf()
 
     # Creates boxplot of Predictor Variables to show outliers
     sns.boxplot(data[measure])
-    plt.title(f"Boxplot of {measure}")
     plt.ylabel(f"{measure} (%)")
     plt.savefig(output_path + f"{measure} Boxplot")
     plt.clf()
@@ -276,7 +289,7 @@ def linear_reg(df,
                          bic=bic,
                          path=output_path)
     
-    return lm.llf, aic, bic
+    return round(lm.llf, 5), round(aic, 5), round(bic, 5)
 
 # Codespace 
 # =======================================================

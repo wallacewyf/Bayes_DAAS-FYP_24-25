@@ -225,6 +225,7 @@ consumer_staple = df[df.index.get_level_values(1) == 'Consumer Staples']
 consumer_disc = df[df.index.get_level_values(1) == 'Consumer Discretionary']
 reits = df[df.index.get_level_values(1) == 'Real Estate']
 comm = df[df.index.get_level_values(1) == 'Communication Services']
+all = df.iloc[:,:-1]
 
 log.info (f"Data wrangling complete!\n")
 
