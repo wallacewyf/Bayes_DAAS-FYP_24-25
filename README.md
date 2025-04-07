@@ -1,9 +1,17 @@
-# fyp_24
+# Project Title: Evaluating ESG Factors and its impact on corporate financial performance
 
-Student Number: 200055530
+BSc Data Analytics and Actuarial Science
+Bayes Business School (formerly Cass)
 
-Project Title: Evaluating ESG Factors and its impact on finanical investments
+Authored by: Wallace Wong
+Supervisor: Dr David Smith
 
-Scope: NASDAQ technology companies
-Timeline: before and after Paris Agreement, before and after COVID-19
+------------------------------------------------------------------------------------------------------
+Update file locations in config.py
 
+
+
+------------------------------------------------------------------------------------------------------
+Examples can be found in examples.py
+
+Models in file  from main.py
