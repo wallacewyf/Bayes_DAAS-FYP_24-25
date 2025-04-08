@@ -1,15 +1,15 @@
 GICS Sector: Information Technology
 Regression Equation: ROA_lag_2 ~ E + S + G + Q_Ratio 
 
-Generated: 2025-04-05 03:52:34.552086 
+Generated: 2025-04-08 03:31:35.024056 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:              ROA_lag_2   R-squared:                       0.011
 Model:                            OLS   Adj. R-squared:                  0.008
 Method:                 Least Squares   F-statistic:                     3.890
-Date:                Sat, 05 Apr 2025   Prob (F-statistic):            0.00379
-Time:                        03:52:34   Log-Likelihood:                -4170.9
+Date:                Tue, 08 Apr 2025   Prob (F-statistic):            0.00379
+Time:                        03:31:35   Log-Likelihood:                -4170.9
 No. Observations:                1423   AIC:                             8352.
 Df Residuals:                    1418   BIC:                             8378.
 Df Model:                           4                                         

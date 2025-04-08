@@ -30,6 +30,18 @@ descriptive.desc('financials')
 # GICS Sector: Information Technology
 descriptive.desc('Information Technology')
 
+# Naive Model
+# ===========================================================================
+# Return on Assets (ROA)
+reg.linear_reg(df = wrangle.all,
+               measure = 'roa', 
+               esg = 'combined')
+
+# Return on Equity (ROE)
+reg.linear_reg(df = wrangle.all,
+               measure = 'roe', 
+               esg = 'combined')
+
 
 # Financial Sector
 # ===========================================================================

@@ -61,7 +61,7 @@ def desc(industry):
     log.info (f"Descriptive Statistics called for GICS Sector: {industry if industry != 'All' else 'All Sectors'} \n")    
     output = os.path.join(config.desc_path, f'{industry}.csv')
     desc = data.describe()
-
+    
     with open(output, "w") as file:
         file.write(f"Descriptive Statistics for {industry} Companies\n")
         file.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")

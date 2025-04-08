@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: ROE ~ ESG + Q_Ratio 
 
-Generated: 2025-04-05 03:52:29.932831 
+Generated: 2025-04-08 03:31:30.464045 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
@@ -10,8 +10,8 @@ Model:                            GLM   Df Residuals:                     3502
 Model Family:                 Tweedie   Df Model:                            2
 Link Function:                    Log   Scale:                          3.3061
 Method:                          IRLS   Log-Likelihood:                -3932.2
-Date:                Sat, 05 Apr 2025   Deviance:                       10869.
-Time:                        03:52:29   Pearson chi2:                 1.16e+04
+Date:                Tue, 08 Apr 2025   Deviance:                       10869.
+Time:                        03:31:30   Pearson chi2:                 1.16e+04
 No. Iterations:                     8   Pseudo R-squ. (CS):            0.03058
 Covariance Type:            nonrobust                                         
 ==============================================================================

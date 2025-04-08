@@ -21,8 +21,11 @@ import config, wrangle
 
 start = datetime.datetime.now()
 
+# GICS Sector: Finance
+descriptive.desc('financials')
 
-
+# GICS Sector: Information Technology
+descriptive.desc('Information Technology')
 
 stop = datetime.datetime.now()
 
