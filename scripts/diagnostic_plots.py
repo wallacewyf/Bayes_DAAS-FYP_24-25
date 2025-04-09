@@ -24,9 +24,7 @@ import config
 log = config.logging
 
 def export_graphs(model, 
-                  model_type = 'lm',
-                  esg='combined', 
-                  measure='roe', 
+                  model_type = 'lm', 
                   path=config.results_path):
     
     '''
@@ -49,9 +47,6 @@ def export_graphs(model,
 
     elif model_type.lower() == 'glm':
         residuals = model.resid_deviance 
-
-    if esg.lower() == 'combined': score = 'ESG'
-    elif esg.lower() == 'individual': score = 'E,S,G'
 
     # Residuals Histograms
     sns.histplot(residuals, kde=True, bins=30)
