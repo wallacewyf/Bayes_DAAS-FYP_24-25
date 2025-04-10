@@ -1,15 +1,15 @@
 GICS Sector: Information Technology
 Regression Equation: log_ROA ~ E + S + G + Q_Ratio 
 
-Generated: 2025-04-08 03:31:23.367332 
+Generated: 2025-04-10 14:02:21.893839 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                log_ROA   R-squared:                       0.018
 Model:                            OLS   Adj. R-squared:                  0.015
 Method:                 Least Squares   F-statistic:                     7.651
-Date:                Tue, 08 Apr 2025   Prob (F-statistic):           4.16e-06
-Time:                        03:31:23   Log-Likelihood:                -1329.6
+Date:                Thu, 10 Apr 2025   Prob (F-statistic):           4.16e-06
+Time:                        14:02:21   Log-Likelihood:                -1329.6
 No. Observations:                1692   AIC:                             2669.
 Df Residuals:                    1687   BIC:                             2696.
 Df Model:                           4                                         
@@ -44,8 +44,8 @@ Variance Inflation Factor Table
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
-Shapiro-Wilk Normality Test p-value: 6.5340332401525766e-24
-Breusch-Pagan Test p-value: 1.1842126296503206e-06
+Shapiro-Wilk Normality Test p-value: 6.531736346363316e-24
+Breusch-Pagan Test p-value: 1.1842126296504245e-06
 Chi-square p-value: 1.0
 AIC: 2669.1710355385208
 BIC: 2696.3393682393516

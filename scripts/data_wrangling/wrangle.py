@@ -178,7 +178,7 @@ scores = scores[cond3]
 returns = returns[cond3]
 
 # Combine both Returns and Scores into 1 single dataframe 
-df = pd.concat([scores, returns], axis=1)
+df = pd.concat([returns, scores], axis=1)
 
 # Remove outliers from ROE / ROA since ESG is fixed
 # Top 5% outliers - subject to change
@@ -197,6 +197,13 @@ df = df[
 # Convert ROE / ROA from 0 - 1 to 0 - 100% scale
 df['ROE'] *= 100
 df['ROA'] *= 100
+
+# sorting in ascending order by Company Name
+df.sort_values(by=['Year', "Company Name"],
+                   axis=0, 
+                   ascending=[True, True],
+                   inplace=True)
+
 
 df.to_csv(config.data_path + 'cleaned_data.csv')
 

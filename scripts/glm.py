@@ -288,8 +288,6 @@ def gaussian_glm(df,
     # Diagnostic Plots
     dplot.export_graphs(model=glm, 
                         model_type='glm', 
-                        esg=esg, 
-                        measure=measure, 
                         path=output_path)
     
     # Export results to directory
@@ -390,8 +388,6 @@ def inv_gaussian(df,
         # Diagnostic Plots
         dplot.export_graphs(model=glm, 
                             model_type='glm', 
-                            esg=esg, 
-                            measure=measure, 
                             path=output_path)
         
         # Export results to directory
@@ -485,8 +481,6 @@ def gamma_glm(df,
         # Diagnostic Plots
         dplot.export_graphs(model=glm, 
                             model_type='glm', 
-                            esg=esg, 
-                            measure=measure, 
                             path=output_path)
         
         # Export results to directory
@@ -579,8 +573,6 @@ def tweedie_glm(df,
     # Diagnostic Plots
     dplot.export_graphs(model=glm, 
                         model_type='glm', 
-                        esg=esg, 
-                        measure=measure, 
                         path=output_path)
     
     # Export results to directory

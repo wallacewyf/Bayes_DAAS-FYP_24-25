@@ -1,15 +1,15 @@
 GICS Sector: Information Technology
 Regression Equation: ROE ~ ESG + Q_Ratio 
 
-Generated: 2025-04-08 03:31:37.660033 
+Generated: 2025-04-10 14:02:55.510832 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                    ROE   R-squared:                       0.010
 Model:                            OLS   Adj. R-squared:                  0.009
 Method:                 Least Squares   F-statistic:                     6.934
-Date:                Tue, 08 Apr 2025   Prob (F-statistic):            0.00101
-Time:                        03:31:37   Log-Likelihood:                -4932.3
+Date:                Thu, 10 Apr 2025   Prob (F-statistic):            0.00101
+Time:                        14:02:55   Log-Likelihood:                -4932.3
 No. Observations:                1355   AIC:                             9871.
 Df Residuals:                    1352   BIC:                             9886.
 Df Model:                           2                                         
@@ -21,7 +21,7 @@ const         20.0116      0.846     23.666      0.000      18.353      21.670
 ESG           -0.0377      0.015     -2.594      0.010      -0.066      -0.009
 Q_Ratio        0.0010      0.000      2.592      0.010       0.000       0.002
 ==============================================================================
-Omnibus:                       97.700   Durbin-Watson:                   1.911
+Omnibus:                       97.700   Durbin-Watson:                   0.640
 Prob(Omnibus):                  0.000   Jarque-Bera (JB):              117.567
 Skew:                           0.701   Prob(JB):                     2.96e-26
 Kurtosis:                       3.342   Cond. No.                     2.12e+03
@@ -40,9 +40,9 @@ Variance Inflation Factor Table
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
-Shapiro-Wilk Normality Test p-value: 1.2381394932157399e-17
-Breusch-Pagan Test p-value: 0.6275728319040428
+Shapiro-Wilk Normality Test p-value: 1.2393190514183884e-17
+Breusch-Pagan Test p-value: 0.6275728319039955
 Chi-square p-value: 0.0
-AIC: 9870.697952496812
-BIC: 9886.332622696753
+AIC: 9870.697952496814
+BIC: 9886.332622696755
 
