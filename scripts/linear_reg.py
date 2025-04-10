@@ -273,8 +273,6 @@ def linear_reg(df,
     # Diagnostic Plots
     dplot.export_graphs(model=lm, 
                         model_type='lm', 
-                        esg=esg, 
-                        measure=measure, 
                         path=output_path)
     
     # Export results into .txt 
