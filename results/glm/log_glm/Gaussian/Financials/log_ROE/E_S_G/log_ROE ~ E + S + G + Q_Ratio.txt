@@ -1,0 +1,42 @@
+GICS Sector: Financials
+Regression Equation: log_ROE ~ E + S + G + Q_Ratio 
+
+Generated: 2025-04-12 03:41:48.397610 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                log_ROE   No. Observations:                 3505
+Model:                            GLM   Df Residuals:                     3500
+Model Family:                Gaussian   Df Model:                            4
+Link Function:               Identity   Scale:                         0.21349
+Method:                          IRLS   Log-Likelihood:                -2264.7
+Date:                Sat, 12 Apr 2025   Deviance:                       747.20
+Time:                        03:41:48   Pearson chi2:                     747.
+No. Iterations:                     3   Pseudo R-squ. (CS):            0.03281
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.6241      0.025    105.283      0.000       2.575       2.673
+E             -0.0013      0.000     -3.113      0.002      -0.002      -0.000
+S          -9.349e-05      0.001     -0.170      0.865      -0.001       0.001
+G           1.325e-05      0.000      0.032      0.974      -0.001       0.001
+Q_Ratio        0.0226      0.002      9.083      0.000       0.018       0.027
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E  12.694928
+1        S  15.599501
+2        G   8.304280
+3  Q_Ratio   1.047922
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 3.298681999902552e-12
+Breusch-Pagan Test p-value: 1.769849873602247e-64
+Chi-square p-value: 1.0
+AIC: 4539.404477914604
+BIC: 4570.214206911948
+

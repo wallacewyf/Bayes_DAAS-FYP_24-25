@@ -1,0 +1,38 @@
+GICS Sector: Information Technology
+Regression Equation: ROA ~ ESG + Q_Ratio 
+
+Generated: 2025-04-12 03:41:51.966990 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROA   No. Observations:                 1692
+Model:                            GLM   Df Residuals:                     1689
+Model Family:                 Tweedie   Df Model:                            2
+Link Function:                    Log   Scale:                          2.3006
+Method:                          IRLS   Log-Likelihood:                -2343.4
+Date:                Sat, 12 Apr 2025   Deviance:                       4145.9
+Time:                        03:41:51   Pearson chi2:                 3.89e+03
+No. Iterations:                     6   Pseudo R-squ. (CS):           0.002829
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.2994      0.037     62.854      0.000       2.228       2.371
+ESG           -0.0014      0.001     -2.167      0.030      -0.003      -0.000
+Q_Ratio     6.253e-06   2.07e-05      0.302      0.763   -3.44e-05    4.69e-05
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0      ESG   1.003209
+1  Q_Ratio   1.003209
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 8.2854038916132e-15
+Breusch-Pagan Test p-value: 0.6318788273091376
+Chi-square p-value: 0.0
+AIC: 4692.731737719426
+BIC: 4709.032737339924
+

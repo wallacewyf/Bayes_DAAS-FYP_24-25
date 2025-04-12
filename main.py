@@ -23,7 +23,6 @@ start = datetime.datetime.now()
 
 # # Descriptive Statistics
 # # ===========================================================================
-
 # GICS Sector: Financials
 descriptive.desc('Financials')
 

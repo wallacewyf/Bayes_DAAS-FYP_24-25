@@ -83,7 +83,7 @@ ta = ta.melt(var_name='Year',
             ignore_index=False).drop(columns=['Year'])
 
 log.info (f"Merging all melted dataframes into a single dataframe...")
-returns = pd.concat([roe, roa, mktcap, ta, q, net_income, eqi],
+returns = pd.concat([roa, roe, mktcap, ta, q, net_income, eqi],
                     axis=1)
 
 returns.set_index('Year', 

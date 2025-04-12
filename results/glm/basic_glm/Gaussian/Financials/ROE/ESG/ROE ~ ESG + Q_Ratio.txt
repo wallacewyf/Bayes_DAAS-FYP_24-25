@@ -1,0 +1,38 @@
+GICS Sector: Financials
+Regression Equation: ROE ~ ESG + Q_Ratio 
+
+Generated: 2025-04-12 03:41:46.446098 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                 3505
+Model:                            GLM   Df Residuals:                     3502
+Model Family:                Gaussian   Df Model:                            2
+Link Function:                    Log   Scale:                          45.232
+Method:                          IRLS   Log-Likelihood:                -11652.
+Date:                Sat, 12 Apr 2025   Deviance:                   1.5840e+05
+Time:                        03:41:46   Pearson chi2:                 1.58e+05
+No. Iterations:                    15   Pseudo R-squ. (CS):            0.02505
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.6720      0.025    107.017      0.000       2.623       2.721
+ESG           -0.0017      0.000     -3.725      0.000      -0.003      -0.001
+Q_Ratio        0.0111      0.001     10.690      0.000       0.009       0.013
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0      ESG   1.031564
+1  Q_Ratio   1.031564
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 1.333430305888188e-40
+Breusch-Pagan Test p-value: 4.61934266639473e-57
+Chi-square p-value: 0.0
+AIC: 23310.138950845052
+BIC: 23328.624788243458
+
