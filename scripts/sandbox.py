@@ -21,6 +21,13 @@ import config, wrangle
 
 start = datetime.datetime.now()
 
+# Codespace
+# ==========================================
+
+descriptive.desc('Financials')
+descriptive.desc('Information Technology')
+
+
 stop = datetime.datetime.now()
 
 print (f"Runtime: {stop-start}")

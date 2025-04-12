@@ -93,7 +93,7 @@ def init_data(
         # Introducing log1p(Y) and n-year lag
         if log_transform and n_shift is not None:
             data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data.loc[:, measure] = np.log1p(np.abs(data[measure]))
             data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[measure])
             
@@ -105,7 +105,7 @@ def init_data(
         # Introducing log1p (Y)
         elif log_transform: 
             data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data.loc[:, measure] = np.log1p(np.abs(data[measure]))
             
             data = data.rename(columns={measure: f'log_{measure}'})
             measure = f'log_{measure}'
@@ -128,7 +128,7 @@ def init_data(
         # Introducing log1p(Y) and n-year lag
         if log_transform and n_shift is not None:
             data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data.loc[:, measure] = np.log1p(np.abs(data[measure]))
             data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[measure])
 
@@ -140,7 +140,7 @@ def init_data(
         # Introducing log1p (Y)
         elif log_transform: 
             data = data.sort_index()
-            data.loc[:, measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data.loc[:, measure] = np.log1p(np.abs(data[measure]))
 
             data = data.rename(columns={measure: f'log_{measure}'})
             measure = f'log_{measure}'

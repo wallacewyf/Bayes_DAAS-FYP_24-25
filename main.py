@@ -24,8 +24,8 @@ start = datetime.datetime.now()
 # # Descriptive Statistics
 # # ===========================================================================
 
-# GICS Sector: Finance
-descriptive.desc('financials')
+# GICS Sector: Financials
+descriptive.desc('Financials')
 
 # GICS Sector: Information Technology
 descriptive.desc('Information Technology')
@@ -48,19 +48,17 @@ reg.linear_reg(df = wrangle.all,
 # Return on Assets (ROA)
 # Model F1
 # ROA / ESG
-glm.gamma_glm(df = wrangle.finance, 
-              measure = 'roa',
-              esg = 'combined',
-              log_transform = True, 
-              link = 'Log')
+glm.gaussian_glm(df = wrangle.finance, 
+                 measure = 'roa',
+                 esg = 'combined',
+                 log_transform = True)
 
 # Model F2
 # ROA / E,S,G
-glm.gamma_glm(df = wrangle.finance, 
-              measure = 'roa',
-              esg = 'individual',
-              log_transform = True, 
-              link = 'Log')
+glm.gaussian_glm(df = wrangle.finance, 
+                 measure = 'roa', 
+                 esg = 'individual',
+                 log_transform=True)
 
 # Return on Equity (ROE)
 # Model F3
@@ -143,6 +141,12 @@ for data in data_dfs:
                                     measure = measure, 
                                     esg = esg, 
                                     log_transform = True))
+            
+            print ("Gaussian GLM with log-link")
+            print(glm.gaussian_glm(df = data, 
+                                    measure = measure, 
+                                    esg = esg, 
+                                    link = 'Log'))
 
             print ("Tweedie GLM")
             print(glm.tweedie_glm(df = data, 

@@ -35,8 +35,7 @@ def init_data(
             year_threshold=None,
             log_transform=None,
             n_shift=None,
-            glm_type='Gaussian'
-            ):
+            glm_type='Gaussian'):
 
     '''
     Data Initialization
@@ -100,7 +99,7 @@ def init_data(
             data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
                                    ascending=[True, True, True])
             
-            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data[measure] = np.log1p(np.abs(data[measure]))
             data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[measure])
             
@@ -114,7 +113,7 @@ def init_data(
             data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
                                    ascending=[True, True, True])
             
-            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data[measure] = np.log1p(np.abs(data[measure]))
             
             data = data.rename(columns={measure: f'log_{measure}'})
             measure = f'log_{measure}'
@@ -141,7 +140,7 @@ def init_data(
             data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
                                    ascending=[True, True, True])
             
-            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data[measure] = np.log1p(np.abs(data[measure]))
             data[measure] = data.groupby(level='Company Name')[[f'{measure}']].shift(n_shift)
             data = data.dropna(subset=[measure])
 
@@ -155,7 +154,7 @@ def init_data(
             data = data.sort_index(level=["Year", 'Company Name', 'GICS Sector Name'],
                                    ascending=[True, True, True])
             
-            data[measure] = np.sign(data[measure]) * np.log1p(np.abs(data[measure]))
+            data[measure] = np.log1p(np.abs(data[measure]))
 
             data = data.rename(columns={measure: f'log_{measure}'})
             measure = f'log_{measure}'
@@ -416,7 +415,7 @@ def gamma_glm(df,
                 year_threshold = None, 
                 log_transform = None, 
                 n_shift = None,
-                link = 'Log'):
+                link = None):
         
     '''
     Gamma GLMs
@@ -455,52 +454,67 @@ def gamma_glm(df,
     # Extract measure
     measure = eqn.split("~")[0].strip()
 
-    # Link functions
-    try:
-        if link is None:
-            log.warning (f"Gamma with no link function does not work!")
-
-            glm = smf.glm(eqn, 
-                        data=data, 
-                        family=sm.families.Gamma()).fit()
-            
-            return
-        
-        elif link.lower() == 'log':
-            glm = smf.glm(eqn, 
+    if not log_transform and link.lower() == 'log':
+        glm = smf.glm(eqn, 
                         data = data, 
                         family = sm.families.Gamma(link=sm.genmod.families.links.Log())).fit()
+    
+    else:
+        # Link functions
+        try:
+            if link is None:
+                log.warning (f"Gamma with no link function does not work!")
+
+                glm = smf.glm(eqn, 
+                            data=data, 
+                            family=sm.families.Gamma()).fit()
+                
+                return
             
-            transformation_note = f"Log-link function called -> Interpret coefficient as exp(coef)! \n"
+            elif link.lower() == 'log':
+                glm = smf.glm(eqn, 
+                            data = data, 
+                            family = sm.families.Gamma(link=sm.genmod.families.links.Log())).fit()
+                
+            elif link.lower() == 'identity':
+                glm = smf.glm(eqn, 
+                            data = data, 
+                            family = sm.families.Gamma(link=sm.genmod.families.links.Identity())).fit()
+                
+            elif link.lower() == 'inverse':
+                glm = smf.glm(eqn, 
+                            data = data, 
+                            family = sm.families.Gamma(link=sm.genmod.families.links.InversePower())).fit()
 
-        # Statistical Tests
-        shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
-                                                        model_type = 'glm', 
-                                                        model = glm)
-        
-        # Diagnostic Plots
-        dplot.export_graphs(model=glm, 
-                            model_type='glm', 
-                            path=output_path)
-        
-        # Export results to directory
-        dplot.export_results(summary=glm.summary(), 
-                            vif=vif, 
-                            industry=industry, 
-                            eqn=eqn, 
-                            shapiro_p_value=shapiro, 
-                            bp_p_value=bp, 
-                            chi2_p_value=chi2,
-                            aic=aic,
-                            bic=bic,
-                            path=output_path)
-        
-        return round(glm.llf, 5), round(aic, 5), round(bic, 5)
 
-    except ValueError as error_msg:
-        log.warning (f"ValueError: {error_msg}")
+        except ValueError as error_msg:
+            log.warning (f"ValueError: {error_msg}")
 
-        print(f"ValueError encountered: {error_msg}")
+            print(f"ValueError encountered: {error_msg}")
+    
+    # Statistical Tests
+    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+                                                    model_type = 'glm', 
+                                                    model = glm)
+    
+    # Diagnostic Plots
+    dplot.export_graphs(model=glm, 
+                        model_type='glm', 
+                        path=output_path)
+    
+    # Export results to directory
+    dplot.export_results(summary=glm.summary(), 
+                        vif=vif, 
+                        industry=industry, 
+                        eqn=eqn, 
+                        shapiro_p_value=shapiro, 
+                        bp_p_value=bp, 
+                        chi2_p_value=chi2,
+                        aic=aic,
+                        bic=bic,
+                        path=output_path)
+    
+    return round(glm.llf, 5), round(aic, 5), round(bic, 5)
 
 def tweedie_glm(df, 
                  measure = 'roe', 

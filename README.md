@@ -41,6 +41,10 @@ To access wrangled dataframes:
 
 ---
 
+# Regression Results 
+
+The project uses the statsmodels package to run both the linear regression and generalized linear models for the aforementioned models in the Financials sector and provides the results in a file saved in a pre-specified directory in config.py's results_path
+
 Examples can be found in examples.py
 
 Models in file  from main.py
