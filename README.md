@@ -1,4 +1,4 @@
-# Project Title: Evaluating ESG Factors and its impact on corporate financial performance
+# Project Title: Evaluating ESG (Environmental, Social, Governance) and its impact on corporate financial performance of Financial and Technology companies.
 
 BSc Data Analytics and Actuarial Science
 
