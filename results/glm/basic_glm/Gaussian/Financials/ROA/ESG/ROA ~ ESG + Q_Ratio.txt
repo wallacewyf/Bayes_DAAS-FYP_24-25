@@ -1,25 +1,25 @@
 GICS Sector: Financials
 Regression Equation: ROA ~ ESG + Q_Ratio 
 
-Generated: 2025-04-13 05:03:10.625341 
+Generated: 2025-04-13 05:06:11.135703 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
 Dep. Variable:                    ROA   No. Observations:                 3505
 Model:                            GLM   Df Residuals:                     3502
 Model Family:                Gaussian   Df Model:                            2
-Link Function:               Identity   Scale:                          9.7585
-Method:                          IRLS   Log-Likelihood:                -8964.3
-Date:                Sun, 13 Apr 2025   Deviance:                       34174.
-Time:                        05:03:10   Pearson chi2:                 3.42e+04
-No. Iterations:                     3   Pseudo R-squ. (CS):             0.1411
+Link Function:                    Log   Scale:                          10.594
+Method:                          IRLS   Log-Likelihood:                -9108.3
+Date:                Sun, 13 Apr 2025   Deviance:                       37101.
+Time:                        05:06:11   Pearson chi2:                 3.71e+04
+No. Iterations:                    17   Pseudo R-squ. (CS):            0.05945
 Covariance Type:            nonrobust                                         
 ==============================================================================
                  coef    std err          z      P>|z|      [0.025      0.975]
 ------------------------------------------------------------------------------
-Intercept      3.8487      0.159     24.188      0.000       3.537       4.161
-ESG           -0.0318      0.003    -10.867      0.000      -0.037      -0.026
-Q_Ratio        0.3340      0.017     20.033      0.000       0.301       0.367
+Intercept      1.5378      0.055     28.080      0.000       1.430       1.645
+ESG           -0.0133      0.001    -11.159      0.000      -0.016      -0.011
+Q_Ratio        0.0193      0.001     14.506      0.000       0.017       0.022
 ==============================================================================
 
 Variance Inflation Factor Table
@@ -31,7 +31,7 @@ Variance Inflation Factor Table
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
 Shapiro-Wilk Normality Test p-value: 9.178330358337707e-67
-Breusch-Pagan Test p-value: 1.4183521845027735e-234
-AIC: 17934.625958239907
-BIC: 17953.111795638313
+Breusch-Pagan Test p-value: 3.0012211989660383e-71
+AIC: 18222.656456731667
+BIC: 18241.142294130073
 
