@@ -51,14 +51,14 @@ The project uses the statsmodels package to run both the linear regression and g
 Once the regression models are run, they will be saved in the results folder.
 
 For example, when a Gaussian GLM is run between ESG and the Return on Assets (ROA) of firms in the Financials Sector: 
-    - results
-        - glm
-            - basic_glm
-                - Financials
-                    - ROA
-                        - ESG
-                            - QQ Plot.png
-                            - Residuals Histogram.png
-                            - ROA ~ ESG + Q_Ratio.txt
-                            - ROA Boxplot.png
-                            - ROA Histogram.png
+
+```bash
+├───results
+│   ├───descriptive
+│   ├───glm
+│   │   ├───basic_glm
+│   │   │   └───Gaussian
+│   │   │       └───Financials
+│   │   │           └───ROA
+│   │   │               └───ESG
+```
