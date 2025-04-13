@@ -1,15 +1,15 @@
 GICS Sector: Information Technology
 Regression Equation: ROE ~ ESG + Q_Ratio 
 
-Generated: 2025-04-12 03:41:54.816271 
+Generated: 2025-04-13 04:29:49.940538 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                    ROE   R-squared:                       0.008
 Model:                            OLS   Adj. R-squared:                  0.007
 Method:                 Least Squares   F-statistic:                     6.582
-Date:                Sat, 12 Apr 2025   Prob (F-statistic):            0.00142
-Time:                        03:41:54   Log-Likelihood:                -6128.8
+Date:                Sun, 13 Apr 2025   Prob (F-statistic):            0.00142
+Time:                        04:29:49   Log-Likelihood:                -6128.8
 No. Observations:                1692   AIC:                         1.226e+04
 Df Residuals:                    1689   BIC:                         1.228e+04
 Df Model:                           2                                         
@@ -42,7 +42,6 @@ Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
 Shapiro-Wilk Normality Test p-value: 1.3976521113775932e-18
 Breusch-Pagan Test p-value: 0.5018611699469515
-Chi-square p-value: 0.0
 AIC: 12263.576018075746
 BIC: 12279.877017696244
 

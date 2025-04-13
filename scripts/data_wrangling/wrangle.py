@@ -206,7 +206,6 @@ df.sort_values(by=['Year', "Company Name"],
 
 scores.to_csv(config.data_path + 'scores.csv')
 returns.to_csv(config.data_path + 'returns.csv')
-df.to_csv(config.data_path + 'cleaned_data.csv')
 
 # available dataframes
 # GICS Sectors

@@ -56,14 +56,12 @@ def diagnostics(predictor_variable=None,
 
     shapiro_p_value, shapiro_response = shapiro_wilks(predictor_variable)
     bp_p_value, bp_response = breusch_pagan(model, model_type)
-    chi2_p_value, chi2_p_response = chi_square(model, model_type)
     aic, bic = aic_bic(model, model_type)
 
     log.info (f"Normality: {shapiro_response}")
     log.info (f"Heteroscedasticity: {bp_response}")
-    log.info (f"Goodness-of-Fit: {chi2_p_response}")
 
-    return shapiro_p_value, bp_p_value, chi2_p_value, aic, bic
+    return shapiro_p_value, bp_p_value, aic, bic
 
 def aic_bic(model, 
             model_type = 'lm'):
@@ -99,40 +97,6 @@ def shapiro_wilks(predictor_variable):
     else: shapiro_response = "Reject H0; normally distributed"
 
     return shapiro_p, shapiro_response
-
-def chi_square(model, 
-               model_type = 'lm'):
-    
-    '''
-    Pearson Chi-Square Test for Goodness-of-Fit
-    ----------------------------------------------------------
-    Parameters:
-        - model
-        - model_type = LM (default) / GLM
-    ----------------------------------------------------------
-    Interpretation:
-        - H0: Good model fit, p >= 0.05
-        - H1: Bad model fit, p < 0.05
-    '''
-
-    if model_type.lower() == 'lm':
-        residuals = model.resid
-        observed_values = np.abs(residuals)
-        expected_values = np.full_like(observed_values, np.mean(observed_values))
-
-        _, chi2_p_value = stats.chisquare(f_obs=observed_values, 
-                                          f_exp=expected_values)
-
-    elif model_type.lower() == 'glm':
-        chi2_value = model.pearson_chi2
-        residuals = model.df_resid
-    
-        chi2_p_value = 1 - stats.chi2.cdf(chi2_value, residuals)
-
-    if chi2_p_value >= 0.05: chi2_p_response = 'Fail to reject H0; good fit'
-    else: chi2_p_response = 'Reject H0; bad fit'
-
-    return chi2_p_value, chi2_p_response
 
 def breusch_pagan(model,
                   model_type = 'lm'):

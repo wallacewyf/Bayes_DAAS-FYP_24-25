@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: ROA ~ ESG + Q_Ratio 
 
-Generated: 2025-04-12 03:41:41.554874 
+Generated: 2025-04-13 04:29:38.809697 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
@@ -10,8 +10,8 @@ Model:                            GLM   Df Residuals:                     3502
 Model Family:                Gaussian   Df Model:                            2
 Link Function:                    Log   Scale:                          10.594
 Method:                          IRLS   Log-Likelihood:                -9108.3
-Date:                Sat, 12 Apr 2025   Deviance:                       37101.
-Time:                        03:41:41   Pearson chi2:                 3.71e+04
+Date:                Sun, 13 Apr 2025   Deviance:                       37101.
+Time:                        04:29:38   Pearson chi2:                 3.71e+04
 No. Iterations:                    17   Pseudo R-squ. (CS):            0.05945
 Covariance Type:            nonrobust                                         
 ==============================================================================
@@ -32,7 +32,6 @@ Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
 Shapiro-Wilk Normality Test p-value: 9.178330358337707e-67
 Breusch-Pagan Test p-value: 3.0012211989660383e-71
-Chi-square p-value: 0.0
 AIC: 18222.656456731667
 BIC: 18241.142294130073
 

@@ -266,7 +266,7 @@ def linear_reg(df,
         lm = sm.OLS(Y, X).fit(cov_type=cov_type.upper())
 
     # Statistical Test values
-    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = Y,
+    shapiro, bp, aic, bic = stest.diagnostics(predictor_variable = Y,
                                                     model_type = 'lm',
                                                     model = lm)
     
@@ -282,7 +282,6 @@ def linear_reg(df,
                          eqn=eqn, 
                          shapiro_p_value=shapiro, 
                          bp_p_value=bp, 
-                         chi2_p_value=chi2, 
                          aic=aic, 
                          bic=bic,
                          path=output_path)

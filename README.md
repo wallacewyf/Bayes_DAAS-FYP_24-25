@@ -41,10 +41,24 @@ To access wrangled dataframes:
 
 ---
 
-# Regression Results 
+# Regression Models and Results 
 
 The project uses the statsmodels package to run both the linear regression and generalized linear models for the aforementioned models in the Financials sector and provides the results in a file saved in a pre-specified directory in config.py's results_path
 
-Examples can be found in examples.py
+    - Examples can be found in examples.py
+    - Models in file are to be found in main.py
 
-Models in file  from main.py
+Once the regression models are run, they will be saved in the results folder.
+
+For example, when a Gaussian GLM is run between ESG and the Return on Assets (ROA) of firms in the Financials Sector: 
+    - results
+        - glm
+            - basic_glm
+                - Financials
+                    - ROA
+                        - ESG
+                            - QQ Plot.png
+                            - Residuals Histogram.png
+                            - ROA ~ ESG + Q_Ratio.txt
+                            - ROA Boxplot.png
+                            - ROA Histogram.png

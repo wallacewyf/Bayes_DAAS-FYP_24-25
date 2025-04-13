@@ -66,7 +66,6 @@ def export_results(summary,
                    eqn,
                    shapiro_p_value=None, 
                    bp_p_value=None, 
-                   chi2_p_value=None,
                    aic=None, 
                    bic=None,
                    transformation_note=None,
@@ -92,7 +91,6 @@ def export_results(summary,
         file.write ('----------------------------------------------------------------------------\n')
         file.write (f"Shapiro-Wilk Normality Test p-value: {shapiro_p_value}\n")
         file.write (f"Breusch-Pagan Test p-value: {bp_p_value}\n")
-        file.write (f"Chi-square p-value: {chi2_p_value}\n")
         file.write (f"AIC: {aic}\n")
         file.write (f"BIC: {bic}\n\n")
 

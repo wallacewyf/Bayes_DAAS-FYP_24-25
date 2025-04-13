@@ -281,7 +281,7 @@ def gaussian_glm(df,
                       family = sm.families.Gaussian(link=sm.genmod.families.links.Log())).fit()
 
     # Statistical Tests
-    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+    shapiro, bp, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
                                                     model_type = 'glm', 
                                                     model = glm)
     # Diagnostic Plots
@@ -296,7 +296,6 @@ def gaussian_glm(df,
                          eqn=eqn, 
                          shapiro_p_value=shapiro, 
                          bp_p_value=bp, 
-                         chi2_p_value=chi2,
                          aic=aic,
                          bic=bic, 
                          path=output_path)
@@ -380,7 +379,7 @@ def inv_gaussian(df,
             transformation_note += f"Strictly positive transformation with {inverse_value} \n\n"
 
         # Statistical Tests
-        shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+        shapiro, bp, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
                                                         model_type = 'glm', 
                                                         model = glm)
         
@@ -396,7 +395,6 @@ def inv_gaussian(df,
                             eqn=eqn, 
                             shapiro_p_value=shapiro, 
                             bp_p_value=bp, 
-                            chi2_p_value=chi2,
                             aic=aic,
                             bic=bic,
                             transformation_note=transformation_note,
@@ -454,7 +452,7 @@ def gamma_glm(df,
     # Extract measure
     measure = eqn.split("~")[0].strip()
 
-    if not log_transform and link.lower() == 'log':
+    if not log_transform and link is not None and link.lower() == 'log':
         glm = smf.glm(eqn, 
                         data = data, 
                         family = sm.families.Gamma(link=sm.genmod.families.links.Log())).fit()
@@ -463,14 +461,10 @@ def gamma_glm(df,
         # Link functions
         try:
             if link is None:
-                log.warning (f"Gamma with no link function does not work!")
-
                 glm = smf.glm(eqn, 
                             data=data, 
                             family=sm.families.Gamma()).fit()
-                
-                return
-            
+                            
             elif link.lower() == 'log':
                 glm = smf.glm(eqn, 
                             data = data, 
@@ -493,7 +487,7 @@ def gamma_glm(df,
             print(f"ValueError encountered: {error_msg}")
     
     # Statistical Tests
-    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+    shapiro, bp, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
                                                     model_type = 'glm', 
                                                     model = glm)
     
@@ -509,7 +503,6 @@ def gamma_glm(df,
                         eqn=eqn, 
                         shapiro_p_value=shapiro, 
                         bp_p_value=bp, 
-                        chi2_p_value=chi2,
                         aic=aic,
                         bic=bic,
                         path=output_path)
@@ -555,7 +548,7 @@ def tweedie_glm(df,
 
     # Extract measure
     measure = eqn.split("~")[0].strip()
-
+    
     # Link functions 
     if var_power is None:
         if link is None:
@@ -580,7 +573,7 @@ def tweedie_glm(df,
                         family = sm.families.Tweedie(link=sm.genmod.families.links.Identity(),
                                                      var_power=var_power)).fit()
     # Statistical Tests
-    shapiro, bp, chi2, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
+    shapiro, bp, aic, bic = stest.diagnostics(predictor_variable = data[[measure]], 
                                                     model_type = 'glm', 
                                                     model = glm)
     
@@ -596,7 +589,6 @@ def tweedie_glm(df,
                          eqn=eqn, 
                          shapiro_p_value=shapiro, 
                          bp_p_value=bp, 
-                         chi2_p_value=chi2, 
                          aic=aic,
                          bic=bic,
                          path=output_path)

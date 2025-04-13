@@ -50,14 +50,18 @@ reg.linear_reg(df = wrangle.all,
 glm.gaussian_glm(df = wrangle.finance, 
                  measure = 'roa',
                  esg = 'combined',
-                 log_transform = True)
+                 log_transform = True, 
+                 link = None)               # None defaults as Identity for statsmodels.glm
+
 
 # Model F2
 # ROA / E,S,G
 glm.gaussian_glm(df = wrangle.finance, 
                  measure = 'roa', 
                  esg = 'individual',
-                 log_transform=True)
+                 log_transform=True, 
+                 link = None)               # None defaults as Identity for statsmodels.glm
+
 
 # Return on Equity (ROE)
 # Model F3
@@ -81,32 +85,32 @@ glm.gaussian_glm(df = wrangle.finance,
 # Return on Assets (ROA)
 # Model T1
 # ROA / ESG
-reg.linear_reg(df = wrangle.tech,
+glm.tweedie_glm(df = wrangle.tech,
                measure = 'roa',
                esg = 'combined',
-               log_transform = True)
+               var_power=1)
 
 # Model T2
 # ROA / E,S,G
-reg.linear_reg(df = wrangle.tech,
+glm.tweedie_glm(df = wrangle.tech,
                measure = 'roa',
                esg = 'individual',
-               log_transform = True)
+               var_power=1)
 
 # Return on Equity (ROE)
 # Model T3
 # ROE / ESG
-reg.linear_reg(df = wrangle.tech,
+glm.tweedie_glm(df = wrangle.tech,
                measure = 'roe',
                esg = 'combined',
-               log_transform = True)
+               var_power=1)
 
 # Model T4
 # ROE / E,S,G
-reg.linear_reg(df = wrangle.tech,
+glm.tweedie_glm(df = wrangle.tech,
                measure = 'roe',
                esg = 'individual',
-               log_transform = True)
+               var_power=1)
 
 
 # # Diagnostic Tests
@@ -118,42 +122,61 @@ esg_types = ['combined', 'individual']
 for data in data_dfs:
     for measure in measure_types:
         for esg in esg_types:
-            print ("Basic Linear Regression")
-            print(reg.linear_reg(df = data,
-                                measure = measure,
-                                esg = esg))
-
-            print ("2-Year Lagged Linear Regression")
-            print(reg.linear_reg(df = data,
-                                measure = measure, 
-                                esg = esg, 
-                                n_shift = 2))
-
-            print ("Post-2008 Linear Regression")
-            print(reg.linear_reg(df = data,
-                                measure = measure, 
-                                esg = esg, 
-                                year_threshold = 2008))
-
-            print ("Gaussian GLM with log-transformation")
-            print(glm.gaussian_glm(df = data, 
-                                    measure = measure, 
-                                    esg = esg, 
-                                    log_transform = True))
-            
-            print ("Gaussian GLM with log-link")
-            print(glm.gaussian_glm(df = data, 
-                                    measure = measure, 
-                                    esg = esg, 
-                                    link = 'Log'))
-
-            print ("Tweedie GLM")
-            print(glm.tweedie_glm(df = data, 
-                                    measure = measure, 
-                                    esg = esg))
-             
+            if data.equals(wrangle.finance): print (f'Industry: Finance | Measure: {measure.upper()} | ESG: {esg.title()}')
+            else: print (f'Industry: Technology | Measure: {measure.upper()} | ESG: {esg.title()}')
             print ()
 
+            print ("Basic Linear Regression")
+            llh, aic, bic = reg.linear_reg(df = data,
+                                measure = measure,
+                                esg = esg)
+            
+            print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+            print ("2-Year Lagged Linear Regression")
+            llh, aic, bic = reg.linear_reg(df = data,
+                                measure = measure, 
+                                esg = esg, 
+                                n_shift = 2)
+            
+            print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+            print ("Post-2008 Linear Regression")
+            llh, aic, bic = reg.linear_reg(df = data,
+                                measure = measure, 
+                                esg = esg, 
+                                year_threshold = 2008)
+                        
+            print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+            if data.equals(wrangle.tech):
+                print ("Gaussian GLM with log-transformation")
+                llh, aic, bic = glm.gaussian_glm(df = data, 
+                                        measure = measure, 
+                                        esg = esg, 
+                                        log_transform = True)
+
+                print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+            else:
+                print ("Gaussian GLM with log-link")
+                llh, aic, bic = glm.gaussian_glm(df = data, 
+                                        measure = measure, 
+                                        esg = esg, 
+                                        link = 'Log')
+
+                print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+            print ("Tweedie GLM")
+            llh, aic, bic = glm.tweedie_glm(df = data, 
+                                    measure = measure, 
+                                    esg = esg)
+            
+            print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+            print ()
+
+            print ('===========================================================================')
 
 stop = datetime.datetime.now()
 
