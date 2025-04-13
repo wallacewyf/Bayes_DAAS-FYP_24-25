@@ -20,7 +20,6 @@ The screens used within the Screener function on Eikon can also be found within 
 
 Once the data is collected into Excel files, update their corresponding file locations in the config.py script.
 
-i.e. 
     # Directory Path
     data_path = "C:/Users/xxx/Downloads/fyp_24/"
 
@@ -35,8 +34,8 @@ i.e.
 The project also allows the wrangled dataset to be accessible and exported as comma-delimited files (csv), grouping by the GICS Sector’s classification. 
 
 To access wrangled dataframes:
-    Financials Sector: *wrangle.finance*
-    Utilities Sector: *wrangle.utilities*
+- Financials Sector: *wrangle.finance*
+- Utilities Sector: *wrangle.utilities*
 
 
 ---
@@ -45,8 +44,8 @@ To access wrangled dataframes:
 
 The project uses the statsmodels package to run both the linear regression and generalized linear models for the aforementioned models in the Financials sector and provides the results in a file saved in a pre-specified directory in config.py's results_path
 
-    - Examples can be found in examples.py
-    - Models in file are to be found in main.py
+- Examples can be found in *examples.py*
+- Models in file are to be found in *main.py*
 
 Once the regression models are run, they will be saved in the results folder.
 
