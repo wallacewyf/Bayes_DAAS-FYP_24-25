@@ -1,15 +1,15 @@
 GICS Sector: Information Technology
 Regression Equation: ROA ~ ESG + Q_Ratio 
 
-Generated: 2025-04-13 05:06:19.568804 
+Generated: 2025-04-14 20:01:25.650436 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                    ROA   R-squared:                       0.005
 Model:                            OLS   Adj. R-squared:                  0.003
 Method:                 Least Squares   F-statistic:                     3.312
-Date:                Sun, 13 Apr 2025   Prob (F-statistic):             0.0367
-Time:                        05:06:19   Log-Likelihood:                -3941.3
+Date:                Mon, 14 Apr 2025   Prob (F-statistic):             0.0367
+Time:                        20:01:25   Log-Likelihood:                -3941.3
 No. Observations:                1355   AIC:                             7889.
 Df Residuals:                    1352   BIC:                             7904.
 Df Model:                           2                                         
@@ -40,8 +40,8 @@ Variance Inflation Factor Table
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
-Shapiro-Wilk Normality Test p-value: 5.925595163863091e-12
-Breusch-Pagan Test p-value: 0.5415672472005801
+Shapiro-Wilk Normality Test p-value: 5.928910574298785e-12
+Breusch-Pagan Test p-value: 0.5415672472005804
 AIC: 7888.584553889443
 BIC: 7904.219224089384
 

@@ -1,15 +1,15 @@
 GICS Sector: All Industries
 Regression Equation: ROA ~ ESG 
 
-Generated: 2025-04-13 05:06:05.445935 
+Generated: 2025-04-14 20:04:42.856308 
 
                             OLS Regression Results                            
 ==============================================================================
 Dep. Variable:                    ROA   R-squared:                       0.006
 Model:                            OLS   Adj. R-squared:                  0.005
 Method:                 Least Squares   F-statistic:                     115.6
-Date:                Sun, 13 Apr 2025   Prob (F-statistic):           6.78e-27
-Time:                        05:06:05   Log-Likelihood:                -60044.
+Date:                Mon, 14 Apr 2025   Prob (F-statistic):           6.78e-27
+Time:                        20:04:42   Log-Likelihood:                -60044.
 No. Observations:               20806   AIC:                         1.201e+05
 Df Residuals:                   20804   BIC:                         1.201e+05
 Df Model:                           1                                         
@@ -31,8 +31,8 @@ Notes:
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
-Shapiro-Wilk Normality Test p-value: 1.1908613403984542e-70
-Breusch-Pagan Test p-value: 8.188869002616639e-16
+Shapiro-Wilk Normality Test p-value: 0.0
+Breusch-Pagan Test p-value: 8.188869002587817e-16
 AIC: 120092.16878676218
 BIC: 120108.05478013345
 
