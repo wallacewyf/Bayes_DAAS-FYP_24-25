@@ -14,7 +14,16 @@ This project uses Python 3.13, and statistical packages in Python such as Pandas
 
 *pip install pandas, numpy, matplotlib, scikit-learn, seaborn, statsmodels, logger*
 
-It is highly recommended to use the screens available on GitHub to have the data extracted in the same order on the Excel files, as the code extracts the data according to the order of the columns. If Refinitiv Eikon is not available, we recommend arranging the data in the same order as the above before running the scripts on GitHub.
+It is highly recommended to use the screens available on GitHub to have the data extracted in the same order on the Excel files, as the code extracts the data according to the order of the columns. If Refinitiv Eikon is not available, we recommend arranging the data in the same order as the below tables before running the scripts on GitHub.
+
+**Financial Returns**
+| Identifier | Company Name | GICS Sector Name | Return on Equity - Actual | Return on Assets - Actual | Company Market Cap | Total Assets - Reported | Net Income - Actual | Shareholders' Equity - Actual |
+| ---------- | ------------ | -----------------| ------------------------- | ------------------------- | ------------------ | ----------------------- | ------------------- | ----------------------------- |
+| x | x | x | x | x | x | x | x | x |
+
+**ESG Scores**
+| Identifier | Company Name | GICS Sector Name | ESG Combined Score | Environmental Pillar Score | Social Pillar Score | Governance Pillar Score |
+| ---------- | ------------ | ---------------- | ------------------ | -------------------------- | ------------------- | ----------------------- |
 
 The screens used within the Screener function on Eikon can also be found within the GitHub directory in the “eikon” folder, and the order of the columns of the downloaded Excel files can be found in the *data* directory.
 
