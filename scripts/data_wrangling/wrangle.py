@@ -56,7 +56,7 @@ net_income = returns.iloc[:, 80:100].melt(var_name='Year',
                                 value_name='Net_Income',
                                 ignore_index=False).drop(columns=['Year'])
 
-# Shareholders' Equity
+# Shareholders' Equity - Actual
 eqi = returns.iloc[:, 100:].melt(var_name='Year', 
                                 value_name='EQI',
                                 ignore_index=False).drop(columns=['Year'])
