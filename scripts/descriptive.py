@@ -1,5 +1,6 @@
 # packages
 import sys, os
+import pandas as pd
 from datetime import datetime
 
 # set path to retrieve returns/scores files
@@ -63,7 +64,8 @@ def desc(industry):
     desc = data.describe()
     
     with open(output, "w") as file:
-        file.write(f"Descriptive Statistics for {industry} Companies\n")
-        file.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-        file.write(str(desc))
+        with pd.option_context('display.max_columns', 7, 'display.expand_frame_repr', False):            
+            file.write(f"Descriptive Statistics for {industry} Companies\n")
+            file.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            file.write(str(desc))
 

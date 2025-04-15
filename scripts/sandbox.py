@@ -24,9 +24,13 @@ start = datetime.datetime.now()
 # Codespace
 # ==========================================
 
-glm.gaussian_glm(df = wrangle.finance, 
-                 measure = 'roa', 
-                 esg = 'env')
+# # Descriptive Statistics
+# # ===========================================================================
+# GICS Sector: Financials
+descriptive.desc('Financials')
+
+# GICS Sector: Information Technology
+descriptive.desc('Information Technology')
 
 stop = datetime.datetime.now()
 
