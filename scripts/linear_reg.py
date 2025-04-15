@@ -42,7 +42,7 @@ def init_data(
     Parameters:
         - df = wrangle.df (default) / wrangle.finance
         - measure = roe (default) / roa
-        - esg = combined (default) / individual
+        - esg = combined (default) / individual / env / soc / gov / env_soc / soc_gov
         - year_threshold = None (default) / 2004 / 2005 / etc.
 
           Note: if year_threshold > max(year), max(year) is used.
@@ -187,6 +187,48 @@ def init_data(
             X = data[['E', 'S', 'G', 'Q_Ratio']]
             vif = stest.vif_calc(data[['E', 'S', 'G', 'Q_Ratio']])
 
+        elif esg == 'env':
+            eqn = f"{measure} ~ E + Q_Ratio"
+            output_path += 'E/'
+
+            X = data[['E', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['E', 'Q_Ratio']])
+
+        elif esg == 'soc':
+            eqn = f"{measure} ~ S + Q_Ratio"
+            output_path += 'S/'
+
+            X = data[['S', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['S', 'Q_Ratio']])
+
+        elif esg == 'gov':
+            eqn = f"{measure} ~ G + Q_Ratio"
+            output_path += 'G/'
+
+            X = data[['G', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['G', 'Q_Ratio']])
+
+        elif esg == 'env_soc' or esg == 'soc_env':
+            eqn = f"{measure} ~ E + S + Q_Ratio"
+            output_path += 'E_S/'
+
+            X = data[['E', 'S', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['E', 'S', 'Q_Ratio']])
+
+        elif esg == 'env_gov' or esg == 'gov_env':
+            eqn = f"{measure} ~ E + G + Q_Ratio"
+            output_path += 'E_G/'
+
+            X = data[['E', 'G', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['E', 'G', 'Q_Ratio']])
+
+        elif esg == 'soc_gov' or esg == 'gov_soc':
+            eqn = f"{measure} ~ S + G + Q_Ratio"
+            output_path += 'S_G/'
+
+            X = data[['S', 'G', 'Q_Ratio']]
+            vif = stest.vif_calc(data[['S', 'G', 'Q_Ratio']])
+
     else:
         vif = None
         if esg == 'combined':
@@ -200,6 +242,42 @@ def init_data(
             output_path += 'E_S_G/'
 
             X = data[['E', 'S', 'G']]
+
+        elif esg == 'env':
+            eqn = f"{measure} ~ E + Q_Ratio"
+            output_path += 'E/'
+
+            X = data[['E', 'Q_Ratio']]
+
+        elif esg == 'soc':
+            eqn = f"{measure} ~ S + Q_Ratio"
+            output_path += 'S/'
+
+            X = data[['S', 'Q_Ratio']]
+
+        elif esg == 'gov':
+            eqn = f"{measure} ~ G + Q_Ratio"
+            output_path += 'G/'
+
+            X = data[['G', 'Q_Ratio']]
+
+        elif esg == 'env_soc' or esg == 'soc_env':
+            eqn = f"{measure} ~ E + S + Q_Ratio"
+            output_path += 'E_S/'
+
+            X = data[['E', 'S', 'Q_Ratio']]
+
+        elif esg == 'env_gov' or esg == 'gov_env':
+            eqn = f"{measure} ~ E + G + Q_Ratio"
+            output_path += 'E_G/'
+
+            X = data[['E', 'G', 'Q_Ratio']]
+
+        elif esg == 'soc_gov' or esg == 'gov_soc':
+            eqn = f"{measure} ~ S + G + Q_Ratio"
+            output_path += 'S_G/'
+
+            X = data[['S', 'G', 'Q_Ratio']]
 
     # Predictor Variable - linear regression
     Y = data[[measure]]

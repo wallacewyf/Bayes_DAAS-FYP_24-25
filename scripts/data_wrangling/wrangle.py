@@ -180,8 +180,6 @@ returns = returns[cond3]
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([returns, scores], axis=1)
 
-df.to_csv(config.data_path + 'cleaned_data.csv')
-
 # Remove outliers from ROE / ROA since ESG is fixed
 # Top 5% outliers removed - would result in no negative financial returns
 
@@ -208,8 +206,6 @@ df.sort_values(by=['Year', "Company Name"],
 
 scores.to_csv(config.data_path + 'scores.csv')
 returns.to_csv(config.data_path + 'returns.csv')
-
-df.to_csv(config.data_path + "no_outliers.csv")
 
 finance = df[df.index.get_level_values(1) == 'Financials']
 utils = df[df.index.get_level_values(1) == 'Utilities']

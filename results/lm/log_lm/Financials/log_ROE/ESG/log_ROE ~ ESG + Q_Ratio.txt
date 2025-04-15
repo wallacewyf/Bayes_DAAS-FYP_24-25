@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: log_ROE ~ ESG + Q_Ratio 
 
-Generated: 2025-04-15 02:50:44.438244 
+Generated: 2025-04-15 05:05:14.780265 
 
                             OLS Regression Results                            
 ==============================================================================
@@ -9,7 +9,7 @@ Dep. Variable:                log_ROE   R-squared:                       0.026
 Model:                            OLS   Adj. R-squared:                  0.026
 Method:                 Least Squares   F-statistic:                     47.27
 Date:                Tue, 15 Apr 2025   Prob (F-statistic):           5.56e-21
-Time:                        02:50:44   Log-Likelihood:                -2275.6
+Time:                        05:05:14   Log-Likelihood:                -2275.6
 No. Observations:                3505   AIC:                             4557.
 Df Residuals:                    3502   BIC:                             4576.
 Df Model:                           2                                         

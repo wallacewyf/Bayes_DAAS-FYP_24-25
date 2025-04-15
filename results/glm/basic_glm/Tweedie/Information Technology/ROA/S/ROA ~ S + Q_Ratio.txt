@@ -1,37 +1,37 @@
 GICS Sector: Information Technology
-Regression Equation: ROA ~ ESG + Q_Ratio 
+Regression Equation: ROA ~ S + Q_Ratio 
 
-Generated: 2025-04-15 05:05:16.262405 
+Generated: 2025-04-15 05:05:17.773761 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
 Dep. Variable:                    ROA   No. Observations:                 1692
 Model:                            GLM   Df Residuals:                     1689
 Model Family:                 Tweedie   Df Model:                            2
-Link Function:                    Log   Scale:                          2.3006
-Method:                          IRLS   Log-Likelihood:                -2343.4
-Date:                Tue, 15 Apr 2025   Deviance:                       4145.9
-Time:                        05:05:16   Pearson chi2:                 3.89e+03
-No. Iterations:                     6   Pseudo R-squ. (CS):           0.002829
+Link Function:                    Log   Scale:                          2.3045
+Method:                          IRLS   Log-Likelihood:                -2341.7
+Date:                Tue, 15 Apr 2025   Deviance:                       4156.5
+Time:                        05:05:17   Pearson chi2:                 3.89e+03
+No. Iterations:                     6   Pseudo R-squ. (CS):          0.0001161
 Covariance Type:            nonrobust                                         
 ==============================================================================
                  coef    std err          z      P>|z|      [0.025      0.975]
 ------------------------------------------------------------------------------
-Intercept      2.2994      0.037     62.854      0.000       2.228       2.371
-ESG           -0.0014      0.001     -2.167      0.030      -0.003      -0.000
-Q_Ratio     6.253e-06   2.07e-05      0.302      0.763   -3.44e-05    4.69e-05
+Intercept      2.2335      0.033     67.412      0.000       2.169       2.298
+S             -0.0002      0.001     -0.297      0.767      -0.001       0.001
+Q_Ratio     6.948e-06   2.07e-05      0.336      0.737   -3.36e-05    4.75e-05
 ==============================================================================
 
 Variance Inflation Factor Table
 ----------------------------------------------------------------------------
   Variable  VIF Value
-0      ESG   1.003209
-1  Q_Ratio   1.003209
+0        S   1.003946
+1  Q_Ratio   1.003946
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
 Shapiro-Wilk Normality Test p-value: 8.2854038916132e-15
-Breusch-Pagan Test p-value: 0.6318788273091376
-AIC: 4692.731737719426
-BIC: 4709.032737339924
+Breusch-Pagan Test p-value: 0.4282084403154923
+AIC: 4689.378594447363
+BIC: 4705.679594067861
 

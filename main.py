@@ -36,7 +36,6 @@ llh, aic, bic = reg.linear_reg(df = wrangle.all,
                 measure = 'roa', 
                 esg = 'combined')
 
-print ('ln (1 +x)')
 print ("===========================================================================")
 print ("Naive Model: ROA")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
@@ -74,6 +73,17 @@ llh, aic, bic = glm.gaussian_glm(df = wrangle.finance,
 print ("Model F2:")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 
+# Model F2 - Environmental Pillar
+# ROA / E 
+llh, aic, bic = glm.gaussian_glm(df = wrangle.finance, 
+                 measure = 'roa', 
+                 esg = 'env',
+                 log_transform=True, 
+                 link = None)               # None defaults as Identity for statsmodels.glm
+
+print ("Model F2 (Environmental):")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
 # Return on Equity (ROE)
 # Model F3
 # ROE / ESG
@@ -94,6 +104,17 @@ llh, aic, bic = glm.gaussian_glm(df = wrangle.finance,
                  link = None)               # None defaults as Identity for statsmodels.glm
 
 print ("Model F4:")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+# Model F4 - Environmental Pillar
+# ROE / E
+llh, aic, bic = glm.gaussian_glm(df = wrangle.finance, 
+                 measure = 'roe',
+                 esg = 'env',
+                 log_transform = True, 
+                 link = None)               # None defaults as Identity for statsmodels.glm
+
+print ("Model F4 (Environmental):")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 
 # Technology Sector
@@ -120,6 +141,26 @@ llh, aic, bic = glm.tweedie_glm(df = wrangle.tech,
 print ("Model T2:")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 
+# Model T2 - Environmental Pillar
+# ROA / E
+llh, aic, bic = glm.tweedie_glm(df = wrangle.tech,
+               measure = 'roa',
+               esg = 'env',
+               var_power=1)
+
+print ("Model T2 (Environmental):")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+# Model T2 - Social Pillar
+# ROA / S
+llh, aic, bic = glm.tweedie_glm(df = wrangle.tech,
+               measure = 'roa',
+               esg = 'soc',
+               var_power=1)
+
+print ("Model T2 (Social):")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
 # Return on Equity (ROE)
 # Model T3
 # ROE / ESG
@@ -140,6 +181,27 @@ llh, aic, bic = glm.tweedie_glm(df = wrangle.tech,
 
 print ("Model T4:")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+# Model T4 - Environmental Pillar
+# ROA / E
+llh, aic, bic = glm.tweedie_glm(df = wrangle.tech,
+               measure = 'roe',
+               esg = 'env',
+               var_power=1)
+
+print ("Model T4 (Environmental):")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
+# Model T4 - Social Pillar
+# ROA / S
+llh, aic, bic = glm.tweedie_glm(df = wrangle.tech,
+               measure = 'roe',
+               esg = 'soc',
+               var_power=1)
+
+print ("Model T4 (Social):")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
 
 # # # Diagnostic Tests
 # # # ===========================================================================

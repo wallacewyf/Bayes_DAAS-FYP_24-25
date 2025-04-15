@@ -1,7 +1,7 @@
 GICS Sector: All Industries
 Regression Equation: ROE ~ ESG 
 
-Generated: 2025-04-15 02:50:43.099205 
+Generated: 2025-04-15 05:05:13.038628 
 
                             OLS Regression Results                            
 ==============================================================================
@@ -9,7 +9,7 @@ Dep. Variable:                    ROE   R-squared:                       0.001
 Model:                            OLS   Adj. R-squared:                  0.001
 Method:                 Least Squares   F-statistic:                     22.08
 Date:                Tue, 15 Apr 2025   Prob (F-statistic):           2.63e-06
-Time:                        02:50:43   Log-Likelihood:                -75058.
+Time:                        05:05:13   Log-Likelihood:                -75058.
 No. Observations:               20806   AIC:                         1.501e+05
 Df Residuals:                   20804   BIC:                         1.501e+05
 Df Model:                           1                                         

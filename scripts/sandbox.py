@@ -26,7 +26,7 @@ start = datetime.datetime.now()
 
 glm.gaussian_glm(df = wrangle.finance, 
                  measure = 'roa', 
-                 esg = 'combined')
+                 esg = 'env')
 
 stop = datetime.datetime.now()
 
