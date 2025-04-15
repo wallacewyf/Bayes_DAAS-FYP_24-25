@@ -211,20 +211,6 @@ returns.to_csv(config.data_path + 'returns.csv')
 
 df.to_csv(config.data_path + "no_outliers.csv")
 
-# available dataframes
-# GICS Sectors
-    # Financials
-    # Utilities
-    # Health Care
-    # Information Technology
-    # Materials
-    # Industrials
-    # Energy
-    # Consumer Staples
-    # Consumer Discretionary
-    # Real Estate
-    # Communication Services
-
 finance = df[df.index.get_level_values(1) == 'Financials']
 utils = df[df.index.get_level_values(1) == 'Utilities']
 health = df[df.index.get_level_values(1) == 'Health Care']
