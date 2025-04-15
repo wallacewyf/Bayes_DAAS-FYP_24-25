@@ -73,6 +73,17 @@ llh, aic, bic = glm.gaussian_glm(df = wrangle.finance,
 print ("Model F2:")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 
+# Model F2 - Environmental and Social Pillar
+# ROA / E 
+llh, aic, bic = glm.gaussian_glm(df = wrangle.finance, 
+                 measure = 'roa', 
+                 esg = 'env_soc',
+                 log_transform=True, 
+                 link = None)               # None defaults as Identity for statsmodels.glm
+
+print ("Model F2 (Environmental and Social):")
+print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+
 # Model F2 - Environmental Pillar
 # ROA / E 
 llh, aic, bic = glm.gaussian_glm(df = wrangle.finance, 

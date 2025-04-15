@@ -1,0 +1,38 @@
+GICS Sector: Financials
+Regression Equation: log_ROA ~ E + S + Q_Ratio 
+
+Generated: 2025-04-15 19:59:21.284627 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                log_ROA   No. Observations:                 3505
+Model:                            GLM   Df Residuals:                     3501
+Model Family:                Gaussian   Df Model:                            3
+Link Function:               Identity   Scale:                         0.31470
+Method:                          IRLS   Log-Likelihood:                -2945.3
+Date:                Tue, 15 Apr 2025   Deviance:                       1101.8
+Time:                        19:59:21   Pearson chi2:                 1.10e+03
+No. Iterations:                     3   Pseudo R-squ. (CS):             0.2602
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      1.4712      0.026     55.599      0.000       1.419       1.523
+E             -0.0090      0.001    -17.814      0.000      -0.010      -0.008
+S           1.887e-05      0.001      0.029      0.977      -0.001       0.001
+Q_Ratio        0.0482      0.003     15.997      0.000       0.042       0.054
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E   11.97020
+1        S   12.11900
+2  Q_Ratio    1.04392
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 0.0
+AIC: 5898.547487363424
+BIC: 5923.1952705612985
+
