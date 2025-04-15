@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: log_ROA ~ E + S + G + Q_Ratio 
 
-Generated: 2025-04-15 05:05:13.961697 
+Generated: 2025-04-15 18:00:18.044635 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
@@ -11,7 +11,7 @@ Model Family:                Gaussian   Df Model:                            4
 Link Function:               Identity   Scale:                         0.31460
 Method:                          IRLS   Log-Likelihood:                -2944.2
 Date:                Tue, 15 Apr 2025   Deviance:                       1101.1
-Time:                        05:05:13   Pearson chi2:                 1.10e+03
+Time:                        18:00:18   Pearson chi2:                 1.10e+03
 No. Iterations:                     3   Pseudo R-squ. (CS):             0.2607
 Covariance Type:            nonrobust                                         
 ==============================================================================
@@ -34,8 +34,7 @@ Variance Inflation Factor Table
 
 Diagnostic Statistical Tests:
 ----------------------------------------------------------------------------
-Shapiro-Wilk Normality Test p-value: 1.1978559091422162e-47
-Breusch-Pagan Test p-value: 5.46189573316143e-273
-AIC: 5898.35979380043
-BIC: 5929.169522797774
+Shapiro-Wilk Normality Test p-value: 0.0
+AIC: 5898.359793800431
+BIC: 5929.169522797775
 

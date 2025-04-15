@@ -90,11 +90,10 @@ def export_results(summary,
         file.write (f"Diagnostic Statistical Tests:\n")
         file.write ('----------------------------------------------------------------------------\n')
         file.write (f"Shapiro-Wilk Normality Test p-value: {shapiro_p_value}\n")
-        file.write (f"Breusch-Pagan Test p-value: {bp_p_value}\n")
+        # file.write (f"Breusch-Pagan Test p-value: {bp_p_value}\n")
         file.write (f"AIC: {aic}\n")
         file.write (f"BIC: {bic}\n\n")
 
-    # Not sure if this is required
     if transformation_note is not None:
         with open(path + f'{eqn}.txt', 'a') as file:
             file.write (f"Notes:\n")
