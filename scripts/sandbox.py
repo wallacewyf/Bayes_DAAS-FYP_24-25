@@ -24,18 +24,6 @@ start = datetime.datetime.now()
 # Codespace
 # ==========================================
 
-# Model F2 - Environmental and Social Pillar
-# ROA / E 
-llh, aic, bic = glm.gaussian_glm(df = wrangle.finance, 
-                 measure = 'roa', 
-                 esg = 'env_soc',
-                 log_transform=True, 
-                 link = None)               # None defaults as Identity for statsmodels.glm
-
-print ("Model F2 (Environmental and Social):")
-print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
-
-
 stop = datetime.datetime.now()
 
 print (f"Runtime: {stop-start}")

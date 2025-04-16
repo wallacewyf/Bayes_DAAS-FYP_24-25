@@ -68,7 +68,7 @@ For example, when a Gaussian GLM is run between ESG and the Return on Assets (RO
 │   │   │   └───Gaussian
 │   │   │       └───Financials
 │   │   │           └───ROA
-│   │   │               └───ESG
+│   │   │               └───ESG_QRatio
 │   │   │                   └───QQ Plot.png
 │   │   │                   └───Residuals Histogram.png
 │   │   │                   └───ROA Boxplot.png

@@ -229,6 +229,13 @@ def init_data(
             X = data[['S', 'G', 'Q_Ratio']]
             vif = stest.vif_calc(data[['S', 'G', 'Q_Ratio']])
 
+        elif esg == 'esg':
+            eqn = f"{measure} ~ ESG"
+            output_path += 'ESG_only/'
+
+            X = data[['ESG']]
+
+
     else:
         vif = None
         if esg == 'combined':
@@ -278,6 +285,12 @@ def init_data(
             output_path += 'S_G/'
 
             X = data[['S', 'G', 'Q_Ratio']]
+
+        elif esg == 'esg':
+            eqn = f"{measure} ~ ESG"
+            output_path += 'ESG_only/'
+
+            X = data[['ESG']]
 
     # Predictor Variable - linear regression
     Y = data[[measure]]

@@ -200,43 +200,83 @@ def init_data(
 
     if esg == 'combined':
         eqn = f"{measure} ~ ESG + Q_Ratio"
-        output_path += 'ESG/'
+        output_path += 'ESG_QRatio/'
         vif = stest.vif_calc(data[['ESG','Q_Ratio']])
 
     elif esg == 'individual':
         eqn = f"{measure} ~ E + S + G + Q_Ratio"
-        output_path += 'E_S_G/'
+        output_path += 'E_S_G_QRatio/'
         vif = stest.vif_calc(data[['E', 'S', 'G', 'Q_Ratio']])
 
-    elif esg == 'env':
+    elif esg == 'env_q' or esg == 'q_env':
         eqn = f"{measure} ~ E + Q_Ratio"
-        output_path += 'E/'
+        output_path += 'E_QRatio/'
         vif = stest.vif_calc(data[['E', 'Q_Ratio']])
 
-    elif esg == 'soc':
+    elif esg == 'soc_q' or esg == 'q_soc':
         eqn = f"{measure} ~ S + Q_Ratio"
-        output_path += 'S/'
+        output_path += 'S_QRatio/'
         vif = stest.vif_calc(data[['S', 'Q_Ratio']])
 
-    elif esg == 'gov':
+    elif esg == 'gov_q' or esg == 'q_gov':
         eqn = f"{measure} ~ G + Q_Ratio"
-        output_path += 'G/'
+        output_path += 'G_QRatio/'
         vif = stest.vif_calc(data[['G', 'Q_Ratio']])
 
-    elif esg == 'env_soc' or esg == 'soc_env':
+    elif esg == 'env_soc_q' or esg == 'soc_env_q' or esg == 'env_q_soc' or esg == 'soc_q_env':
         eqn = f"{measure} ~ E + S + Q_Ratio"
-        output_path += 'E_S/'
+        output_path += 'E_S_QRatio/'
         vif = stest.vif_calc(data[['E', 'S', 'Q_Ratio']])
 
-    elif esg == 'env_gov' or esg == 'gov_env':
+    elif esg == 'env_gov_q' or esg == 'gov_env_q' or esg == 'env_q_gov' or esg == 'gov_q_env':
         eqn = f"{measure} ~ E + G + Q_Ratio"
-        output_path += 'E_G/'
+        output_path += 'E_G_QRatio/'
         vif = stest.vif_calc(data[['E', 'G', 'Q_Ratio']])
 
-    elif esg == 'soc_gov' or esg == 'gov_soc':
+    elif esg == 'soc_gov_q' or esg == 'gov_soc_q' or esg == 'soc_q_gov' or esg == 'gov_q_soc':
         eqn = f"{measure} ~ S + G + Q_Ratio"
-        output_path += 'S_G/'
+        output_path += 'S_G_QRatio/'
         vif = stest.vif_calc(data[['S', 'G', 'Q_Ratio']])
+    
+    elif esg == 'esg':
+        eqn = f"{measure} ~ ESG"
+        output_path += 'ESG/'
+        vif = None
+
+    elif esg == 'env':
+        eqn = f"{measure} ~ E"
+        output_path += 'E/'
+        vif = None
+
+    elif esg == 'soc':
+        eqn = f"{measure} ~ S"
+        output_path += 'S/'
+        vif = None
+
+    elif esg == 'gov':
+        eqn = f"{measure} ~ G"
+        output_path += 'G/'
+        vif = None
+
+    elif esg == 'env_soc' or esg == 'soc_env':
+        eqn = f"{measure} ~ E + S"
+        output_path += 'E_S/'
+        vif = stest.vif_calc(data[['E', 'S']])
+
+    elif esg == 'env_gov' or esg == 'gov_env':
+        eqn = f"{measure} ~ E + G"
+        output_path += 'E_G/'
+        vif = stest.vif_calc(data[['E', 'G']])
+
+    elif esg == 'soc_gov' or esg == 'gov_soc':
+        eqn = f"{measure} ~ S + G"
+        output_path += 'S_G/'
+        vif = stest.vif_calc(data[['S', 'G']])
+
+    elif esg == 'env_soc_gov' or esg == 'env_gov_soc' or esg == 'soc_gov_env' or esg == 'gov_soc_env':
+        eqn = f"{measure} ~ E + S + G"
+        output_path += 'E_S_G/'
+        vif = stest.vif_calc(data[['E', 'S', 'G']])
 
     # Verifies if output_path is valid
     os.makedirs(output_path, exist_ok=True)

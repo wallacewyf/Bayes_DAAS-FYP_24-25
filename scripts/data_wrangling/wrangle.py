@@ -3,6 +3,8 @@ import config
 
 # import libraries
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # initialize logger module 
 log = config.logging
@@ -180,9 +182,34 @@ returns = returns[cond3]
 # Combine both Returns and Scores into 1 single dataframe 
 df = pd.concat([returns, scores], axis=1)
 
+# Exports initial boxplots to show outliers
+finance = df[df.index.get_level_values(1) == 'Financials']
+tech = df[df.index.get_level_values(1) == 'Information Technology']
+
+# Finance Raw Data - Boxplot
+# Return on Assets (ROA)
+sns.boxplot(finance['ROA'])
+plt.savefig(config.results_path + f"Finance ROA Boxplot")
+plt.clf()
+
+# Return on Equity (ROE)
+sns.boxplot(finance['ROE'])
+plt.savefig(config.results_path + f"Finance ROE Boxplot")
+plt.clf()
+
+# Technology Raw Data - Boxplot
+# Return on Assets (ROA)
+sns.boxplot(tech['ROA'])
+plt.savefig(config.results_path + f"Technology ROA Boxplot")
+plt.clf()
+
+# Return on Equity (ROE)
+sns.boxplot(tech['ROE'])
+plt.savefig(config.results_path + f"Technology ROE Boxplot")
+plt.clf()
+
 # Remove outliers from ROE / ROA since ESG is fixed
 # Top 5% outliers removed - would result in no negative financial returns
-
 top_10_ROE = df['ROE'].quantile(0.95)
 bot_10_ROE = df['ROE'].quantile(0.05)
 
@@ -203,9 +230,6 @@ df.sort_values(by=['Year', "Company Name"],
                    axis=0, 
                    ascending=[True, True],
                    inplace=True)
-
-scores.to_csv(config.data_path + 'scores.csv')
-returns.to_csv(config.data_path + 'returns.csv')
 
 finance = df[df.index.get_level_values(1) == 'Financials']
 utils = df[df.index.get_level_values(1) == 'Utilities']
