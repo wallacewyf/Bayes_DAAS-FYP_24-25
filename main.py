@@ -89,12 +89,11 @@ print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 # Return on Equity (ROE)
 # Model F3
 # ROE ~ ESG + Q_Ratio
-llh, aic, bic = reg.linear_reg(df = wrangle.finance, 
-               measure = 'roe',
-               esg = 'combined',
-               log_transform = True)
+llh, aic, bic = glm.tweedie_glm(df = wrangle.finance, 
+                                measure = 'roe',
+                                esg = 'combined')
 
-print ("Model F3 - Linear Regression: ROE ~ ESG + Q_Ratio")
+print ("Model F3 - Tweedie GLM: ROE ~ ESG + Q_Ratio")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 
 # Model F4 

@@ -1,7 +1,7 @@
 GICS Sector: Financials
 Regression Equation: log_ROE ~ E + S + G 
 
-Generated: 2025-04-16 04:03:24.464907 
+Generated: 2025-04-16 06:52:29.168231 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
@@ -11,7 +11,7 @@ Model Family:                Gaussian   Df Model:                            3
 Link Function:               Identity   Scale:                         0.21846
 Method:                          IRLS   Log-Likelihood:                -2305.5
 Date:                Wed, 16 Apr 2025   Deviance:                       764.82
-Time:                        04:03:24   Pearson chi2:                     765.
+Time:                        06:52:29   Pearson chi2:                     765.
 No. Iterations:                     3   Pseudo R-squ. (CS):           0.009553
 Covariance Type:            nonrobust                                         
 ==============================================================================

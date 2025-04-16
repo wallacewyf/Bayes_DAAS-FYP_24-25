@@ -1,7 +1,7 @@
 GICS Sector: Information Technology
 Regression Equation: ROE ~ E + G + Q_Ratio 
 
-Generated: 2025-04-16 04:03:27.347270 
+Generated: 2025-04-16 06:52:33.233192 
 
                  Generalized Linear Model Regression Results                  
 ==============================================================================
@@ -11,7 +11,7 @@ Model Family:                 Tweedie   Df Model:                            3
 Link Function:                    Log   Scale:                          4.6555
 Method:                          IRLS   Log-Likelihood:                -1680.9
 Date:                Wed, 16 Apr 2025   Deviance:                       7929.7
-Time:                        04:03:27   Pearson chi2:                 7.86e+03
+Time:                        06:52:33   Pearson chi2:                 7.86e+03
 No. Iterations:                     6   Pseudo R-squ. (CS):           0.009657
 Covariance Type:            nonrobust                                         
 ==============================================================================
