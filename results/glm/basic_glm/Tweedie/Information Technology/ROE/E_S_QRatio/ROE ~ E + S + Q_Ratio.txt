@@ -1,0 +1,38 @@
+GICS Sector: Information Technology
+Regression Equation: ROE ~ E + S + Q_Ratio 
+
+Generated: 2025-04-16 04:03:22.911008 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROE   No. Observations:                 1692
+Model:                            GLM   Df Residuals:                     1688
+Model Family:                 Tweedie   Df Model:                            3
+Link Function:                    Log   Scale:                          4.5650
+Method:                          IRLS   Log-Likelihood:                -1693.8
+Date:                Wed, 16 Apr 2025   Deviance:                       7743.4
+Time:                        04:03:22   Pearson chi2:                 7.71e+03
+No. Iterations:                     6   Pseudo R-squ. (CS):            0.03344
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.7663      0.035     79.944      0.000       2.698       2.834
+E             -0.0041      0.001     -6.779      0.000      -0.005      -0.003
+S              0.0051      0.001      6.436      0.000       0.004       0.007
+Q_Ratio     4.074e-05   1.63e-05      2.502      0.012    8.83e-06    7.26e-05
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E   7.156671
+1        S   7.170605
+2  Q_Ratio   1.005264
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 1.3976521113775932e-18
+AIC: 3395.6432231660547
+BIC: 3417.3778893267195
+

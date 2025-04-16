@@ -1,0 +1,38 @@
+GICS Sector: Financials
+Regression Equation: log_ROE ~ E + S + G 
+
+Generated: 2025-04-16 04:03:24.464907 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                log_ROE   No. Observations:                 3505
+Model:                            GLM   Df Residuals:                     3501
+Model Family:                Gaussian   Df Model:                            3
+Link Function:               Identity   Scale:                         0.21846
+Method:                          IRLS   Log-Likelihood:                -2305.5
+Date:                Wed, 16 Apr 2025   Deviance:                       764.82
+Time:                        04:03:24   Pearson chi2:                     765.
+No. Iterations:                     3   Pseudo R-squ. (CS):           0.009553
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.6435      0.025    105.239      0.000       2.594       2.693
+E             -0.0018      0.000     -4.178      0.000      -0.003      -0.001
+S              0.0003      0.001      0.455      0.649      -0.001       0.001
+G           5.839e-05      0.000      0.141      0.888      -0.001       0.001
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E  12.510426
+1        S  15.420128
+2        G   8.272572
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 3.298681999902552e-12
+AIC: 4619.0578579391295
+BIC: 4643.705641137004
+

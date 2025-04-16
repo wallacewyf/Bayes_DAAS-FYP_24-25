@@ -1,0 +1,38 @@
+GICS Sector: Information Technology
+Regression Equation: ROA ~ E + S + G 
+
+Generated: 2025-04-16 04:03:25.680295 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                    ROA   No. Observations:                 1692
+Model:                            GLM   Df Residuals:                     1688
+Model Family:                 Tweedie   Df Model:                            3
+Link Function:                    Log   Scale:                          2.2927
+Method:                          IRLS   Log-Likelihood:                -2343.6
+Date:                Wed, 16 Apr 2025   Deviance:                       4110.3
+Time:                        04:03:25   Pearson chi2:                 3.87e+03
+No. Iterations:                     6   Pseudo R-squ. (CS):            0.01196
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.1919      0.041     53.733      0.000       2.112       2.272
+E             -0.0027      0.001     -4.504      0.000      -0.004      -0.002
+S              0.0022      0.001      2.759      0.006       0.001       0.004
+G              0.0006      0.001      0.981      0.327      -0.001       0.002
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E   7.268736
+1        S  11.576710
+2        G   6.911309
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 8.2854038916132e-15
+AIC: 4695.271517890658
+BIC: 4717.006184051323
+

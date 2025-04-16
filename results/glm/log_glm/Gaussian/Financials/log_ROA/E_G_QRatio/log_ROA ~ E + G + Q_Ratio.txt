@@ -1,0 +1,38 @@
+GICS Sector: Financials
+Regression Equation: log_ROA ~ E + G + Q_Ratio 
+
+Generated: 2025-04-16 04:03:24.092070 
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                log_ROA   No. Observations:                 3505
+Model:                            GLM   Df Residuals:                     3501
+Model Family:                Gaussian   Df Model:                            3
+Link Function:               Identity   Scale:                         0.31452
+Method:                          IRLS   Log-Likelihood:                -2944.2
+Date:                Wed, 16 Apr 2025   Deviance:                       1101.1
+Time:                        04:03:24   Pearson chi2:                 1.10e+03
+No. Iterations:                     3   Pseudo R-squ. (CS):             0.2607
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      1.4464      0.028     51.156      0.000       1.391       1.502
+E             -0.0093      0.000    -23.935      0.000      -0.010      -0.009
+G              0.0007      0.000      1.451      0.147      -0.000       0.002
+Q_Ratio        0.0481      0.003     16.001      0.000       0.042       0.054
+==============================================================================
+
+Variance Inflation Factor Table
+----------------------------------------------------------------------------
+  Variable  VIF Value
+0        E   6.371103
+1        G   6.451461
+2  Q_Ratio   1.035872
+
+Diagnostic Statistical Tests:
+----------------------------------------------------------------------------
+Shapiro-Wilk Normality Test p-value: 1.1978559091422162e-47
+AIC: 5896.442437689482
+BIC: 5921.090220887357
+
