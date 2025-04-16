@@ -36,16 +36,15 @@ llh, aic, bic = reg.linear_reg(df = wrangle.all,
                 measure = 'roa', 
                 esg = 'combined')
 
-print ("===========================================================================")
 print ("Naive Model: ROA")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
+print ("===========================================================================")
 
 # Return on Equity (ROE)
 llh, aic, bic = reg.linear_reg(df = wrangle.all,
                measure = 'roe', 
                esg = 'combined')
 
-print ("===========================================================================")
 print ("Naive Model: ROE")
 print (f"Log-likelihood: {llh} | AIC: {aic} | BIC: {bic}")
 
@@ -322,7 +321,7 @@ llh, aic, bic = glm.gaussian_glm(df = wrangle.finance,
 
 print ("Financials - Gaussian GLM: ROE ~ E + G + Q_Ratio")
 print (f'Log-likelihood: {round(llh, 2)} | AIC: {round(aic, 2)} | BIC: {round(bic, 2)}')
-
+print ('===========================================================================')
 # ===================================================================================================================
 # # Technology
 # ROA ~ E + S + G
